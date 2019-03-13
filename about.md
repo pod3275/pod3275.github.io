@@ -6,12 +6,15 @@ permalink: /about/
 
 <img src="/assets/profile.jpg" title="Profile Picture" class="profile">
 
-Centrarium is a custom theme for Jekyll, made by [Ben Centra][bencentra] for his own blog. He'd be humbled if you liked it enough to use it as well! Installation and configuration instructions can be found in the [GitHub repository](https://github.com/bencentra/centrarium).
+안녕하세요.
+pod3275의 블로그 입니다.
+저는 인공지능 랩실 석사과정 재학 중인 [이상헌][이상헌]입니다.
+컴퓨터 공학, 특히 AI, ML의 응용에 관심이 많습니다.
+취미로는 춤, 음악, [게임][칼바람뿍뽁이] 입니다. (이 블로그를 새로운 취미로 시작하고자 합니다.)
 
-This page is a good place to write about yourself, your project, your product, or whatever it is your site is for. You can replace the image above, or you can get rid of it entirely. 
+컴퓨터 공학 공부를 시작한 2013년 이래로, 현재까지 얻은 공식적 그리고 비공식적인 정보들을 공유하고자 블로그를 개설하였습니다.
+제가 얻은 정보과 그에 대한 각자의 생각들을 자유롭게 공유하고싶습니다.
+많은 관심 부탁드립니다.
 
-You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/). And you can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
-
-[centrarium]: https://github.com/bencentra/centrarium
-[bencentra]: http://bencentra.com
-[jekyll]: https://github.com/jekyll/jekyll
+[이상헌]: https://github.com/pod3275
+[칼바람뿍뽁이]: https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA
