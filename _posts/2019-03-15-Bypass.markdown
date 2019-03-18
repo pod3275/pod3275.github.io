@@ -1,12 +1,12 @@
 ---
 layout: post
-title:  "Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 리뷰"
+title:  "Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 설명"
 date:   2019-03-15 20:28:00
 author: Sangheon Lee
 categories: Dummy
 ---
 
-# Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 논문 리뷰
+# Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 설명
 
 - Nicholas Carlini, David Wagner, 2017.11, 140회 인용.
 - 10개의 제안된 adversarial detection method 성능 확인 및 비교.
