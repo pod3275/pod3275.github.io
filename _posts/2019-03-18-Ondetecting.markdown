@@ -71,7 +71,7 @@ categories: Dummy
 - A로 학습하고 B를 test하는 실험 및 결과 (A, B는 공격 방법)
   - Transferrability 측정 실험.
   
-  ![image](https://user-images.githubusercontent.com/26705935/47155365-82ff0c80-d31f-11e8-84d5-3e879fabc093.png)
+  ![image](https://user-images.githubusercontent.com/26705935/54531509-d194fd80-49c8-11e9-834b-f236446441b7.png)
   
   - Iterative FGSM에 의힌 adversarial image로 학습하고, FGSM에 의한 adversarial image로 test 하는건 잘 되지만, 반대는 성능이 낮음.
 	- 센 공격기법에 의한 adv example로 학습해야 함. (예를 들어 DeepFool)
