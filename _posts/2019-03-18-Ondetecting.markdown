@@ -3,7 +3,7 @@ layout: post
 title:  "On Detecting Adversarial Perturbations 정리"
 date:   2019-03-18 21:53:00
 author: Sangheon Lee
-categories: PaperReview
+categories: Paper Review
 ---
 
 # On detecting adversarial perturbations 정리

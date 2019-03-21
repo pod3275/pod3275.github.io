@@ -3,7 +3,7 @@ layout: post
 title:  "Population Based Training of Neural Networks 정리"
 date:   2019-03-19 22:24:00
 author: Sangheon Lee
-categories: PaperReview
+categories: Paper Review
 cover:  "/assets/instacode.png"
 ---
 

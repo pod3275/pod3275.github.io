@@ -3,7 +3,7 @@ layout: post
 title:  "Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리"
 date:   2019-03-15 20:28:00
 author: Sangheon Lee
-categories: PaperReview
+categories: Paper Review
 ---
 
 # Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리
