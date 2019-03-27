@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Self-Normalizing Neural Networks 정리"
-date:   2019-03-26 23:20:00
+title:  "Synthetic and natural noise both break neural machine translation 정리"
+date:   2019-03-27 22:17:00
 author: Sangheon Lee
 categories: Paper
 ---
