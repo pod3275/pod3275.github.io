@@ -60,7 +60,7 @@ categories: Paper
 
  만드는 구조를 보면 썩 괜찮아 보인다. 인간이 발생시키는 noise가 섞인 단어들을 어느정도 cover할 수 있을 것이라고 생각 들었다. 근데 막상 결과를 보면 natural noise를 cover하지 못하는 현상을 볼 수 있다.
 
- ## 4. 첫 번째 실험
+## 4. 첫 번째 실험
 첫 번째 실험은 Vanilla text로 학습하고, noise text를 test set으로 하여 번역의 성능을 판별한다. 판별 기준은 BLEU score인데, **BLEU score**는 기계 학습이 번역한 텍스트가 인간이 만들어 내는 것과 얼마나 유사한지를 기준으로 기계 학습의 성능을 측정하는 도표이다.
 
 모델은 총 3가지의 서로 다른 NMT 모델을 사용하였다. **Char2char 모델**(Lee et al., 2017)은 attention 기법을 이용한sequence-to-sequence model으로, 복잡한 encoder 및 standard recurrent decoder를 가진다. **Nematus 모델**(Sennrich et al., 2017)은 WMT라는 기계 번역 워크샵에서 가장 우수한 성능을 보인 모델이다. 마지막으로 **charCNN 모델**은 word representation 기반의 character cNN 모델이다. 이는 형태학적으로 풍부한 특성을 가진 언어에서 좋은 성능을 보인다고 한다. (Kim et al., 2015; Belinkov & Glass, 2016; Costa-juss'a & Fonollosa, 2016; Sajjad et al., 2017)
