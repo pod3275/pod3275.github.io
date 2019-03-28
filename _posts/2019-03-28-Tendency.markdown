@@ -1,12 +1,12 @@
 ---
 layout: post
-title:  "Measuring the tendency of CNNs to Learn Surface Statistical Regularities 정리"
+title:  "Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리"
 date:   2019-03-28 21:40:00
 author: Sangheon Lee
 categories: Paper
 ---
 
-# Measuring the tendency of CNNs to Learn Surface Statistical Regularities 정리
+# Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리
  - Jason Jo, and Yoshua Bengio (Universit´e de Montr´eal), ArXiv:1706.07068v1, [[pdf]](https://arxiv.org/pdf/1711.11561.pdf)
 
  - CNN을 공격(제 기능을 하지 못하도록)하는 여러 방법들.
