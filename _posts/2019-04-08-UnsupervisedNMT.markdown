@@ -30,7 +30,7 @@ categories: Paper
 
 - 모델
 
-  <img src="/assets/unsup1.png" title="seq-to-seq">
+  <img src="/assets/unsup1.png" title="seq-to-seq" width="60%">
 
   - Sequence-to-sequence 모델 with attention.
   - encoder : bi-directional LSTM, decoder : LSTM, 3 layers.
