@@ -9,7 +9,8 @@ categories: Paper
 # Unsupervised Machine Translation Using Monolingual Corpora Only 정리
 - 저자 : Guillaume Lample, Alexis Conneau, Ludovic Denoyer, Marc'Aurelio Ranzato
 - 학회 : ICLR 2018
-- 날짜 : 2018.04.13
+- 날짜 : 2017.10.31 (last revised 2018.04.13)
+- 인용 : 120회
 - 논문 : [paper](https://arxiv.org/pdf/1711.00043.pdf)
 
 ## 서론

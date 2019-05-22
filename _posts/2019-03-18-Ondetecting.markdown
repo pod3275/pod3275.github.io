@@ -7,13 +7,18 @@ categories: Paper
 ---
 
 # On detecting adversarial perturbations 정리
-- Jan Hendrik Metzen, Tim Genewein, Volker Fischer, Bastian Bischoff, 2017년 2월, 118회 인용.
+- 저자 : Jan Hendrik Metzen, Tim Genewein, Volker Fischer, Bastian Bischoff
+- 학회 : arXiv
+- 날짜 : 2017.02.14 (last revised 2017.02.21)
+- 인용 : 196회
+- 논문 : [paper](https://arxiv.org/pdf/1702.04267.pdf)
 
 ## Introduction
-- 기존의 방어 기법들
+- 기존의 adversarial defense method들
   - Goodfellow : Adversarial training : training data에 adversarial image도 포함.
   - Zheng : Objective function 식을 통해 특정 clean image와 이에 해당하는 adversarial image의 output이 비슷해지도록 학습함.
   - Papernot : Defensive distillation : FGSM과 L-BFGS에서는 잘 되나, C&W에서 안됨.
+- Adversarial defense가 아닌 detection method를 제안함.
 
 ## Proposed Method
 - DeepNN에 detector subnetwork를 추가. 이를 학습하여 주어진 input에 대한 adversarial detection 수행.

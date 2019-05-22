@@ -7,10 +7,11 @@ categories: Paper
 ---
 
 # Synthetic and Natural Noise Both Break Neural Machine Translation 정리
- - 저자 : Yonatan Bellnkov, Yonatan Bisk
- - 학회 : ICLR 2018
- - 날짜 : 2018.02.02
- - 논문 링크 : [[pdf]](https://arxiv.org/pdf/1711.02173)
+- 저자 : Yonatan Bellnkov, Yonatan Bisk
+- 학회 : ICLR 2018
+- 날짜 : 2017.11.06 (last revised 2018.02.24)
+- 인용 : 47회
+- 논문 : [paper](https://arxiv.org/pdf/1711.02173.pdf)
 
 ## 1. Human robust language processing system
 인간은 오타, 스펠링 오류, 철자 누락 등의 에러가 섞인 텍스트에 놀랍도록 robust한 언어 체계 시스템을 가지고 있다. (Rawlinson, 1976) 다음 문장을 보면 이해가 잘 될 것이다.

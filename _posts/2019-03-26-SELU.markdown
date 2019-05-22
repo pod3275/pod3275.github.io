@@ -7,10 +7,12 @@ categories: Paper
 ---
 
 # Self-Normalizing Neural Networks 정리
- - 저자 : Günter Klambauer, Thomas Unterthiner, Andreas Mayr, Sepp Hochreiter
- - 학회 : NIPS 2017
- - 논문 링크 : [[pdf]](http://papers.nips.cc/paper/6698-self-normalizing-neural-networks.pdf)
- - 논문 리뷰에 앞서, 이 논문은 여러 이론을 제시하는데 각 이론의 증명을 담은 appendix가 100여장에 달한다. 리뷰에서는 논문에 기재되어있는 간단한 증명만을 다룬다. 자세한 증명은 [appendix](http://papers.nips.cc/paper/6698-self-normalizing-neural-networks-supplemental.zip)를 참고하면 될 것이다.
+- 저자 : Günter Klambauer, Thomas Unterthiner, Andreas Mayr, Sepp Hochreiter
+- 학회 : NIPS 2017
+- 날짜 : 2017.07.08 (last revised 2017.09.07)
+- 인용 : 457회
+- 논문 : [paper](http://papers.nips.cc/paper/6698-self-normalizing-neural-networks.pdf)
+- 논문 리뷰에 앞서, 이 논문은 여러 이론을 제시하는데 각 이론의 증명을 담은 appendix가 100여장에 달한다. 리뷰에서는 논문에 기재되어있는 간단한 증명만을 다룬다. 자세한 증명은 [appendix](http://papers.nips.cc/paper/6698-self-normalizing-neural-networks-supplemental.zip)를 참고.
 
 ## 1. Introduction
  - 딥 러닝은 여러 벤치마크에서 새로운 기록을 세우고, 다양한 상업용 application을 개발하는데 도움을 주었다. Vision의 분야에선 CNN이, speech 혹은 NLP 분야에서는 RNN이 뛰어난 성능을 보이는 반면, hidden layer가 많은 deep한 feed-forward neural network(이하 FNN)의 성공 사례는 찾아보기 힘들다. 특히 vision이나 sequential한 task와 관련 없는 challenge에서조차도 gradient boosting, random forest 혹은 SVM등이 우세하고, FNN의 성공적인 사례는 드물다.
