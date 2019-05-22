@@ -30,7 +30,7 @@ categories: Paper
 
 - 모델
 
-  ![image](https://user-images.githubusercontent.com/26705935/42151648-9ce80914-7e18-11e8-8b4a-0c3e8602d7d8.png)
+  <img src="/assets/unsup1.png" title="seq-to-seq">
 
   - Sequence-to-sequence 모델 with attention.
   - encoder : bi-directional LSTM, decoder : LSTM, 3 layers.
