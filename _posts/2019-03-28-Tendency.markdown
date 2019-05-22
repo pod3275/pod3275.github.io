@@ -41,6 +41,6 @@ categories: Paper
  - radial masking을 적용한 것 = 이미지에서 high frequency(중요하지 않은 부분)가 사라진 것
    - **중요하지 않다고 생각한 부분(high frequency)이 이미지 인식에 영향을 준다.**
 
-##고찰
+## 고찰
 - 이러한 현상은 CNN 구조상의 잘못인가 혹은 loss function의 잘못인가?
 - CNN의 filter의 크기가 매우 작아서(3*3) 쪼그만 픽셀도 다 feature로 받아들이는 것 아닐까?

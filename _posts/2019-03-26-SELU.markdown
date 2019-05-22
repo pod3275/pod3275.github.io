@@ -32,7 +32,7 @@ categories: Paper
 
  - 하지만 저자들은 이러한 batch normalization을 포함한 다양한 normalization 기법을 사용한 모델을 학습할 때, 불안정한 결과가 나타남에 따라 error의 variance가 높아진다고 주장한다.
 
- ## 3. Notation
+## 3. Notation
  - 저자들이 제시한 SNN 모델을 소개하기 앞서, 논문에서 사용된 notation을 간략히 정리한다.
 
      ![image](https://user-images.githubusercontent.com/26705935/41337747-fdc05608-6f2a-11e8-9b02-986cf0a65603.png)

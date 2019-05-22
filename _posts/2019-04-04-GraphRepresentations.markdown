@@ -43,7 +43,7 @@ categories: Paper
 
    - 이렇게 각 node별로 label의 embedding값이 어느 정도 학습을 통해 정해지면, 그 node의 vector 표현은 그냥 label embedding값을 concatenate함.
 
- ## 실험
+## 실험
    - 'graph를 vector로 얼마나 잘 표현했는가?'에 대한 지표로, 기법을 통해 만들어진 vector 값을 이용하여 label의 classification 실험을 진행함.
 
    ![image](https://user-images.githubusercontent.com/26705935/41191100-49443378-6c25-11e8-83d7-05b0d7d5cdcf.png)
@@ -54,7 +54,7 @@ categories: Paper
 
    - 위는 실험 결과. Single-label classification에 대한 결과 표인데, EP-B 모델의 성능이 가장 좋거나 다른 state-of-the-art model과 유사함을 알 수 있다. Multi-label classification 실험 결과 또한 비슷하게 나타났다.
 
- ## 논의
+## 논의
    - node의 update 순서가 성능에 매우 중요한 영향을 줄 것 같은데, 이부분에 대해서는 논문에 언급되지 않았다.
    - model의 성능 평가 실험에서, vector representation data를 이용한 classification이 과연 성능을 나타내는 좋은 실험일까?
      - **만들어진 vector들이 기존 graph를 얼마나 잘 표현했는가를 측정하는 실험 또는 도표가 필요하다.**
