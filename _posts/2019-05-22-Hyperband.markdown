@@ -47,3 +47,6 @@ categories: Paper
 
 ## 2. Backgrounds
 ### 2-1. Multi-armed bandit problem
+- One-armed bandit, 외팔이 강도
+  - 하나의 레버를 가지고 있는 슬롯머신을 일컫는 말.
+  -
