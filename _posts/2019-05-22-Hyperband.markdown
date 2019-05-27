@@ -64,14 +64,15 @@ categories: Paper
 
   - 최적화 문제에서 대두되는 두 가지 중요한 요소.
   - Exploration: 더 높은 reward를 내는 슬롯 머신을 찾기 위해, 기존에 당기지 않은 새로운 슬롯 머신을 당겨보는 것.
-  - Exploitation: 지금까지 당긴 슬롯 머신 중 가장 높은 reward를 내는 머신을 다시 당기는 것.
+  - Exploitation: 높은 reward를 얻기 위해, 지금까지 당긴 슬롯 머신 중 가장 높은 reward를 내는 머신을 다시 당기는 것.
   - Exploration과 exploitation은 서로 trade-off 관계에 있음.
   - 따라서 두 가지 요소를 조화롭게 적용하는 최적화 정책(policy)은 필수적임.
 
 ### 2-2. Non-stochastic Best Arm Identification
 - 이 논문은 아니고, 같은 저자의 [이전 논문](https://arxiv.org/pdf/1502.07943.pdf) 내용임.
 - Best arm identification problem
-  - Multi-armed banit problem에서 최대의 reward 얻기 --> 최소의 regret 얻기.
+  - (Multi-armed banit problem) 제한 시간 내에 최대의 reward 얻기.
+  --> (Best arm identification problem) 최소의 regret을 내는 arm을 찾기.
 - 문제의 환경 분류: Stochastic and Non-stochastic setting
   - Stochastic setting
 
@@ -97,8 +98,8 @@ categories: Paper
 - 즉, regret의 최종 수렴 값이 가장 낮은 arm을 찾는다. == 최종 loss가 가장 낮은 하이퍼파라미터 설정을 찾는다.
 
 ## 3. Proposed Methods
-### 3-1. Successive Halving Algorithm
-- 본 논문 저자들의 [이전 논문](https://arxiv.org/pdf/1502.07943.pdf) 에서 제안한 하이퍼파라미터 최적화 해결책.
+### 3-1. Successive Halving Algorithm (SHA)
+- 본 논문의 제안 기법은 아니고, 저자들의 [이전 논문](https://arxiv.org/pdf/1502.07943.pdf)에서 제안한 하이퍼파라미터 최적화 해결책.
 - 제한된 시간에서 최소의 loss를 갖는 모델의 하이퍼파라미터 설정을 찾는 것이 목표.
 
   ![image](https://user-images.githubusercontent.com/26705935/58406124-e0242300-80a3-11e9-91ab-0033790cb037.png)
@@ -124,4 +125,17 @@ categories: Paper
   ![image](https://user-images.githubusercontent.com/26705935/58407899-ac4afc80-80a7-11e9-9001-545d74d87457.png)
 
   - 최종 loss(수렴 값)과 현재 loss의 차이에 대한 함수가 non-increasing function이라고 가정.
-  -
+  - 특정 t 이상의 budget을 할당하여 학습된 모델의 중간 loss를 비교하는 것만으로도, 최종 loss의 대소관계를 알 수 있다는 것을 증명.
+  - 그렇다면 대소관계가 반영되는 t는 얼마인지 어떻게 알 수 있는가?
+    - 이에 대해 총 소요 budget B를 충분히 크게 잡으면 best arm이 보장된다는 것을 증명함. (생략)
+  - 총 소요 budget을 크게 잡기 위해 doubling trick을 적용.
+    - 말 그대로 그냥 B를 2B로 하여 돌리고, 3B로 하여 돌리고, ...
+
+- SHA의 단점
+  - 알고리즘 자체의 hyperparameter(input) : B와 n.
+  - B와 n(정확히는 B/n)에 따라서 exploration과 exploitation의 비율이 정해짐.
+  - 따라서 알고리즘 성능을 위해 B와 n이라는 hyperparameter 설정이 굉장히 중요해짐.
+
+- 그래서 이 논문에서 제안한 것이 ***Hyperband*** 입니다. (이제야 이 논문을 처음 언급;; )
+
+### 3-2. Hyperband
