@@ -47,6 +47,78 @@ categories: Paper
 
 ## 2. Backgrounds
 ### 2-1. Multi-armed bandit problem
-- One-armed bandit, 외팔이 강도
+- One-armed bandit (외팔이 강도)
+
+  ![image](https://user-images.githubusercontent.com/26705935/58404464-211a3880-80a0-11e9-8c1c-0d593fb5cf57.png)
+
   - 하나의 레버를 가지고 있는 슬롯머신을 일컫는 말.
+- Multi-armed bandit problem
+  - 여러 개의 슬롯 머신(arms)을 당길 수 있는 상황.
+  - 각각의 슬롯 머신을 당겨서 얻을 수 있는 reward는 서로 다름.
+  - Reward는 어떤 확률 분포에 의해 draw되는 random variable임.
+  - 제한 시간 내에 (혹은 제한 횟수 내에) 최대의 reward를 얻기 위해서는 슬롯 머신을 어떤 순서로 당겨야 할까?
+- 문제는 arm마다 보상이 다르고, 한 번의 당김에서 하나의 arm의 reward 값만 관측 가능하다는 것.
+- Exploration vs exploitation
+  - 최적화 문제에서 대두되는 두 가지 중요한 요소.
+  - Exploration: 더 높은 reward를 내는 슬롯 머신을 찾기 위해, 기존에 당기지 않은 새로운 슬롯 머신을 당겨보는 것.
+  - Exploitation: 지금까지 당긴 슬롯 머신 중 가장 높은 reward를 내는 머신을 다시 당기는 것.
+  - Exploration과 exploitation은 서로 trade-off 관계에 있음.
+  - 따라서 두 가지 요소를 조화롭게 적용하는 최적화 정책(policy)은 필수적임.
+
+### 2-2. Non-stochastic Best Arm Identification
+- 이 논문은 아니고, 같은 저자의 [이전 논문](https://arxiv.org/pdf/1502.07943.pdf) 내용임.
+- Best arm identification problem
+  - Multi-armed banit problem에서 최대의 reward 얻기 --> 최소의 regret 얻기.
+- 문제의 환경 분류: Stochastic and Non-stochastic setting
+  - Stochastic setting
+
+    ![image](https://user-images.githubusercontent.com/26705935/58405341-2d06fa00-80a2-11e9-9d43-47fc93dfa9f8.png)
+
+    - 각 arm의 regret이 수렴한다.(converge)
+    - 수렴하는 정도(convergence rate)를 알고 있다.
+
+  - Non-stochastic setting
+
+    ![image](https://user-images.githubusercontent.com/26705935/58405393-46a84180-80a2-11e9-9039-fd75a150dcbf.png)
+
+    - 각 arm의 regret이 수렴한다.
+    - 수렴하는 정도(convergence rate)를 모른다.
+    - 하나의 arm을 당기는 cost는 매우 높다.
+  - 하이퍼파라미터 최적화 문제는 non-stochastic setting과 유사함.
+
+### 2-3. Multi-armed bandit problem과 하이퍼파라미터 최적화 문제
+- Best arm identification problem --> 하이퍼파라미터 최적화
+  - Arms = 하이퍼파라미터 설정들
+  - number of pulling the arm = number of training iterations of 하이퍼파라미터 설정
+  - regret = 중간까지 학습한 모델의 (intermediate) validation loss
+- 즉, regret의 최종 수렴 값이 가장 낮은 arm을 찾는다. == 최종 loss가 가장 낮은 하이퍼파라미터 설정을 찾는다.
+
+## 3. Proposed Methods
+### 3-1. Successive Halving Algorithm
+- 본 논문 저자들의 [이전 논문](https://arxiv.org/pdf/1502.07943.pdf) 에서 제안한 하이퍼파라미터 최적화 해결책.
+- 제한된 시간에서 최소의 loss를 갖는 모델의 하이퍼파라미터 설정을 찾는 것이 목표.
+
+  ![image](https://user-images.githubusercontent.com/26705935/58406124-e0242300-80a3-11e9-91ab-0033790cb037.png)
+
+  1. 총 탐색에 소요되는 budget 설정. (B)
+  2. n개의 하이퍼파라미터 설정을 랜덤하게 뽑음. (Sk)
+  3. S0의 모델들에 동일한 budget을 할당. (rk)
+  4. 학습 및 중간 loss 추출.
+  5. 중간 loss를 기준으로, 성능이 좋지 않은 하이퍼파라미터 설정을 반 만큼 버림. (Sk+1)
+  6. 하나의 하이퍼파라미터 설정이 남을 때까지 2, 3, 4, 5를 반복.
+
+- 이해가 안가면 숫자를 대입해보면 됨.
+
+  ![image](https://user-images.githubusercontent.com/26705935/58406834-73118d00-80a5-11e9-86e9-3a9dbf4213ae.png)
+
+  - 랜덤하게 16개를 뽑아서 1 epoch 만큼 학습하고 좋은 8개를 추출함.
+  - 추출된 8개를 2 epochs 만큼 학습하고 (1 epoch 만큼 더 학습) 좋은 4개를 추출함.
+  - 추출된 4개를 4 epochs 만큼 학습하고 (2 epochs만큼 더 학습) 좋은 2개를 추출함.
+  - 추출된 2개를 8 epochs 만큼 학습하고 (4 epochs만큼 더 학습) 좋은 1개를 추출함. --> 결과!
+
+- 이게 왜 수렴하는가?
+
+  ![image](https://user-images.githubusercontent.com/26705935/58407899-ac4afc80-80a7-11e9-9001-545d74d87457.png)
+  
+  - 최종 loss(수렴 값)과 현재 loss의 차이에 대한 함수가 non-increasing function이라고 가정.
   -
