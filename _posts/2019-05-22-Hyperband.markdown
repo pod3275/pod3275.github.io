@@ -59,6 +59,9 @@ categories: Paper
   - 제한 시간 내에 (혹은 제한 횟수 내에) 최대의 reward를 얻기 위해서는 슬롯 머신을 어떤 순서로 당겨야 할까?
 - 문제는 arm마다 보상이 다르고, 한 번의 당김에서 하나의 arm의 reward 값만 관측 가능하다는 것.
 - Exploration vs exploitation
+
+  ![image](https://user-images.githubusercontent.com/26705935/58408165-38f5ba80-80a8-11e9-95db-efb6bb385e7f.png) (사진 [출처](https://medium.com/user-experience-ux-experts/you-probably-dont-know-how-to-really-create-great-experiences-e991fbc56767))
+
   - 최적화 문제에서 대두되는 두 가지 중요한 요소.
   - Exploration: 더 높은 reward를 내는 슬롯 머신을 찾기 위해, 기존에 당기지 않은 새로운 슬롯 머신을 당겨보는 것.
   - Exploitation: 지금까지 당긴 슬롯 머신 중 가장 높은 reward를 내는 머신을 다시 당기는 것.
@@ -119,6 +122,6 @@ categories: Paper
 - 이게 왜 수렴하는가?
 
   ![image](https://user-images.githubusercontent.com/26705935/58407899-ac4afc80-80a7-11e9-9001-545d74d87457.png)
-  
+
   - 최종 loss(수렴 값)과 현재 loss의 차이에 대한 함수가 non-increasing function이라고 가정.
   -
