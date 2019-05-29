@@ -136,6 +136,95 @@ categories: Paper
   - B와 n(정확히는 B/n)에 따라서 exploration과 exploitation의 비율이 정해짐.
   - 따라서 알고리즘 성능을 위해 B와 n이라는 hyperparameter 설정이 굉장히 중요해짐.
 
-- 그래서 이 논문에서 제안한 것이 ***Hyperband*** 입니다. (이제야 이 논문을 처음 언급;; )
+- 그래서 이 논문에서 제안한 것이 "***Hyperband***" 입니다. (이제야 이 논문을 처음 언급;; )
 
 ### 3-2. Hyperband
+- B와 n의 설정에 따라 성능이 크게 변한다는 SHA의 단점을 보완한 알고리즘.
+- 간단하게, SHA의 연속.
+
+  ![image](https://user-images.githubusercontent.com/26705935/58550865-b573cf00-8249-11e9-90c7-3c0efad3ea5d.png)
+
+  1. 하나의 하이퍼파라미터 설정에 최대로 할당할 budget 설정. (R)
+  2. SHA의 매 step마다 줄어드는 설정의 개수 (혹은 늘어나는 budget의 비율) 설정. (etha, SHA에서는 2)
+  3. R과 etha에 따라서 SHA를 반복할 개수 (1 SHA = 1 bracket으로 명명) 및 각 SHA의 처음 step에서 초기화하는 설정의 개수와 할당되는 budget이 계샨됨.
+  4. 각 bracket의 SHA 모두 실행.
+
+- 이것도 숫자 대입.
+
+  ![image](https://user-images.githubusercontent.com/26705935/58551212-7d20c080-824a-11e9-85de-1dccebc5e1af.png)
+
+  - R=81, etha=3일 때, 총 5번의 SHA를 반복하며 (5 brackets), 각 bracket의 처음 설정 수 및 할당 budget이 달라짐.
+
+- 특징
+  - B와 n을 설정하지 않고 R 하나만 설정하는 것으로도, 다양한 exploration 및 exploitation 비율을 반영한 search를 진행할 수 있음.
+    - 특히 R은 한 하이퍼파라미터 설정에 할당되는 최대 budget이기 때문에, 사용자 입장에서 따로 생각할 필요 없이 학습하고 싶은 만큼 값을 설정하면 됨.
+    - R을 한 단위로 보고, 다양하게 설정 가능. (예를 들어, 1R = 10 epochs 학습)
+  - 각 bracket들을 동시에 (parallel하게) 수행할 수 있음.
+    - 전체 탐색 시간을 단축시킬 수 있음.
+  - Budget은 학습에 사용되는 자원으로, 제한될 수 있는 다양한 것들이 budget이 될 수 있음.
+    - 학습 iterations(학습 시간), 학습 dataset 개수, 학습 데이터의 feature, 등...
+  - Etha는 다양한 값이 될 수 있으나, 저자들은 3 또는 4에서 좋은 결과를 얻었다고 말함.
+
+## 4. Experiments
+- 제안 알고리즘인 Hyperband의 유효성 및 우수성 검증.
+- 비교 모델은 3개의 Bayesian Optimization 기법
+  - [SMAC](https://github.com/automl/SMAC3), [TPE](https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf), [Spearmint](https://github.com/JasperSnoek/spearmint)
+  - Baseline 모델: random search, random 2X. (사용 budget이 2배)
+- Budget을 뭘로 잡냐에 따라 3가지 다른 실험을 진행.
+
+### 4-1. Budget = 학습 iterations
+- 8개의 하이퍼파라미터를 가진 Convolutional Neural Network (CNN) 모델을 tuning.
+- R (budget) 단위 및 etha
+  - 1R = 100 mini-batch iterations
+  - etha = 4
+- 사용 데이터셋 및 R값
+  - CIFAR10 (R=300), MRBI (R=300), SVHN (R=600)
+- 결과
+
+  ![image](https://user-images.githubusercontent.com/26705935/58552107-89a61880-824c-11e9-9492-9ff8b32315f5.png)
+
+  - Random search보다 20배 빠르다.
+  - 다른 하이퍼파라미터 최적화 기법들보다 수렴이 빠르며, 성능이 비슷하거나 좋고, varation도 적었다.
+
+### 4-2. Budget = 학습 dataset 크기
+- 6개의 하이퍼파라미터를 가진 ernel-based classification 모델을 tuning.
+- R (budget) 단위 및 etha
+  - 1R = 100 training data points
+  - etha = 4
+- 사용 데이터셋 및 R값
+  - CIFAR10 (R=400)
+- 결과
+
+  ![image](https://user-images.githubusercontent.com/26705935/58552420-531ccd80-824d-11e9-85d8-1013b3c89489.png)
+
+  - Bayesian Optimizatio보다 30배 빠르다.
+  - Random search보다 70배 빠르다.
+
+### 4-3. Budget = feature subsample
+- 4-2.와 같은 모델 tuning.
+- R (budget) 단위 및 etha
+  - 1R = 100 features
+  - etha = 4
+- 사용 데이터셋 및 R값
+  - CIFAR10 (R=1000)
+- 결과
+
+  ![image](https://user-images.githubusercontent.com/26705935/58552547-9f680d80-824d-11e9-9682-e1c1d72dd770.png)
+
+  - Bayesian Optimization보다 6배 빠르다.
+
+## 5. Conclusion
+- Hyperparameter optimization 문제를 non-stochastic best arm identification 문제로 대응함.
+  - 중간 loss function의 variation이 non-decreasing function이라는 가정.
+- Hyperband 알고리즘 제안.
+  - 기존에 제안된 Successive Halving Algorithm의 연속.
+  - 다양한 exploration vs exploitation 비율을 반영한 탐색을 진행.
+  - 결과적으로 Bayesian Optimization보다 빠른 수렴이 가능함.
+- (내가 본)특징
+  - 빠른 수렴이 가능하기 때문에 모델 tuning 시간이 제한된 환경에서 좋은 성능을 효율적으로 낼 수 있음.
+  - 하지만 제한되지 않은 환경에서는 기존 최적화 기법들이 더 높은 성능을 냄.
+  - 이것은 Hyperband의 bracket (매 SHA를 반복하는 것) 들 간의 정보 교환이 없기 때문임.
+  - 즉, 기탐색에서 얻은 정보를 활용하지 않기 때문에, 맨 땅에 계속 헤딩하는 식임.
+  - 그렇다고 정보를 교환한다는 것은, 각 bracket을 parallel하게 연산할 수 없기 때문에 탐색 시간이 느려질 것임.
+  - Bracket간의 정보 교환 vs (parallel 연산을 통한) 탐색 시간 단축
+    - 사실 이를 해결하여 Bayesian Optimization과 Hypeerband를 결합한 [BOHB](https://arxiv.org/pdf/1807.01774.pdf) 알고리즘이 이미 제안됨. 참고!
