@@ -226,5 +226,5 @@ categories: Paper
   - 이것은 Hyperband의 **bracket (매 SHA를 반복하는 것) 들 간의 정보 교환**이 없기 때문임.
   - 즉, 기탐색에서 얻은 정보를 활용하지 않기 때문에, 맨 땅에 계속 헤딩하는 식임.
   - 그렇다고 정보를 교환한다는 것은, 각 bracket을 parallel하게 연산할 수 없기 때문에 탐색 시간이 느려질 것임.
-  - **Bracket간의 정보 교환 vs (parallel 연산을 통한) 탐색 시간 단축**
+  - **Bracket간의 정보 교환 vs (parallel 연산을 통한) 탐색 시간 단축** 의 조화가 핵심.
     - 사실 이를 해결하여 Bayesian Optimization과 Hypeerband를 결합한 [BOHB](https://arxiv.org/pdf/1807.01774.pdf) 알고리즘이 이미 제안됨. 참고!
