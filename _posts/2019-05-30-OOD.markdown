@@ -1,0 +1,16 @@
+---
+layout: post
+title:  "Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리"
+date:   2019-05-30 21:23:00
+author: Sangheon Lee
+categories: Paper
+---
+
+# Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리
+- 저자 : Kimin Lee, Honglak Lee, Kibok Lee, Jinwoo Shin
+- 학회 : ICLR 2018
+- 날짜 : 2017.11.26 (last revised 2018.02.23)
+- 인용 : 50회
+- 논문 : [paper](https://arxiv.org/pdf/1711.09325.pdf)
+
+## 1. Introduction
