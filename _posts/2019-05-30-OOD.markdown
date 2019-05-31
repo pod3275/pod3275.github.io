@@ -11,6 +11,29 @@ categories: Paper
 - 학회 : ICLR 2018
 - 날짜 : 2017.11.26 (last revised 2018.02.23)
 - 인용 : 50회
-- 논문 : [paper](https://arxiv.org/pdf/1711.09325.pdf)
+- 논문 : [paper](https://arxiv.org/pdf/1603.06560.pdf)
 
 ## 1. Introduction
+**- 모델의 Uncertainty**
+  - 기계학습 또는 딥러닝 모델의 Uncertainty란, 학습된 모델이 학습 과정에서 보지 못한 데이터에 대해 도출한 결과에 대해 얼마나 믿을 것인지를 나타내는 요소.
+  - 간단히, 모델의 신뢰성.
+  - 자금 투자 혹은 의료 분야에서 기계학습 모델이 사용되는 경우, 모델이 도출한 결과의 영향력이 매우 크기 때문에 uncertainty가 중요함.
+
+## 2. Related Works
+**1) Softmax Probability**
+
+  ![image](https://user-images.githubusercontent.com/26705935/58702782-b8092c80-83e1-11e9-9da6-690f58e13c26.png)
+
+  - Softmax 값, 즉 분류 모델의 classification probability를 통해, 주어진 입력에 대해 모델이 얼마나 확신을 가지고 대답할 수 있는지 판단할 수 있음.
+  - 하지만 그림과 같이, 학습 과정에서 보지 못했던 입력에 대해 높은 classification probability로 틀려버리는 경우가 있기 때문에, 단순하게 softmax 값만으로는 uncertainty를 정확히 측정할 수 없음.
+
+**2) Threshold-based Detector**
+
+  ![image](https://user-images.githubusercontent.com/26705935/58703289-27335080-83e3-11e9-9bfa-23822ca5c281.png)
+
+  - 2015년 [논문](https://ieeexplore.ieee.org/document/7439470) 및 다른 논문들에서 연구됨.
+  - 입력 데이터가 학습 데이터 분포에 해당하는지(in-distrubution), 학습 데이터 분포 밖인지(out-of-distribution)를 판별하는 연구.
+  - 모델의 softmax 값을 기반으로 score를 계산하여, 특정 threshold보다 높으면 입력을 in-distribution, 낮으면 입력을 out-of-distribution으로 판단.
+  - 한계점: 모델 학습 데이터(in-distrubution)를 어떻게 잡냐에 따라 성능이 좌지우지됨.
+
+## 3. Proposed Methods
