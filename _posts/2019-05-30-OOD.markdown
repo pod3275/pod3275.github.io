@@ -17,7 +17,7 @@ categories: Paper
 **- 모델의 Uncertainty**
   - 기계학습 또는 딥러닝 모델의 Uncertainty란, 학습된 모델이 학습 과정에서 보지 못한 데이터에 대해 도출한 결과에 대해 얼마나 믿을 것인지를 나타내는 요소.
   - 간단히, 모델의 신뢰성.
-  - 자금 투자 혹은 의료 분야에서 기계학습 모델이 사용되는 경우, 모델이 도출한 결과의 영향력이 매우 크기 때문에 uncertainty가 중요함.
+  - 자금 투자 혹은 의료 분야에서 기계학습 모델이 사용되는 경우, 모델이 도출한 결과의 영향력이 매우 크기 때문에 uncertainty를 통한 모델의 신뢰성 측정은 중요함.
 
 ## 2. Related Works
 **1) Softmax Probability**
@@ -37,3 +37,36 @@ categories: Paper
   - 한계점: 모델 학습 데이터(in-distrubution)를 어떻게 잡냐에 따라 성능이 좌지우지됨.
 
 ## 3. Proposed Methods
+### 3-1. Objective
+
+![image](https://user-images.githubusercontent.com/26705935/58784462-73b6a000-861e-11e9-9c26-3f9b3d3656ce.png)
+
+- In-distribution data: 학습에 따라 모델이 유추하는 classification probability를 그대로 출력.
+- Out-of-distribution data: 모델에 따른 classification probability를 uniform distrubution이 되도록 함.
+
+### 3-2. Confidence Loss
+
+![image](https://user-images.githubusercontent.com/26705935/58799053-30b8f480-863f-11e9-96fa-36c12fd8fc4c.png)
+
+- 3-1.을 만족시키기 위해 모델 학습에 사용되는 Loss.
+  - In-distribution data는 NLL(Negative Log Likelihood) loss.
+  - Out-of-distribution data는 uniform distrubution과의 KL divergence. (KL divergence: 분포 간의 거리)
+
+- 간단한 실험
+
+  ![image](https://user-images.githubusercontent.com/26705935/58799220-b3da4a80-863f-11e9-8001-34b47986be23.png)
+
+  - SVHN (in-dist dataset), MNIST (out-of-dist dataset) 을 사용한 간단한 CNN 모델.
+  - 기존 cross entropy loss만을 썼을 때 (왼쪽 그래프), unseen data의 가장 높은 softmax값이 0.9처럼 높은 값을 갖는 경우가 많음.
+  - 제안된 Confidence loss를 썼을 때 (오른쪽 그래프), unseen data의 가장 높은 softmax값은 대체적으로 낮음.
+- 그렇다면 모델 학습에서 사용되는 out-of-distribution dataset을 어떻게 설정할 것인가?
+  - 다른 dataset을 사용하는 것이 아니라, GAN으로 만들자.
+
+### 3-3. GAN for generating OOD samples
+
+![image](https://user-images.githubusercontent.com/26705935/58799561-948fed00-8640-11e9-9145-cd426811050b.png)
+
+- (a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,
+- (b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion 데이터 분포와 동일하게 나타나지 않음.
+- (c): 따라서 out-of-distrubtion data를 그림과 같이 in-distrubtion data에 최대한 밀접하여 설정을 하면,
+- (d): 분포가 이렇게
