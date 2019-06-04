@@ -60,13 +60,35 @@ categories: Paper
   - 기존 cross entropy loss만을 썼을 때 (왼쪽 그래프), unseen data의 가장 높은 softmax값이 0.9처럼 높은 값을 갖는 경우가 많음.
   - 제안된 Confidence loss를 썼을 때 (오른쪽 그래프), unseen data의 가장 높은 softmax값은 대체적으로 낮음.
 - 그렇다면 모델 학습에서 사용되는 out-of-distribution dataset을 어떻게 설정할 것인가?
-  - 다른 dataset을 사용하는 것이 아니라, GAN으로 만들자.
+  - 다른 dataset을 사용하는 것이 아니라, GAN (Generative Adversarial Networks) 으로 만들자.
 
 ### 3-3. GAN for generating OOD samples
 
-![image](https://user-images.githubusercontent.com/26705935/58799561-948fed00-8640-11e9-9145-cd426811050b.png)
+  ![image](https://user-images.githubusercontent.com/26705935/58799561-948fed00-8640-11e9-9145-cd426811050b.png)
 
-- (a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,
-- (b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion 데이터 분포와 동일하게 나타나지 않음.
-- (c): 따라서 out-of-distrubtion data를 그림과 같이 in-distrubtion data에 최대한 밀접하여 설정을 하면,
-- (d): 분포가 이렇게
+  - (a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,
+  - (b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion data 분포와 동일하게 나타나지 않음.
+  - (c): 따라서 out-of-distrubtion data를 그림과 같이 in-distrubtion data에 최대한 밀접하여 설정을 하면,
+  - (d): 모델의 decision boundary를 in-distrubtion data 분포와 일치하도록 할 수 있음.
+
+- 이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 GAN을 이용하여 생성하자.
+
+  ![image](https://user-images.githubusercontent.com/26705935/58880352-a8a41f00-8712-11e9-8db0-ed2ca05dcfe0.png)
+
+  - OOD loss (a): G가 생성하는 데이터에 대한 모델의 결과가 uniform distrubtion과 같아지도록 분류 모델을 학습.
+  - GAN loss (b): G가 생성하는 데이터가 기존 데이터와 비슷한 모양이도록 생성 모델을 학습.
+
+  ![image](https://user-images.githubusercontent.com/26705935/58880622-4f88bb00-8713-11e9-8831-4cc6fcc91788.png)
+
+  - 왼쪽: 위의 loss에서 (a)만 있는 경우.
+  - 오른쪽: 위의 loss에서 (a), (b) 모두 사용한 경우.
+
+### 3-4. 최종 Joint Confidence loss
+
+![image](https://user-images.githubusercontent.com/26705935/58880791-b73f0600-8713-11e9-8523-188236c159f3.png)
+
+- 분류 모델과 생성 모델을 번갈아가며 학습함.
+  - 분류 모델 (theta) 학습 시 생성 모델 (G, D) 고정 --> (c) + (d) 사용.
+  - 생성 모델 (G, D) 학습 시 분류 모델 (theta) 고정 --> (d) + (e) 사용.
+
+## 4. Experiments
