@@ -54,7 +54,7 @@ categories: Paper
 
 - 간단한 실험
 
-  ![image](https://user-images.githubusercontent.com/26705935/58799220-b3da4a80-863f-11e9-8001-34b47986be23.png)
+  ![image](https://user-images.githubusercontent.com/26705935/58881153-8c08e680-8714-11e9-877e-908d28d1420b.png)
 
   - SVHN (in-dist dataset), MNIST (out-of-dist dataset) 을 사용한 간단한 CNN 모델.
   - 기존 cross entropy loss만을 썼을 때 (왼쪽 그래프), unseen data의 가장 높은 softmax값이 0.9처럼 높은 값을 갖는 경우가 많음.
@@ -64,14 +64,14 @@ categories: Paper
 
 ### 3-3. GAN for generating OOD samples
 
-  ![image](https://user-images.githubusercontent.com/26705935/58799561-948fed00-8640-11e9-9145-cd426811050b.png)
+  ![image](https://user-images.githubusercontent.com/26705935/58881050-4d732c00-8714-11e9-9220-33baf8004ecb.png)
 
   - (a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,
   - (b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion data 분포와 동일하게 나타나지 않음.
   - (c): 따라서 out-of-distrubtion data를 그림과 같이 in-distrubtion data에 최대한 밀접하여 설정을 하면,
   - (d): 모델의 decision boundary를 in-distrubtion data 분포와 일치하도록 할 수 있음.
 
-- 이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 GAN을 이용하여 생성하자.
+- 이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 생성하는 GAN 모델 학습 loss.
 
   ![image](https://user-images.githubusercontent.com/26705935/58880352-a8a41f00-8712-11e9-8db0-ed2ca05dcfe0.png)
 
