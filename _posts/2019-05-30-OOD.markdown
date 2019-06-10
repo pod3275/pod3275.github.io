@@ -14,17 +14,20 @@ categories: Paper
 - 논문 : [paper](https://arxiv.org/pdf/1603.06560.pdf)
 
 ## 1. Introduction
-**- 모델의 Uncertainty**
-  - 기계학습 또는 딥러닝 모델의 Uncertainty란, 학습된 모델이 학습 과정에서 보지 못한 데이터에 대해 도출한 결과에 대해 얼마나 믿을 것인지를 나타내는 요소.
-  - 간단히, 모델의 신뢰성.
+**모델의 Uncertainty**
+  - 기계학습 또는 딥러닝 모델의 *uncertainty*란, 학습된 모델이 학습 과정에서 보지 못한 데이터에 대해 도출한 결과에 대해 얼마나 믿을 것인지를 나타내는 요소.
+  - 간단히, **모델의 신뢰성**.
   - 자금 투자 혹은 의료 분야에서 기계학습 모델이 사용되는 경우, 모델이 도출한 결과의 영향력이 매우 크기 때문에 uncertainty를 통한 모델의 신뢰성 측정은 중요함.
 
 ## 2. Related Works
+
+- Uncertainty 측정 방법
+
 **1) Softmax Probability**
 
   ![image](https://user-images.githubusercontent.com/26705935/58702782-b8092c80-83e1-11e9-9da6-690f58e13c26.png)
 
-  - Softmax 값, 즉 분류 모델의 classification probability를 통해, 주어진 입력에 대해 모델이 얼마나 확신을 가지고 대답할 수 있는지 판단할 수 있음.
+  - Softmax 값, 즉 **분류 모델의 classification probability**를 통해, 주어진 입력에 대해 모델이 얼마나 확신을 가지고 대답할 수 있는지 판단할 수 있음.
   - 하지만 그림과 같이, 학습 과정에서 보지 못했던 입력에 대해 높은 classification probability로 틀려버리는 경우가 있기 때문에, 단순하게 softmax 값만으로는 uncertainty를 정확히 측정할 수 없음.
 
 **2) Threshold-based Detector**
@@ -32,24 +35,24 @@ categories: Paper
   ![image](https://user-images.githubusercontent.com/26705935/58703289-27335080-83e3-11e9-9bfa-23822ca5c281.png)
 
   - 2015년 [논문](https://ieeexplore.ieee.org/document/7439470) 및 다른 논문들에서 연구됨.
-  - 입력 데이터가 학습 데이터 분포에 해당하는지(in-distrubution), 학습 데이터 분포 밖인지(out-of-distribution)를 판별하는 연구.
-  - 모델의 softmax 값을 기반으로 score를 계산하여, 특정 threshold보다 높으면 입력을 in-distribution, 낮으면 입력을 out-of-distribution으로 판단.
-  - 한계점: 모델 학습 데이터(in-distrubution)를 어떻게 잡냐에 따라 성능이 좌지우지됨.
+  - 입력 데이터가 학습 데이터 분포에 해당하는지(*in-distrubution*), 학습 데이터 분포 밖인지(*out-of-distribution*)를 판별하는 연구.
+  - 모델의 softmax 값을 기반으로 score를 계산하여, 특정 *threshold*보다 높으면 입력을 in-distribution data, 낮으면 입력을 out-of-distribution data로 판단.
+  - 한계점: 모델 학습 데이터(in-distrubution data)를 어떻게 잡냐에 따라 성능이 좌지우지됨.
 
 ## 3. Proposed Methods
 ### 3-1. Objective
 
 ![image](https://user-images.githubusercontent.com/26705935/58784462-73b6a000-861e-11e9-9c26-3f9b3d3656ce.png)
 
-- In-distribution data: 학습에 따라 모델이 유추하는 classification probability를 그대로 출력.
-- Out-of-distribution data: 모델에 따른 classification probability를 uniform distrubution이 되도록 함.
+- **In-distribution data**: 학습에 따라 모델이 유추하는 **classification probability**를 그대로 출력.
+- **Out-of-distribution data**: 모델에 따른 classification probability를 **uniform distrubution**이 되도록 함.
 
 ### 3-2. Confidence Loss
 
 ![image](https://user-images.githubusercontent.com/26705935/58799053-30b8f480-863f-11e9-96fa-36c12fd8fc4c.png)
 
 - 3-1.을 만족시키기 위해 모델 학습에 사용되는 Loss.
-  - In-distribution data는 NLL(Negative Log Likelihood) loss.
+  - In-distribution data는 *NLL(Negative Log Likelihood)* loss.
   - Out-of-distribution data는 uniform distrubution과의 KL divergence. (KL divergence: 분포 간의 거리)
 
 - 간단한 실험
@@ -58,9 +61,9 @@ categories: Paper
 
   - SVHN (in-dist dataset), MNIST (out-of-dist dataset) 을 사용한 간단한 CNN 모델.
   - 기존 cross entropy loss만을 썼을 때 (왼쪽 그래프), unseen data의 가장 높은 softmax값이 0.9처럼 높은 값을 갖는 경우가 많음.
-  - 제안된 Confidence loss를 썼을 때 (오른쪽 그래프), unseen data의 가장 높은 softmax값은 대체적으로 낮음.
+  - 제안된 Confidence loss를 썼을 때 (오른쪽 그래프), **unseen data의 가장 높은 softmax값은 대체적으로 낮음**.
 - 그렇다면 모델 학습에서 사용되는 out-of-distribution dataset을 어떻게 설정할 것인가?
-  - 다른 dataset을 사용하는 것이 아니라, GAN (Generative Adversarial Networks) 으로 만들자.
+  - 다른 dataset을 사용하는 것이 아니라, **GAN (Generative Adversarial Networks) 으로 만들자.**
 
 ### 3-3. GAN for generating OOD samples
 
@@ -68,27 +71,65 @@ categories: Paper
 
   - (a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,
   - (b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion data 분포와 동일하게 나타나지 않음.
-  - (c): 따라서 out-of-distrubtion data를 그림과 같이 in-distrubtion data에 최대한 밀접하여 설정을 하면,
+  - (c): 따라서 out-of-distrubtion data를 그림과 같이 **in-distrubtion data에 최대한 밀접하여 설정**을 하면,
   - (d): 모델의 decision boundary를 in-distrubtion data 분포와 일치하도록 할 수 있음.
 
-- 이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 생성하는 GAN 모델 학습 loss.
+- 이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 생성하는 **GAN 모델** 학습 loss.
 
   ![image](https://user-images.githubusercontent.com/26705935/58880352-a8a41f00-8712-11e9-8db0-ed2ca05dcfe0.png)
 
-  - OOD loss (a): G가 생성하는 데이터에 대한 모델의 결과가 uniform distrubtion과 같아지도록 분류 모델을 학습.
-  - GAN loss (b): G가 생성하는 데이터가 기존 데이터와 비슷한 모양이도록 생성 모델을 학습.
+  - **OOD loss (a)**: G가 생성하는 데이터에 대한 모델의 결과가 uniform distrubtion과 같아지도록 분류 모델을 학습.
+  - **GAN loss (b)**: G가 생성하는 데이터가 기존 데이터와 비슷한 모양이도록 생성 모델을 학습.
 
   ![image](https://user-images.githubusercontent.com/26705935/58880622-4f88bb00-8713-11e9-8831-4cc6fcc91788.png)
 
-  - 왼쪽: 위의 loss에서 (a)만 있는 경우.
+  - 왼쪽: 위의 loss에서 (b)만 있는 경우. 기존 GAN의 생성 데이터.
   - 오른쪽: 위의 loss에서 (a), (b) 모두 사용한 경우.
 
 ### 3-4. 최종 Joint Confidence loss
 
 ![image](https://user-images.githubusercontent.com/26705935/58880791-b73f0600-8713-11e9-8523-188236c159f3.png)
 
-- 분류 모델과 생성 모델을 번갈아가며 학습함.
+- 분류 모델과 생성 모델을 **번갈아가며 학습**함.
   - 분류 모델 (theta) 학습 시 생성 모델 (G, D) 고정 --> (c) + (d) 사용.
   - 생성 모델 (G, D) 학습 시 분류 모델 (theta) 고정 --> (d) + (e) 사용.
 
 ## 4. Experiments
+- Dataset 및 모델
+  - [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html), [SVHN](http://ufldl.stanford.edu/housenumbers/), [TinyImageNet](https://tiny-imagenet.herokuapp.com/), LSUN
+  - VGGNet
+
+### 4-1. Without GAN loss
+- In-distrubtion data, out-of-distrubtion data 모두 기존의 데이터셋을 이용함 : GAN 생성 제외.
+- 실험 결과
+
+  ![image](https://user-images.githubusercontent.com/26705935/58950713-5fafa180-87ca-11e9-8ee0-b6c61a865fd5.png)
+
+  - SVHN은 숫자가 포함된 이미지 데이터셋이고, 나머지는 사진 데이터셋임.
+  - SVHN(in-dist), CIFAR10(out-of-dist) : "숫자는 in-distrubtion이고 나머지 사진같이 생긴건 OOD이다." 라고 학습되었기 때문에, 사진 데이터인 TinyImageNet, LSUN 등에서 잘함.
+  - CIFAR10(out-of-dist), SVHN(in-dist) : "사진같이 생긴 것중에 CIFAR10만 in-distrubtion이고 나머지 사진 혹은 숫자는 OOD이다." 라고 학습되었기 때문에, **같은 사진 domain**인 TinyImageNet, LSUN 등에서 잘 못함.
+
+- 즉, OOD 데이터셋이랑 **같은 domain을 갖는 unseen image에 대해서는 잘 못함.**
+
+### 4-2. Include GAN loss
+- GAN을 사용하여 OOD data를 생성함으로써 모델을 학습.
+- 실험 결과
+
+  ![image](https://user-images.githubusercontent.com/26705935/59179288-87bd4d00-8b9c-11e9-86a5-42bee4a49c87.png)
+
+  - 각 그래프 위의 OOD: 의 dataset은 training이 아닌 test 단계에서의 OOD를 의미함.
+  - 모든 상황에서 저자들이 제안한 joint confidence loss를 통한 모델 학습이 제일 좋았음.
+  - GAN이 생성한 OOD를 학습과정에서 추가함에 따라 **모델의 원래 분류 성능이 어떤지는 표시 안함.**
+
+- Interpretability
+
+  ![image](https://user-images.githubusercontent.com/26705935/59179484-1b8f1900-8b9d-11e9-87b9-6dfba9deb431.png)
+
+  - Guided gradient, 학습된 모델의 gradient를 이용하여, 입력 이미지 내에서 중요하게 생각하는 부분을 표시한 것.
+  - Out of distribution data에 대해서 모두 검은색으로 표시되어, 모델 분류 작업을 안한다는 것을 알 수 있음.
+
+## 5. Conclusion
+- **Out-of-distribution data를 detect**할 수 있는 모델의 학습 loss를 제안함.
+- In-distrubtion data를 기준으로 GAN을 이용하여 OOD data를 생성함.
+- OOD data에 대한 detection 성능은 기존 기법들에 비해 좋음.
+  - **분류 모델의 성능 저하가 얼마나 되는지는 언급하지 않음.**
