@@ -1,0 +1,21 @@
+---
+layout: post
+title:  "Dropout on CNN"
+date:   2019-05-30 21:23:00
+author: Sangheon Lee
+categories: Paper
+---
+
+# Dropout on CNN
+- CNN에 dropout이 적용되는 여러 변형들을 제안한 논문들을 정리.
+
+## 1. Introduction
+### 1-1. Overfitting & Generalization
+- 딥러닝 모델은 데이터가 많을수록 높은 성능을 낸다는 특성을 가짐.
+
+  ![image](https://user-images.githubusercontent.com/26705935/59272432-f8de2c80-8c90-11e9-80be-e96519681c3f.png)
+
+  - 출처:[링크](https://towardsdatascience.com/why-deep-learning-is-needed-over-traditional-machine-learning-1b6a99177063)
+
+- 하지만 데이터가 많다고 해서 모델 성능이 항상 좋은 건 아님.
+  - 모델의 power
