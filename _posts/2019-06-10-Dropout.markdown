@@ -18,4 +18,11 @@ categories: Paper
   - 출처:[링크](https://towardsdatascience.com/why-deep-learning-is-needed-over-traditional-machine-learning-1b6a99177063)
 
 - 하지만 데이터가 많다고 해서 모델 성능이 항상 좋은 건 아님.
-  - 모델의 power
+  - 모델의 복잡도(혹은 power)가 높으면 학습에서 본 데이터를 너무 따라가는 경향이 있음.
+  - ***"Overfitting"***
+
+  ![image](https://user-images.githubusercontent.com/26705935/59351118-9ea89e80-8d58-11e9-8272-93cd60955fc4.png)
+
+  - 출처:[링크](https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html)
+
+- Overfitting을 방지하자 = Generalization
