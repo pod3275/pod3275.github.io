@@ -26,3 +26,11 @@ categories: Paper
   - 출처:[링크](https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html)
 
 - Overfitting을 방지하자 = Generalization
+- 대표적인 generalization 기법 = Dropout
+  - 신경망의 overfitting을 방지하기 위한 기법.
+  - 학습 과정에서 특정 node들을 p의 확률로 제거.
+
+  ![image](https://user-images.githubusercontent.com/26705935/59435006-a5521700-8e27-11e9-881e-5b8c0e8049b7.png)
+
+  - Dropout을 적용하면 적용하지 않은 것과 비교하여 output 값이 p배만큼 감소함.
+  - 따라서, test 과정에서는 모든 weight를 사용함 + weight들에 1/p배를 곱함.
