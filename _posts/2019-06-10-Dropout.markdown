@@ -50,7 +50,7 @@ categories: Paper
   - 즉, dropout을 적용하여 학습된 model은 독립적인 작은 model들의 ensemble 효과를 볼 수 있다는 주장.
 
   **2) Avoiding co-adaptation**
-  - Co-adaptation: 학습 후 네트워크 내의 각 node들이 서로 같은 역할을 하는 것.
+  - Co-adaptation: 학습 후 네트워크 내의 각 node들이 너무 서로 비슷한 역할을 하는 것.
   - Dropout은 결과적으로 각 node가 서로 다른 것을 학습하도록 함으로써, 네트워크 전체를 utilize할 수 있게 함.
 
   ![image](https://user-images.githubusercontent.com/26705935/59605143-16a40980-9149-11e9-9a82-d06b304b6699.png)
@@ -83,4 +83,20 @@ categories: Paper
 
   ![image](https://user-images.githubusercontent.com/26705935/59606246-9b902280-914b-11e9-96d6-11cf9d24bc38.png)
 
-  - Drop-path
+- Drop-path
+
+  ![image](https://user-images.githubusercontent.com/26705935/59920065-406c7180-9464-11e9-8bb5-ec5e1525b215.png)
+
+  - FractalNet의 한 path (a층부터 b층까지의 connection 경로) 내의 weight을 모두 제거하는 방식의 dropout.
+  - Fractal 구조인 경우에 한정되어 적용 가능.
+
+### 1-4. CNN에서의 Dropout
+- CNN에서 Dropout은 보통 pooling layer 혹은 맨 마지막 dense layer에 적용함.
+  - Convolution layer에는 적용하지 않음.
+  - 이유는 convolution 연산을 통해 데이터의 spatial feature를 추출하기 때문에, 노드(output) 몇 개를 지우는 것은 추출되는 정보의 손실이 큼.
+  - 실제로 convolution layer에 dropout을 적용하면 성능이 떨어짐.
+
+- 이에 따라 convolution layer에 적용할 수 있는 dropout 기반의 generalization 기법들이 제안됨.
+  - **DropBlock, DropFilter, Spectral Dropout**
+
+## 2. DropBlock
