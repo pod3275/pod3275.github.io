@@ -31,12 +31,12 @@ categories: Paper
 - 대표적인 generalization 기법 = **Dropout**
   - 2014년 JMLR에서 처음 제안됨. [논문](http://jmlr.org/papers/volume15/srivastava14a.old/srivastava14a.pdf)
   - 신경망의 overfitting을 방지하기 위한 기법.
-  - 학습 과정에서 특정 node들을 p의 확률로 제거. 0<p<1.
+  - 학습 과정에서 특정 node들을 p의 확률로 사용하겠다 (1-p의 확률로 제거하겠다). 0<p<1.
 
   ![image](https://user-images.githubusercontent.com/26705935/59435006-a5521700-8e27-11e9-881e-5b8c0e8049b7.png)
 
-  - Dropout을 적용하면 적용하지 않은 것과 비교하여 output 값이 p배만큼 감소함.
-  - 따라서, test 과정에서는 모든 weight를 사용함 + weight들에 1/p배를 곱함.
+  - Dropout을 적용하면 적용하지 않은 것과 비교하여 output 값이 1/p배만큼 증가함.
+  - 따라서, test 과정에서는 모든 weight를 사용함 + weight들에 p배를 곱함.
 
 - Dropout의 효과 (실험 결과)
 
@@ -67,8 +67,8 @@ categories: Paper
   ![image](https://user-images.githubusercontent.com/26705935/59605607-2112d300-914a-11e9-802a-92e39b430f0c.png)
 
   - 출처: [링크](https://m.blog.naver.com/laonple/220827359158)
-  - 학습 과정에서 특정 weight를 p의 확률로 제거. 0<p<1.
-  - Dropout과 동일하게 test 과정에서 모든 weight를 사용 + 1/p배.
+  - 학습 과정에서 특정 weight를 p의 확률로 사용 (1-p의 확률로 제거). 0<p<1.
+  - Dropout과 동일하게 test 과정에서 모든 weight를 사용 + p배.
 
 - DropConnect 성능
 
