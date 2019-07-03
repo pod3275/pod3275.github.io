@@ -93,10 +93,22 @@ categories: Paper
 ### 1-4. CNN에서의 Dropout
 - CNN에서 Dropout은 보통 pooling layer 혹은 맨 마지막 dense layer에 적용함.
   - Convolution layer에는 적용하지 않음.
-  - 이유는 convolution 연산을 통해 데이터의 spatial feature를 추출하기 때문에, 노드(output) 몇 개를 지우는 것은 추출되는 정보의 손실이 큼.
-  - 실제로 convolution layer에 dropout을 적용하면 성능이 떨어짐.
+  - 이유는 convolution 연산을 통해 데이터의 spatial feature를 추출하기 때문에, 단순히 노드(output) 몇 개를 지우는 것으로는 추출한 일부 correlated information을 완벽하게 지울 수 없음.
+  - 실제로 convolution layer에 dropout을 적용하면 성능 증가가 크지 않음. (떨어지는 경우도 생김.)
 
 - 이에 따라 convolution layer에 적용할 수 있는 dropout 기반의 generalization 기법들이 제안됨.
   - **DropBlock, DropFilter, Spectral Dropout**
 
 ## 2. DropBlock
+### 2-1. Idea
+
+![image](https://user-images.githubusercontent.com/26705935/60589434-7c90c200-9dd4-11e9-9538-2cd59c47f92d.png)
+
+  - (b): Convolution layer의 activation(output) units은 공간적으로 연관되있으므로(spatially correlated), 랜덤하게 몇 개의 activations를 선택해서 지우는 것으로는 연관된 정보(correlated information) 를 제대로 막을 수 없음.
+  - (c): 그러니까, 랜덤하게 몇 개가 아니라, 연속된 몇 개의 node들을 지우자. **DropBlock**.
+
+- How to find "continuous regions"?
+
+  ![image](https://user-images.githubusercontent.com/26705935/60589644-f759dd00-9dd4-11e9-9ac9-3ea87ef036a9.png)
+
+  -
