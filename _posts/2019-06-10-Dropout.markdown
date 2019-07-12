@@ -29,13 +29,13 @@ categories: Paper
 
 ### 1-2. Dropout
 - 대표적인 generalization 기법 = **Dropout**
-  - 2014년 JMLR에서 처음 제안됨. [논문](http://jmlr.org/papers/volume15/srivastava14a.old/srivastava14a.pdf)
+  - 2014년 JMLR [논문](http://jmlr.org/papers/volume15/srivastava14a.old/srivastava14a.pdf).
   - 신경망의 overfitting을 방지하기 위한 기법.
   - 학습 과정에서 특정 node들을 p의 확률로 사용하겠다 (1-p의 확률로 제거하겠다). 0<p<1.
 
   ![image](https://user-images.githubusercontent.com/26705935/59435006-a5521700-8e27-11e9-881e-5b8c0e8049b7.png)
 
-  - Dropout을 적용하면 적용하지 않은 것과 비교하여 output 값이 1/p배만큼 증가함.
+  - Dropout을 적용하면 적용하지 않은 것과 비교하여 각 node들의 output 값이 1/p배만큼 증가함.
   - 따라서, test 과정에서는 모든 weight를 사용함 + weight들에 p배를 곱함.
 
 - Dropout의 효과 (실험 결과)
@@ -60,24 +60,24 @@ categories: Paper
 
 ### 1-3. Dropout의 변형
 #### 1) DropConnect
-- 2013년 ICML [논문](http://proceedings.mlr.press/v28/wan13.pdf) (사실 dropout 논문인 2014년보다 먼저 나왔음.)
+- 2013년 ICML [논문](http://proceedings.mlr.press/v28/wan13.pdf) (사실 dropout 논문인 2014년보다 먼저 나왔음.).
 - Dropout의 조금 더 일반화된 version.
 - Node 제거 --> Weight 제거.
 
-  ![image](https://user-images.githubusercontent.com/26705935/59605607-2112d300-914a-11e9-802a-92e39b430f0c.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61127882-79d85000-a4eb-11e9-9401-3d6da49cbb3d.png)
 
   - 출처: [링크](https://m.blog.naver.com/laonple/220827359158)
   - 학습 과정에서 특정 weight를 p의 확률로 사용 (1-p의 확률로 제거). 0<p<1.
-  - Dropout과 동일하게 test 과정에서 모든 weight를 사용 + p배.
+  - Dropout과 동일하게 test 과정에서 모든 weight를 사용 + 모든 weight에 p배함.
 
 - DropConnect 성능
 
-  ![image](https://user-images.githubusercontent.com/26705935/59605882-c037ca80-914a-11e9-90cb-30d5a70d7d2c.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61127948-a8562b00-a4eb-11e9-94c8-d4e9c9fe1aea.png)
 
   - Dropout보다 조금 더 좋다.
 
 #### 2) Drop-path
-- 2016년 [논문](https://arxiv.org/pdf/1605.07648.pdf)
+- 2017년 ICLR [논문](https://arxiv.org/pdf/1605.07648.pdf).
 - FractalNet이라는 모델 제안 + Drop-path 적용.
   - FractalNet: 하나의 연산을 그림과 같이 2개로 나누고, 각각의 연산에도 적용.
 
@@ -101,14 +101,104 @@ categories: Paper
 
 ## 2. DropBlock
 ### 2-1. Idea
+- 2018년 NIPS [논문](http://papers.nips.cc/paper/8271-dropblock-a-regularization-method-for-convolutional-networks.pdf).
 
 ![image](https://user-images.githubusercontent.com/26705935/60589434-7c90c200-9dd4-11e9-9538-2cd59c47f92d.png)
 
-  - (b): Convolution layer의 activation(output) units은 공간적으로 연관되있으므로(spatially correlated), 랜덤하게 몇 개의 activations를 선택해서 지우는 것으로는 연관된 정보(correlated information) 를 제대로 막을 수 없음.
-  - (c): 그러니까, 랜덤하게 몇 개가 아니라, 연속된 몇 개의 node들을 지우자. **DropBlock**.
+  - (b): Convolution layer의 output units은 공간적으로 연관되있으므로 (spatially correlated), 랜덤하게 몇 개의 activations를 선택해서 지우는 것으로는 연관된 정보 (correlated information, 초록색)를 제대로 지울 수 없음.
+  - (c): 랜덤하게 몇 개가 아니라, 연속된 몇 개의 node들을 지우자. **DropBlock**.
 
-- How to find "continuous regions"?
+### 2-2. How to find "continuous regions"?
 
-  ![image](https://user-images.githubusercontent.com/26705935/60589644-f759dd00-9dd4-11e9-9ac9-3ea87ef036a9.png)
+![image](https://user-images.githubusercontent.com/26705935/60589644-f759dd00-9dd4-11e9-9ac9-3ea87ef036a9.png)
 
-  -
+![image](https://user-images.githubusercontent.com/26705935/61125274-670e4d00-a4e4-11e9-84bd-58df42e6395a.png)
+
+  - (a): 초록색 내의 임의의 점을 center로 하여,
+  - (b): *block_size* 를 한 변으로 하는 정사각형 region을 형성 및 값을 제거.
+    - *block_size* = 1 이면, Dropout.
+    - *block_size* 가 모든 featrue map을 덮으면, SpatialDropout.
+
+### 2-3. Results
+
+![image](https://user-images.githubusercontent.com/26705935/61123969-a9ce2600-a4e0-11e9-9464-3431374edae2.png)
+
+  - *block_size* = 7로 설정.
+  - Dropout, DropPath, SpatialDropout을 적용했을 때보다 성능이 좋음.
+
+![image](https://user-images.githubusercontent.com/26705935/61124184-37117a80-a4e1-11e9-9bae-883178bbf6c5.png)
+
+  - 위: input 이미지 내에서 class를 결정하는 영향력을 표시한 CAM.
+  - DropPath를 적용했을 때, 모델은 인간이 보는 것과 비슷한 것을 보고 판단할 수 있음.
+  - 즉, DropPath은 모델로 하여금 spatially correlated information을 더 잘 catch할 수 있도록 함.
+
+## 3. DropFilter (SpatialDropout)
+### 3-1. Idea
+- 2018년 arXiv [논문](https://arxiv.org/pdf/1810.09849.pdf). (**거의 동일한 개념인 SpatialDropout은 2015년 CVPR에서 먼저 발표함.** [논문](https://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Tompson_Efficient_Object_Localization_2015_CVPR_paper.pdf).)
+
+- Node간의 co-adaptation 문제는 같은 채널 내의 근처에 있는 값들에 의해서 발생하지만, 동일한 위치에 있는 다른 채널 간의 값들에 의해서 더 자주 발생함.
+- 즉, channel간의 correlation이 존재함.
+- 따라서 channel 하나를 통째로 drop하자. **DropFilter**. (SpatialDropout과 동일함.)
+
+  ![image](https://user-images.githubusercontent.com/26705935/61125604-3aa70080-a4e5-11e9-8946-4e270b8ffb8a.png)
+
+  - 간단하게, 일정 확률로 channel을 지우자.
+
+### 3-2. ScaleFilter
+- Deep CNN의 경우, channel 하나를 통째로 날려버리는 것의 영향이 너무 큼.
+- 즉, retaining rate *p* 의 의존도가 너무 큼.
+- 따라서, channel 하나를 모두 0으로 하지 말고, 값을 scaling 하자.
+
+  ![image](https://user-images.githubusercontent.com/26705935/61125841-ddf81580-a4e5-11e9-95d5-cea63999e231.png)
+
+  - 일정 확률로 0을 곱하는게 아니라, scaling 값을 곱하자.
+  - 아무래도 이게 DropFilter이 SpatialDropout과 다른점 인듯.
+
+### 3-3. Results
+
+![image](https://user-images.githubusercontent.com/26705935/61125984-3af3cb80-a4e6-11e9-8d04-d3881ba960c8.png)
+
+  - DropBlock과 비교하진 않았으나, 기존 dropout을 적용했을 때보다 좋은 성능을 보임.
+
+![image](https://user-images.githubusercontent.com/26705935/61126145-a89ff780-a4e6-11e9-93f7-08af2a858078.png)
+
+  - Retaining rate (dropout keep prob.) *p*의 설정에 따른 성능.
+  - 기존 droput이나 DropFilter는 retaining rate *p* 에 매우 민감하나, ScaleFilter는 비교적으로 어떻게 설정해도 좋은 성능을 보임.
+
+## 4. Spectral Dropout
+### 4-1. Idea
+- 2019년 Neural Networks [논문](https://arxiv.org/pdf/1711.08591.pdf)
+- Neural Network의 activation 요소 중 "**Weak**" 하고 "**Noisy**" 한 것을 제거하자.
+
+### 4-2. Methods
+- 주어진 이미지를 decorrelation transform ([DCT](https://idlecomputer.tistory.com/121), Discrete Cosine Transform)을 이용하여 변환.
+
+  ![image](https://user-images.githubusercontent.com/26705935/61127107-47c5ee80-a4e9-11e9-9f25-b9654fbc7414.png)
+
+  - (left) DCT의 과정. 입력 이미지와 베이스 이미지를 이용한 연산을 통해 주파수 이미지로 변환.
+  - (middle) 기본적으로 사용되는 베이스 이미지.
+  - (right) 나비 이미지에 대해, 가운데 베이스 이미지를 이용한 DCT 결과 주파수 이미지에 log scale한 이미지.
+
+- Spectral Dropout
+
+![image](https://user-images.githubusercontent.com/26705935/61127306-df2b4180-a4e9-11e9-952f-8b766eb29622.png)
+
+  - Activation map을 DCT로 변환.
+  - 변환된 주파수 이미지에서, 특정 threshold를 기준으로 값이 작은 것들을 제거.
+  - 다시 역 DCT로 변환.
+
+- 결과적으로, **low frequency 정보** (**weak하고 noisy한 정보**) 를 일정 확률로 제거함.
+
+### 4-3. Results
+
+![image](https://user-images.githubusercontent.com/26705935/61127510-6b3d6900-a4ea-11e9-9ae0-a3fa26d7e228.png)
+
+  - Dropout, Drop-Connect 보다 좋은 성능을 보임.
+
+![image](https://user-images.githubusercontent.com/26705935/61127657-dab35880-a4ea-11e9-9483-294eff72513a.png)
+
+  - Threshold 값은 모델마다 다르기 때문에, 최적의 값을 찾아야 함.
+
+## 5. Conclusion
+- CNN 모델은 공간적으로 상관 정보 (spatially correlated information) 를 catch하기 때문에, 기존 dropout과는 다른 방식의 dropout 기법이 필요함.
+- **DropBlock**, **DropFilter (SpatialDropout)**, **Spectral Dropout** 등 다양한 CNN용 dropout 기법들이 제안됨.
