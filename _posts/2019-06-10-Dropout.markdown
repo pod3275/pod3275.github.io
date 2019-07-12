@@ -13,7 +13,7 @@ categories: Paper
 ### 1-1. Overfitting & Generalization
 - 딥러닝 모델은 데이터가 많을수록 높은 성능을 낸다는 특성을 가짐.
 
-  ![image](https://user-images.githubusercontent.com/26705935/59272432-f8de2c80-8c90-11e9-80be-e96519681c3f.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61128424-c6705b00-a4ec-11e9-8493-ae0009f4a688.png)
 
   - 출처:[링크](https://towardsdatascience.com/why-deep-learning-is-needed-over-traditional-machine-learning-1b6a99177063)
 
@@ -53,7 +53,7 @@ categories: Paper
   - Co-adaptation: 학습 후 네트워크 내의 각 node들이 너무 서로 비슷한 역할을 하는 것.
   - Dropout은 결과적으로 각 node가 서로 다른 것을 학습하도록 함으로써, 네트워크 전체를 utilize할 수 있게 함.
 
-  ![image](https://user-images.githubusercontent.com/26705935/59605143-16a40980-9149-11e9-9a82-d06b304b6699.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61128212-4813b900-a4ec-11e9-9e8e-3afaf8bc0e50.png)
 
   - 그림: 중간 feature들(hidden node들의 output)의 시각화.
   - Dropout을 적용했을 때 feature들이 각기 다른 모양을 갖고, 좀 더 밝은 것(높은 값)을 확인할 수 있음.
@@ -64,7 +64,7 @@ categories: Paper
 - Dropout의 조금 더 일반화된 version.
 - Node 제거 --> Weight 제거.
 
-  ![image](https://user-images.githubusercontent.com/26705935/61127882-79d85000-a4eb-11e9-9401-3d6da49cbb3d.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61128245-5cf04c80-a4ec-11e9-937e-a0426affe05c.png)
 
   - 출처: [링크](https://m.blog.naver.com/laonple/220827359158)
   - 학습 과정에서 특정 weight를 p의 확률로 사용 (1-p의 확률로 제거). 0<p<1.
@@ -81,11 +81,11 @@ categories: Paper
 - FractalNet이라는 모델 제안 + Drop-path 적용.
   - FractalNet: 하나의 연산을 그림과 같이 2개로 나누고, 각각의 연산에도 적용.
 
-  ![image](https://user-images.githubusercontent.com/26705935/59606246-9b902280-914b-11e9-96d6-11cf9d24bc38.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61128287-78f3ee00-a4ec-11e9-87d7-6a8efdf75961.png)
 
 - Drop-path
 
-  ![image](https://user-images.githubusercontent.com/26705935/59920065-406c7180-9464-11e9-8bb5-ec5e1525b215.png)
+  ![image](https://user-images.githubusercontent.com/26705935/61128306-87420a00-a4ec-11e9-8691-b438f96aeb45.png)
 
   - FractalNet의 한 path (a층부터 b층까지의 connection 경로) 내의 weight을 모두 제거하는 방식의 dropout.
   - Fractal 구조인 경우에 한정되어 적용 가능.
@@ -160,7 +160,7 @@ categories: Paper
 
   - DropBlock과 비교하진 않았으나, 기존 dropout을 적용했을 때보다 좋은 성능을 보임.
 
-![image](https://user-images.githubusercontent.com/26705935/61126145-a89ff780-a4e6-11e9-93f7-08af2a858078.png)
+![image](https://user-images.githubusercontent.com/26705935/61128366-a476d880-a4ec-11e9-8a39-ce6aed364af9.png)
 
   - Retaining rate (dropout keep prob.) *p*의 설정에 따른 성능.
   - 기존 droput이나 DropFilter는 retaining rate *p* 에 매우 민감하나, ScaleFilter는 비교적으로 어떻게 설정해도 좋은 성능을 보임.
