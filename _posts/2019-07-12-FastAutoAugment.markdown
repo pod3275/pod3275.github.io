@@ -120,11 +120,8 @@ use_math: true
 
 - **데이터의 density 비교**를 어떻게 하는가?
   - **학습된 model 을 이용하자.**
-
-  - $T_* = \argmax_T{R(\theta^{*} \vert T(D_{A}))}$
-
+  - $T_* = \arg\max_{T}{R(\theta^{*} \vert T(D_{A}))}$
     - $\theta^{*}$ : $D_M$ 으로 학습한 모델의 parameter.
-
     - $R(\theta \vert D)$ : 데이터 D의 모델 $\theta$ 에 대한 정확도(accuracy).
 
   - 즉, $D_M$ 으로 학습한 모델을 기준으로, augmented $D_{A}$ 에 대한 성능이 높은, 그런 policy를 찾자.
@@ -132,7 +129,6 @@ use_math: true
 - 기존 Augmentation 개념과 반대로 생각함.
   - 기존 개념: **학습 데이터에 augmentation을 적용**한 데이터로 학습된 모델을 기준으로, 검증 데이터에 대한 성능이 높은 augmentation policy가 최적.
   - 제안 개념: 학습 데이터로 학습된 모델을 기준으로, **검증 데이터에 augmentation을 적용**한 데이터에 대한 성능이 높은 augmentation policy가 최적.
-
   - **이렇게 하면, 모델을 재학습할 필요가 없음 : 시간 단축 가능.**
 
 ### 2-3. Algorithm
