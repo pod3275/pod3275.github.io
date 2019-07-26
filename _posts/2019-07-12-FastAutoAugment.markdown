@@ -120,9 +120,13 @@ use_math: true
 
 - **데이터의 density 비교**를 어떻게 하는가?
   - **학습된 model 을 이용하자.**
+
   - $\Tau_* = \argmax_T{R(\theta^*|\Tau(D_{A}))}$
+  
     - $\theta^*$ : $D_M$ 으로 학습한 모델의 parameter.
+
     - $R(\theta|D)$ : 데이터 D의 모델 $\theta$ 에 대한 정확도(accuracy).
+
   - 즉, $D_M$ 으로 학습한 모델을 기준으로, augmented $D_{A}$ 에 대한 성능이 높은, 그런 policy를 찾자.
 
 - 기존 Augmentation 개념과 반대로 생각함.
