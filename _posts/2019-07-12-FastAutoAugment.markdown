@@ -102,9 +102,9 @@ use_math: true
   - 이미지에 적용 시, 각 operation을 확률에 따라 순서대로 적용.
   - 하나의 sub-policy = 하나의 이미지 생성. (위의 그림에서, 오른쪽 4장의 이미지 중 하나.)
 
-- Policy $\Tau$
-  - $N_\Tau$ 개의 sub-policy들.
-  - 하나의 policy = $N_\Tau$ 개의 이미지 생성.
+- Policy $T$
+  - $N_T$ 개의 sub-policy들.
+  - 하나의 policy = $N_T$ 개의 이미지 생성.
   - 우리가 찾고 싶은 최종.
 
 ### 2-2. Search Strategy
@@ -121,11 +121,11 @@ use_math: true
 - **데이터의 density 비교**를 어떻게 하는가?
   - **학습된 model 을 이용하자.**
 
-  - $\Tau_* = \argmax_T{R(\theta^{*} | \Tau(D_{A}))}$
+  - $T_* = \argmax_T{R(\theta^{*} \vert T(D_{A}))}$
 
     - $\theta^{*}$ : $D_M$ 으로 학습한 모델의 parameter.
 
-    - $R(\theta | D)$ : 데이터 D의 모델 $\theta$ 에 대한 정확도(accuracy).
+    - $R(\theta \vert D)$ : 데이터 D의 모델 $\theta$ 에 대한 정확도(accuracy).
 
   - 즉, $D_M$ 으로 학습한 모델을 기준으로, augmented $D_{A}$ 에 대한 성능이 높은, 그런 policy를 찾자.
 
