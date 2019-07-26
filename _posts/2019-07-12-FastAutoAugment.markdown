@@ -71,8 +71,11 @@ categories: Paper
   ![image](https://user-images.githubusercontent.com/26705935/51183079-8d777500-1913-11e9-958e-b26d1f285c6f.png)
 
   (1) { 동일한 모델 + 다른 augmentation 기법 적용 } X 여러 개 를 동시에 학습.
+
   (2) 중간 지점에서 각 모델의 성능을 비교.
+
   (3) 성능이 높은 모델의 parameter를 복제하고 (exploit), 적용된 augmentation 기법에 약간의 변형을 줌. (explore)
+
   (4) 동시 학습 진행. (2)와 (3)을 반복.
 
 - 결과
