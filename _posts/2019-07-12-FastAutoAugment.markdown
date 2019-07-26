@@ -41,9 +41,13 @@ categories: Paper
 ![image](https://user-images.githubusercontent.com/26705935/61943777-27ad2980-afd7-11e9-8a16-d6d4a7ac192a.png)
 
 - RNN (Recurrent Neural Network) + RL (Reinforcement Learning)
+
   (1) Augmentation 기법을 출력하는 RNN controller 생성.
+
   (2) 이를 통해 얻은 augmentation 기법을 학습 데이터에 적용.
+
   (3) 모델을 학습 및 성능을 평가하여 reward(R)를 얻음.
+
   (4) 계산된 reward를 통해 RNN controller 학습.
 
 - Augmentation 기법을 policy, sub-policy 단위로 나누어 search space를 체계화함.
