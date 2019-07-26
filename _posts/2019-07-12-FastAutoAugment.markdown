@@ -4,6 +4,7 @@ title:  "Fast AutoAugment 정리"
 date:   2019-07-12 21:50:00
 author: Sangheon Lee
 categories: Paper
+use_math: true
 ---
 
 # Fast AutoAugment 정리
