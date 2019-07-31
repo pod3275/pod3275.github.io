@@ -87,7 +87,7 @@ use_math: true
 
 ## 2. Proposed Method
 ### Fast AutoAugment
-- [TPE](https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf) (Bayesian Optimization과 비슷한 black-box optimization 기법) 기반의 빠르고 효과적인 augmentation policy search 기법.
+- [TPE](https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf) (Bayesian Optimization과 비슷한 black-box optimization 기법) 기반의 빠르고 효과적인 augmentation policy search 기법 제안.
 
 ### 2-1. Search Space
 - Operation *O*
@@ -129,6 +129,7 @@ use_math: true
 - 기존 Augmentation 개념과 반대로 생각함.
   - 기존 개념: **학습 데이터에 augmentation을 적용**한 데이터로 학습된 모델을 기준으로, 검증 데이터에 대한 성능이 높은 augmentation policy가 최적.
   - 제안 개념: 학습 데이터로 학습된 모델을 기준으로, **검증 데이터에 augmentation을 적용**한 데이터에 대한 성능이 높은 augmentation policy가 최적.
+
   - **이렇게 하면, 모델을 재학습할 필요가 없음 : 시간 단축 가능.**
 
 ### 2-3. Algorithm
@@ -137,4 +138,24 @@ use_math: true
 
   ![image](https://user-images.githubusercontent.com/26705935/61948960-3f3edf00-afe4-11e9-9948-4ab5472ba92b.png)
 
-- 3단계
+- 단계
+
+  (1) 학습 데이터 $D_{train}$을 k개의 묶음으로 (class 비율을 맞추어) 나눔. 각각의 묶음은 $D_M$과 $D_A$로 이루어짐.
+
+  (2) $D_M$으로 모델 학습($\theta$) 및 *Bayesian Optimization* 을 통해 $L(\theta \vert T(D_{A}))$ 가 최소가 되는 policy $T$를 search함.
+
+    - $L(\theta \vert T(D_{A}))$ : 모델 $\theta$에 대한 $T(D_{A})$ 데이터의 검증 loss.
+    - Bayesian Optimization : [TPE](https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf) 사용.
+
+  (3) 성능이 좋은 N개의 policy들을 병합함. (**$T_*^{k}$**)
+
+  (4) (2)와 (3)을 T번 반복하여 모든 결과 policy를 병합함.
+
+  (4) 각 k-fold에 대해 (2)~(4)를 반복하여, 모든 결과 policy를 하나로 병합함. (**$T_*$**)
+
+  (5) (4)의 결과를 $D_{train}$에 적용한 augmented data로 모델을 재학습함.
+
+- 이점
+  - 학습된 모델 1개만을 이용하여 최적의 policy 탐색.
+  - 즉, Bayesian Optimization 과정에서, 성능이 높을 것으로 기대되는 augmentation policy를 뽑아낼 때마다 모델을 학습시킬 필요가 없음.
+  - 탐색 시간이 매우 단축됨.
