@@ -160,8 +160,8 @@ use_math: true
 - 이점
   - **학습된 모델 1개만을 이용**하여 최적의 policy 탐색.
   - 즉, Bayesian Optimization 과정에서, 성능이 높을 것으로 기대되는 augmentation policy를 **뽑아낼 때마다 모델을 학습시킬 필요가 없음.**
-  - **탐색 시간**이 매우 단축됨.
-  - 뿐만 아니라, search space를 numerical한 공간으로 표현하였기 때문에 (*p*, $\lambda$ $\in$ [0,1]), Bayesian Optimization의 특성과 잘 맞음.
+  - **탐색 시간이 매우 단축**됨.
+  - 또한 search space를 numerical한 공간으로 표현하였기 때문에 (*p*, $\lambda$ $\in$ [0,1]), Bayesian Optimization의 특성과 잘 맞음.
 
 ## 3. Experiments
 - 4가지 이미지 데이터에 대한 분류 모델에 augmentation 적용.
@@ -185,15 +185,15 @@ use_math: true
   - [AA](https://arxiv.org/pdf/1805.09501.pdf) : AutoAugment, [PBA](https://arxiv.org/pdf/1905.05393.pdf) : Population Based Augmentation
   - Fast AA의 transfer : Wide-ResNet-40-2 모델과 조금 축소한 데이터를 이용하여 찾은 augmentation 기법들을 그대로 적용한 것.
 
-  - 제안된 기법인 Fast AA는 Baseline 및 기존 augmentation 기법보다 좋은 성능을 보임.
-  - 또한 AA 및 PBA보다 높진 않지만, 이에 준하는 성능을 보임.
+  - 제안된 기법인 **Fast AA는 Baseline 및 기존 augmentation 기법보다 좋은 성능**을 보임.
+  - 또한 **AA 및 PBA보다 높진 않지만, 이에 준하는 성능**을 보임.
 
 - **속도**
 
   ![image](https://user-images.githubusercontent.com/26705935/62290114-83762780-b49b-11e9-91a2-1fa3c7fe2aa7.png)
 
   - 이 논문의 핵심 = AutoAugment에 비하여 **탐색 속도의 엄청난 개선**.
-  - AA보다 빠르다는 PBA에 준하는 속도를 보임. 다음은 PBA 논문에 있는 탐색 속도.
+  - AA보다 빠르다는 **PBA에 준하는 속도**를 보임. 다음은 PBA 논문에 있는 탐색 속도.
 
     ![image](https://user-images.githubusercontent.com/26705935/62289185-0649b300-b499-11e9-8c21-02811ccd79eb.png)
 
@@ -203,10 +203,10 @@ use_math: true
 - 딥러닝 모델의 overfitting을 피하기 위한 generalization 기법들 중, 데이터 단계에서 적용할 수 있는 augmentation의 자율 최적화에 관한 연구.
 - 기존의 AutoAugment라는 augmentation 최적화 기법은 강화학습을 통해 RNN controller를 학습 구조로서, 탐색 시간이 매우 오래걸린다는 단점이 있음.
 - **"Augmentation은 데이터 분포의 빈 공간을 채우는 것"** 이라는 개념 하에, augmetation 기법을 검증 데이터에 적용 및 한 번 학습된 모델로 augmentation 기법 성능 평가.
-- 탐색 결과 마다 모델을 학습할 필요가 없기 때문에, 최적화에 소요되는 총 소요 시간이 감소함.
+- 탐색 결과 마다 모델을 학습할 필요가 없기 때문에, 최적화에 소요되는 **총 소요 시간이 감소**함.
 - 다양한 이미지 분류 데이터에 대한 실험 결과, AutoAugment 및 PBA에 준하는 성능과 함께 단축된 소요 시간을 보임.
 
-- Auto Augmentation 연구는 후에 NAS (Neural Architecture Search, 신경망 구조 탐색) 분야에 접목되어, 모델의 일반화 및 자율 최적화 기법에 관한 연구가 진행될 필요가 있음.
+- Auto Augmentation 연구는 후에 **NAS (Neural Architecture Search, 신경망 구조 탐색) 분야에 접목**되어, 모델의 일반화 및 자율 최적화 기법에 관한 연구가 진행될 필요가 있음.
 
 - (개인적인 생각)
   - BO를 뽑아낼 때마다 매 번 학습을 할 필요가 없는 것은 매우 큰 장점인듯 함.
