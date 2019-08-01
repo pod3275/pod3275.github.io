@@ -136,8 +136,6 @@ use_math: true
 
   ![image](https://user-images.githubusercontent.com/26705935/61948934-2cc4a580-afe4-11e9-9d8d-f3b311189bfc.png)
 
-  ![image](https://user-images.githubusercontent.com/26705935/61948960-3f3edf00-afe4-11e9-9948-4ab5472ba92b.png)
-
 - 단계
 
   (1) 학습 데이터 $D_{train}$을 k개의 묶음으로 (class 비율을 맞추어) 나눔. 각각의 묶음은 $D_M$과 $D_A$로 이루어짐.
@@ -147,15 +145,70 @@ use_math: true
     - $L(\theta \vert T(D_{A}))$ : 모델 $\theta$에 대한 $T(D_{A})$ 데이터의 검증 loss.
     - Bayesian Optimization : [TPE](https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf) 사용.
 
-  (3) 성능이 좋은 N개의 policy들을 병합함. (**$T_*^{k}$**)
+  (3) 성능이 좋은 *N*개의 policy들을 병합함. (**$T_*^{(k)}$**)
 
-  (4) (2)와 (3)을 T번 반복하여 모든 결과 policy를 병합함.
+  (4) (2)와 (3)을 *T*번 반복하여 모든 결과 policy를 병합함.
 
   (4) 각 k-fold에 대해 (2)~(4)를 반복하여, 모든 결과 policy를 하나로 병합함. (**$T_*$**)
 
   (5) (4)의 결과를 $D_{train}$에 적용한 augmented data로 모델을 재학습함.
 
+- 알고리즘
+
+  ![image](https://user-images.githubusercontent.com/26705935/61948960-3f3edf00-afe4-11e9-9948-4ab5472ba92b.png)
+
 - 이점
-  - 학습된 모델 1개만을 이용하여 최적의 policy 탐색.
-  - 즉, Bayesian Optimization 과정에서, 성능이 높을 것으로 기대되는 augmentation policy를 뽑아낼 때마다 모델을 학습시킬 필요가 없음.
-  - 탐색 시간이 매우 단축됨.
+  - **학습된 모델 1개만을 이용**하여 최적의 policy 탐색.
+  - 즉, Bayesian Optimization 과정에서, 성능이 높을 것으로 기대되는 augmentation policy를 **뽑아낼 때마다 모델을 학습시킬 필요가 없음.**
+  - **탐색 시간**이 매우 단축됨.
+  - 뿐만 아니라, search space를 numerical한 공간으로 표현하였기 때문에 (*p*, $\lambda$ $\in$ [0,1]), Bayesian Optimization의 특성과 잘 맞음.
+
+## 3. Experiments
+- 4가지 이미지 데이터에 대한 분류 모델에 augmentation 적용.
+  - CIFAR-10, CIFAR-100, (reduced) SVHN, (reduced) ImageNet
+
+### 3-1. Hyperparameters 설정
+  - Operation 종류 = 16 (Shear X, Rotate, Invert, ...)
+  - $N_{\tau}$ (sub-policy 내의 operation 수) = 2
+  - $N_{T}$ (policy내 sub-policy 수) = 5
+  - k (fold 수) = 5, *T* (각 fold data마다 반복 횟수) = 2
+  - B (TPE를 뽑아내는 후보 개수) = 200, *N* (각 반복마다 성능이 좋은 policy 저장할 개수) = 10
+
+  - 즉, 최종적으로 **100개의 policy**를 찾으며, 이에 따라 1장의 data로부터 500장의 augmented data가 생성됨.
+
+### 3-2. 실험 결과
+- **정확도 향상**
+
+  ![image](https://user-images.githubusercontent.com/26705935/62288917-63913480-b498-11e9-8dc8-b956517a7590.png)
+
+  - Baseline : Augmentation을 적용하지 않은 것, [Cutout](https://arxiv.org/pdf/1708.04552.pdf) : 가장 널리 사용되는 augmentation 기법
+  - [AA](https://arxiv.org/pdf/1805.09501.pdf) : AutoAugment, [PBA](https://arxiv.org/pdf/1905.05393.pdf) : Population Based Augmentation
+  - Fast AA의 transfer : Wide-ResNet-40-2 모델과 조금 축소한 데이터를 이용하여 찾은 augmentation 기법들을 그대로 적용한 것.
+
+  - 제안된 기법인 Fast AA는 Baseline 및 기존 augmentation 기법보다 좋은 성능을 보임.
+  - 또한 AA 및 PBA보다 높진 않지만, 이에 준하는 성능을 보임.
+
+- **속도**
+
+  ![image](https://user-images.githubusercontent.com/26705935/62290114-83762780-b49b-11e9-91a2-1fa3c7fe2aa7.png)
+
+  - 이 논문의 핵심 = AutoAugment에 비하여 **탐색 속도의 엄청난 개선**.
+  - AA보다 빠르다는 PBA에 준하는 속도를 보임. 다음은 PBA 논문에 있는 탐색 속도.
+
+    ![image](https://user-images.githubusercontent.com/26705935/62289185-0649b300-b499-11e9-8c21-02811ccd79eb.png)
+
+  - PBA와 Fast AA의 속도 비교는 (reduced) ImageNet 이용한 실험에서 제대로 비교해봐야 할 것 같음.
+
+## 4. Conclusions
+- 딥러닝 모델의 overfitting을 피하기 위한 generalization 기법들 중, 데이터 단계에서 적용할 수 있는 augmentation의 자율 최적화에 관한 연구.
+- 기존의 AutoAugment라는 augmentation 최적화 기법은 강화학습을 통해 RNN controller를 학습 구조로서, 탐색 시간이 매우 오래걸린다는 단점이 있음.
+- **"Augmentation은 데이터 분포의 빈 공간을 채우는 것"** 이라는 개념 하에, augmetation 기법을 검증 데이터에 적용 및 한 번 학습된 모델로 augmentation 기법 성능 평가.
+- 탐색 결과 마다 모델을 학습할 필요가 없기 때문에, 최적화에 소요되는 총 소요 시간이 감소함.
+- 다양한 이미지 분류 데이터에 대한 실험 결과, AutoAugment 및 PBA에 준하는 성능과 함께 단축된 소요 시간을 보임.
+
+- Auto Augmentation 연구는 후에 NAS (Neural Architecture Search, 신경망 구조 탐색) 분야에 접목되어, 모델의 일반화 및 자율 최적화 기법에 관한 연구가 진행될 필요가 있음.
+
+- (개인적인 생각)
+  - BO를 뽑아낼 때마다 매 번 학습을 할 필요가 없는 것은 매우 큰 장점인듯 함.
+  - 하지만 검증 데이터에 augmentation 기법을 적용하고, 이미 학습된 모델로 loss를 계산하는 것이 과연 그 augmentation 기법에 대한 성능을 100% 반영하는지에 대한 의문이 듦.
+  - 두 가지 데이터의 density matching 관점에서 봤을 때 어느 정도 이해는 되지만, 필요충분조건에 대한 수학적인 증명이 필요하다고 생각됨.
