@@ -21,13 +21,14 @@ use_math: true
 
   ![image](https://user-images.githubusercontent.com/26705935/62862896-3b2ff280-bd42-11e9-9db1-416e5bfe5dc3.png)
 
-  - 이미 학습된 DNN = Teacher network (large)
-  - 새로 학습할 DNN = Student network (small)
+  - **이미 학습된 DNN = Teacher network (large)**
+  - **새로 학습할 DNN = Student network (small)**
 
 - **학습 방법**
+
   (1) Teacher network를 학습한다.
 
-  (2) 각 data에 대해, teacher network를 통해 얻는 *classification probability* (softmax 이전 layer의 출력) 를 이용하여 *temperature probability* 를 계산 및 저장한다.
+  (2) 각 data에 대해, teacher network를 통해 얻는 *classification probability* (softmax 이전 layer의 output) 를 이용하여 *temperature probability* 를 계산 및 저장한다.
 
     - **Temperature probability**
 
@@ -70,4 +71,7 @@ use_math: true
 - 이 논문에서는 더욱 효과적인 knowledge distillation 방법을 제안함.
   - **모델의 decision boundary (결정 경계) 근처에 있는 데이터**를 이용.
   - 특히,  **adversarial attack**은 특정 데이터를 모델의 decision boundary 근처로 이동하게 함.
-  - 즉, Adversarial attack을 기반으로 **Boundary Supporting Sample (BSS)** 를 생성.
+  - 즉, adversarial attack을 기반으로 **Boundary Supporting Sample (BSS)** 를 생성.
+
+## 2. Related Works
+### 2-1. Adversarial Attack
