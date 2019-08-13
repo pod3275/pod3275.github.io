@@ -75,3 +75,46 @@ use_math: true
 
 ## 2. Related Works
 ### 2-1. Adversarial Attack
+
+![image](https://user-images.githubusercontent.com/26705935/62939101-6d595700-be0b-11e9-93b8-fe562b6f3d4d.png)
+
+- 2014년 Ian Goodfellow의 [논문](https://arxiv.org/pdf/1412.6572.pdf)에서 처음 언급됨.
+- **Adversarial attack (적대적 공격)** : 입력 이미지에 사람이 구분하기 힘든 noise를 섞음으로써 모델로 하여금 결과를 다르게 하는 것.
+  - 또는 그러한 이미지를 생성하는 방법.
+  - 위의 그림: "panda" label을 갖는 그림에 noise를 추가하여 생성된 그림은 "gibbon" label을 가짐. ([출처](https://arxiv.org/pdf/1412.6572.pdf))
+
+- 생성된 이미지 = adversarial image (example) = natural image + **noise (perturbation)**
+
+- 종류
+  - 공격자의 상황에 따라 두 가지로 나뉨.
+
+  ![image](https://user-images.githubusercontent.com/26705935/62939044-4569f380-be0b-11e9-920f-b1590c528239.png)
+
+  그림: [출처](https://arxiv.org/pdf/1708.03999.pdf)
+
+  **1. White-box attack**
+
+    - 공격자가 모델의 구조, parameter를 알고, 모델의 loss를 통해 gradient를 계산할 수 있는 경우.
+    - 일반적으로, **입력에 따른 모델의 loss의 gradient를 계산하여, 이의 반대 방향으로 입력을 update 하는 방식.**
+
+    - ex) *FGSM (Fast Gradient Sign Method)* attack
+
+    ![image](https://user-images.githubusercontent.com/26705935/62938398-f53e6180-be09-11e9-9259-06a3d4b8e027.png)
+
+    - $x^* $ = adversarial image, $x$ = natural image, $J(x, y)$ = cross-entropy loss.
+    - FGSM 이후로 다양한 종류의 attack 기법이 제안됨 ([BIM](https://arxiv.org/pdf/1607.02533.pdf), [JSMA](https://arxiv.org/pdf/1511.07528.pdf), [DeepFool](https://arxiv.org/pdf/1511.04599.pdf), [C&W](https://arxiv.org/pdf/1608.04644.pdf), ...)
+    - 직관적인 loss, 안정적인 gradient descent method를 기반으로 하기 때문에, 매우 높은 공격 성공률을 보임.
+    -
+
+  **2. Black-box attack**
+
+    - 공격자가 모델에 대한 모든 정보를 모르고, 오로지 **특정 입력에 대한 결과만 얻을 수 있는 경우. (query)**
+
+    - 대표적으로 2가지 방식
+      - **대체 모델 (substitute model) 을 통한 공격** : 원래 모델로부터 query를 날려 얻은 결과로 새로운 구조의 모델 학습 및 공격 ([논문](https://arxiv.org/pdf/1602.02697.pdf))
+      - **Gradient estimation** 을 통한 공격 : 경사의 기울기 구하는 개념으로 gradient를 estimation하여 구함으로써, white-box attack과 같은 방식으로 공격 ([논문](https://arxiv.org/pdf/1805.11770.pdf), 정리)
+
+    - 정확한 수식을 통해 최적화하는 것이 아니기 때문에, 낮은 공격 성공률을 보임.
+    - 하지만 대체 모델을 통한 공격은 대부분의 모델에서 통하기 때문에, 방어하기 어려움.
+
+- 분석
