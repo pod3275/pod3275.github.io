@@ -23,12 +23,13 @@ use_math: true
 
   - **이미 학습된 DNN = Teacher network (large)**
   - **새로 학습할 DNN = Student network (small)**
+  - 일반적으로 large network에서 small network로 knowledge transfer가 이루어짐.
 
 - **학습 방법**
 
   (1) Teacher network를 학습한다.
 
-  (2) 각 data에 대해, teacher network를 통해 얻는 *classification probability* (softmax 이전 layer의 output) 를 이용하여 *temperature probability* 를 계산 및 저장한다.
+  (2) 각 data에 대해, teacher network를 통해 얻는 *classification probability* (softmax 이전 layer의 output) 를 이용하여 ***temperature probability*** 를 계산 및 저장한다.
 
     - **Temperature probability**
 
@@ -36,7 +37,7 @@ use_math: true
 
     - 증류 (Distillation) 에서 temperature 용어를 따옴.
 
-  (3) Student network는 기존 데이터의 *original labels* 와 (2)에서 구한 *temperature probability*를 이용하여, *KD loss* (*Knowldege Distillation loss*) 를 통해 학습한다.
+  (3) Student network는 기존 데이터의 *original labels* 와 (2)에서 구한 *temperature probability*를 이용하여, ***KD loss*** (***Knowldege Distillation loss***) 를 통해 학습한다.
 
     - **KD loss**
 
@@ -61,7 +62,7 @@ use_math: true
   - 결과적으로, student network는 teacher network보다 **작지만 비슷한 성능**을 보일 수 있다.
 
 - **사용**
-  - 주된 용도: 거의 동등한 성능을 보이면서, **네트워크의 크기를 줄이고자 할 때 사용.**
+  - 주된 용도: 거의 동등한 성능을 보이면서, **모델의 크기를 줄이고자 할 때 사용.**
   - Knowledge Distillation으로 학습한 student 모델이, adversarial attack (적대적 공격) 에 강인한 모습을 보인다는 [논문](https://arxiv.org/pdf/1511.04508.pdf)이 2016년 발표됨. (*Defensive Distillation*)
 
 - **문제점**
@@ -141,6 +142,7 @@ use_math: true
 
 - Student network가 좋은 performance를 갖기 위해선, decision boundary가 teacher network의 decision boundary와 비슷해야 함.
 - 이를 위해, 모델의 decision boundary 정보를 가지고 있는 데이터를 사용한 Knowldege Distillation 제안.
+  - 일종의 distillation 에서의 data augmentation.
 
 - **Boundary Supporting Sample (BSS)**: teacher network의 decision boundary 근처에 존재하는 데이터.
   - Adversarial example과 비슷한 개념이고, 생성 방식도 비슷하지만, 약간 다름.
@@ -158,9 +160,135 @@ use_math: true
 - 그림과 같이, teacher network를 기반으로 특정 데이터 (base sample) 로부터 adversairl sample을 생성함.
 - 생성은 white-box attack 방식과 같이, x에 따른 loss의 gradient를 통한 gradient descent method.
 
-- BSS 생성의 loss function
+- **BSS 생성의 loss function**
 
   ![image](https://user-images.githubusercontent.com/26705935/62944397-88ca5f00-be17-11e9-9328-1b50a75fcd93.png)
 
   - b: base sample의 class, k: (b가 아닌) target class.
-  -
+  - $f_b(x)$: x의 classification score (softmax 이전 값들) 중 b class에 해당하는 값.
+  - $f_k(x)$: x의 classification score (softmax 이전 값들) 중 k class에 해당하는 값.
+
+  - Loss를 최소화함 == b class 확률보다 k class 확률을 높임 == 결과가 k class가 되도록 함.
+
+- **GDM with loss**
+
+  ![image](https://user-images.githubusercontent.com/26705935/63001739-3e94bc80-beaf-11e9-975a-1bf848828367.png)
+
+  - (-항 $$ 앞쪽 곱): gradient 크기, (가장 왼쪽 분수): gradient의 방향.
+  - $\epsilon$: loss가 (-)가 되게 하기 위함 == x가 decision boundary를 넘어가게 하기 위함.
+
+    ![image](https://user-images.githubusercontent.com/26705935/63002088-16598d80-beb0-11e9-8c26-3fc1989811e6.png)
+
+    - 테일러 급수를 이용하여 정리해보면 위와 같이 negative loss가 가능해짐.
+
+- **GDM step을 멈추는 조건**
+
+  ![image](https://user-images.githubusercontent.com/26705935/63004025-705c5200-beb4-11e9-8d39-837d74bcdff9.png)
+
+  - (a): loss가 (-)가 되면. BSS로 채택함. (accept)
+  - (b): x가 다른 class 경계 안으로 들어가면. BSS가 아니므로 버림. (reject)
+  - (c): 너무 많은 step을 가면. 그 쪽 decision boundary가 너무 멀기 때문에 버림. (reject)
+
+### 3-2. Knowledge Distillation using BSS
+
+- 이미 학습된 teacher classifier ($f_t$) 를 이용한, student classifier ($f_s$) 의 학습 loss $L(n)$
+
+![image](https://user-images.githubusercontent.com/26705935/63003443-17d88500-beb3-11e9-899a-6c67bd6af5f7.png)
+
+  - $L_{cls}(n)$: 원본 데이터 ($(x_n, c_n)$) 의 hard label (true label, $y^{true}$) 을 학습.
+  - $L_{KD}(n)$: 원본 데이터에 대한 $f_t$의 temperature probability를 학습.
+  - **$L_{BS}(n, k)$: BSS ($\dot{x}_n^k$) 에 대한 $f_t$의 temperature probability를 학습.**
+    - Decision boundary 정보를 갖는 BSS를 학습에 이용함.
+
+  - $\alpha, \beta$ 는 loss의 영향력을 나타내는 hyperparameter이고, $p_n^k$는 target class k 가 선택될 확률임. (3-3에서 설명)
+
+### 3-3. Various Issues on using BSSs
+- **How to choose Base Sample?**
+  - 모든 데이터를 base sample로 하여 각각의 BSS를 구하는 게 아니고, 괜찮을 것으로 보이는 애들만 선택하여 그에 대한 BSS를 구함.
+
+  - 선택되는 base sample $C$ 의 조건:
+
+  ![image](https://user-images.githubusercontent.com/26705935/63004954-8539e500-beb6-11e9-9e22-33313e746688.png)
+
+  - 즉, BSS를 생성하는 기준인 base sample은 teacher network가 맞추고, (학습 과정 속 현재의) student network도 맞추는 데이터.
+  - Student network 학습 batch 내에서, 위와 같은 조건을 만족하는 N개의 base sample을 뽑음.
+
+- **How to choose Target Class k?**
+  - BSS를 생성하는 과정에서, target class는 아래와 같은 확률 분포 하에서 하나를 sampling 함.
+
+  ![image](https://user-images.githubusercontent.com/26705935/63005358-4ce6d680-beb7-11e9-9e6b-44397f712582.png)
+
+  - $p_n^k$: target class로 k가 선택될 확률.
+    - Teacher network를 기준으로 base class가 아닌 다른 class들의 probability 비율.
+
+  - 즉, base class와 비슷하다고 판단되는 (가장 가까운) class를 target class로 잡음.
+
+### 3-4. Metrices for Similarity of Decision Boundaries
+- 두 decision boundary의 유사도를 측정하는 두 가지 metrics 제안.
+
+- Magnitude Similarity (***MagSim***) and Amgle Similarity (***AngSim***)
+
+  ![image](https://user-images.githubusercontent.com/26705935/63005847-4a38b100-beb8-11e9-92bf-f0ee75408fcf.png)
+
+  - $\bar{x}_n^{k, t} = \dot{x}_n^{k, t} - x_n$ : Perturbation vector.
+  - *MagSim*, *AngSim* $\in [0, 1]$, 높을수록 더 유사함.
+
+  - Base sample로부터 두 모델의 decision boundary까지를 이은 vector들의 크기 및 각도를 비교.
+
+## 4. Experiments
+- 이미지 분류 모델 Knowledge Distillation 실험
+  - 데이터: CIFAR10, ImageNet (32*32), TinyImageNet
+
+- 비교 기법
+  - Original: Classification loss (원래 데이터의 true label) 만으로 학습함.
+  - Hinton: Classification loss + (기존) KD loss 로 학습함.
+  - FITNET, AT, FSP: Hinton 기법에 부가적인 요소를 추가한 distillation 기법들.
+  - FSP: layer-wise correlation matrix를 이용하는 기법으로, 실험에서 본 논문 제안 기법과 결합함.
+
+- Teacher, student network 종류
+
+  ![image](https://user-images.githubusercontent.com/26705935/63018844-c2ad6b00-bed4-11e9-870a-3f16ee017063.png)
+
+- **결과 Student 분류 성능**
+
+  ![image](https://user-images.githubusercontent.com/26705935/63018938-0607d980-bed5-11e9-8dbd-5a2e86555211.png)
+
+  - 기존의 distillation 기법들에 비해 제안 기법 혹은 FSP와 결합한 기법의 성능이 높음.
+
+- **Student의 generalization 평가**
+  - 가정: **적은 데이터 만으로 높은 성능을 보인다면 generalization을 잘 한 것이다.**
+  - CIFAR10 학습 데이터의 양을 100%에서 20%까지 줄이면서 student의 성능 평가.
+
+  ![image](https://user-images.githubusercontent.com/26705935/63019191-98a87880-bed5-11e9-941c-3fd7892a7c4c.png)
+
+  - 그래프: 학습 데이터 양에 따라, Original 기법과 비교한 성능 개선 정도.
+
+  - 학습 데이터가 적은 상황에서, student를 그냥 학습한 것에 비한 성능 개선율이 매우 높음.
+
+- **두 decision boundary 간의 유사도 측정**
+  - *MagSim* and *AngSim* using CIFAR10 dataset.
+
+  ![image](https://user-images.githubusercontent.com/26705935/63019422-4582f580-bed6-11e9-9a31-370e3e782460.png)
+
+  - Original 기법이나 Hinton 기법에 비해 높은 유사도를 보임.
+    - *다른 기법들은 왜 비교하지 않았는가?*
+
+- **BSS == Adversarial attack?**
+  - BSS를 찾는 과정을, 기존의 adversarial attack 기법으로 대체하면 어떻게 되는가?
+  - 즉, BSS = adversarial example 이며, distillation에 adversarial training을 적용한 것.
+
+  ![image](https://user-images.githubusercontent.com/26705935/63019599-ccd06900-bed6-11e9-8ed2-59a12a9b513f.png)
+
+  - 실험 결과 제안 기법이 기존 adversarial attack을 적용한 것보다 우수한 distillation 성능을 보임.
+
+## 5. Conclusion
+- *Knowledge Distillation* 이란 이미 학습된 모델을 이용하여 새로운 모델을 효율적으로 학습하는 기법임.
+  - 일반적으로 이미 학습된 모델 (*teacher network*) 은 크기가 크고, 새로 학습할 모델 (*student network*) 은 크기가 작은 것으로 설정함.
+  - 비슷한 성능을 보이면서 **모델의 크기를 줄일 수 있음.**
+
+- 본 논문에서는 모델의 decision boundary 정보를 포함하고 있는 데이터를 생성 및 이용하는, 더욱 효과적인 distillation 기법을 제안함.
+  - 적대적 공격 (Adversarial attack) 개념을 기반으로 ***Boundary Supporting Sample (BSS)*** 를 생성.
+  - 생성된 BSS를 이용하여 student network를 학습하는 distillation loss 제안.
+  - 두 모델의 decision boundary의 유사도를 측정하는 두 measures 제안.
+
+- Knowledge Distillation 결과 모델의 정확도 및 일반화 성능을 높임.
