@@ -151,7 +151,7 @@ use_math: true
   - Iterative scheme to find BSS.
   - Knowledge Distillation using BSS.
   - BSS 기반 KD와 관련한 다양한 issue들.
-  - 두 모델의 decision boundary의 유사도를 측정하는 metric.
+  - 두 모델의 decision boundary의 유사도를 측정하는 metrics.
 
 ### 3-1. Iterative Scheme to Find BSS
 
@@ -174,7 +174,7 @@ use_math: true
 
   ![image](https://user-images.githubusercontent.com/26705935/63001739-3e94bc80-beaf-11e9-975a-1bf848828367.png)
 
-  - (-항 $$ 앞쪽 곱): gradient 크기, (가장 왼쪽 분수): gradient의 방향.
+  - (- 항의 $\eta$ 앞쪽 곱): gradient 크기, (가장 왼쪽 분수): gradient의 방향.
   - $\epsilon$: loss가 (-)가 되게 하기 위함 == x가 decision boundary를 넘어가게 하기 위함.
 
     ![image](https://user-images.githubusercontent.com/26705935/63002088-16598d80-beb0-11e9-8c26-3fc1989811e6.png)
@@ -268,7 +268,7 @@ use_math: true
 - **두 decision boundary 간의 유사도 측정**
   - *MagSim* and *AngSim* using CIFAR10 dataset.
 
-  ![image](https://user-images.githubusercontent.com/26705935/63019422-4582f580-bed6-11e9-9a31-370e3e782460.png)
+  ![image](https://user-images.githubusercontent.com/26705935/63020465-28035b00-bed9-11e9-8e0e-3f6f477a4048.png)
 
   - Original 기법이나 Hinton 기법에 비해 높은 유사도를 보임.
     - *다른 기법들은 왜 비교하지 않았는가?*
