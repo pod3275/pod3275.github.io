@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리</title>
+  <meta name="description" content="Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리  저자 : Jason Jo, Yoshua Bengio  학회 : arXiv  날짜 : 2017.11.30  인용 : 31회  논문 : paper">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리  저자 : Jason Jo, Yoshua Bengio  학회 : arXiv  날짜 : 2017.11.30  인용 : 31회  논문 : paper" />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리">
+  <meta name="twitter:description" content="Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리  저자 : Jason Jo, Yoshua Bengio  학회 : arXiv  날짜 : 2017.11.30  인용 : 31회  논문 : paper">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/03/29/Tendency.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/typography/">Typography</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">March 29, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="measuring-the-tendency-of-cnns-to-learn-surface-statistical-regularities-정리">Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리</h1>
+<ul>
+  <li>저자 : Jason Jo, Yoshua Bengio</li>
+  <li>학회 : arXiv</li>
+  <li>날짜 : 2017.11.30</li>
+  <li>인용 : 31회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1711.11561.pdf">paper</a></li>
+</ul>
+
+<h2 id="서론">서론</h2>
+<ul>
+  <li>CNN을 공격(제 기능을 하지 못하도록)하는 여러 방법들.
+    <ul>
+      <li>Adversarial example : noise를 섞어서, 인간은 알아볼 수 있는데 기계학습 모델은 알아보지 못하도록 하는 것</li>
+      <li>Universal example : 한 class를 대상으로 하는 adversarial example과는 달리, 전체 dataset에 대해 적용할 수 있는 noise 모델</li>
+    </ul>
+  </li>
+  <li>
+    <p>Noise를 섞는 공격 방법은, noise를 통해 classification의 경계를 이동하는 것이라고 분석한다.</p>
+  </li>
+  <li>기존까진 CNN이 filter를 통해 high-level abstraction을 수행하여 어떤 특정 패턴을 인식하고 이를 통해 classification 등의 task를 수행하는 것이라고 생각되어었으나, 이렇게 되면 adversarial example에 공격당하는 것을 설명하지 못한다.
+    <ul>
+      <li><strong>따라서, 저자들은 CNN의 generalization이 training 및 test dataset에 공통적으로 있는 low level의 무언가 (저자에 따르면, superficial cues) 에 집중하고, 이를 통해 학습하여 성능을 나타내는 것이라고 말한다.</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="실험">실험</h2>
+<ul>
+  <li>Mapping 함수 <em>F : x (original data)</em> –&gt; <em>x’ (noise data)</em></li>
+  <li>F를 fourier filtering을 이용함 : wave를 여러 파장의 단위 신호의 합으로 나타냄. 신호의 분할.</li>
+  <li>Radial masking : 가운데 (low frequency) 부분을 제외한 나머지 부분 (high frequency) 을 날려버리기</li>
+  <li>
+    <p>Uniformly random masking : p의 확률로 랜덤하게 살리거나 날려버리기</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/41142287-18d01068-6b30-11e8-8543-d293310a58fa.png" alt="image" /></p>
+  </li>
+  <li>모델 : Preact ResNet 학습 및 인식</li>
+</ul>
+
+<h2 id="결과">결과</h2>
+<ul>
+  <li>
+    <p>학습을 어떤 dataset (original, radial, random data) 로 하든, radial masking을 적용한 data에 대해 인식률이 너무 낮음.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/41142258-0145ab6a-6b30-11e8-957f-6e3aebd943bf.png" alt="image" /></p>
+  </li>
+  <li>
+    <p>Radial masking을 적용한 것 = 이미지에서 high frequency (중요하지 않은 부분) 가 사라진 것</p>
+    <ul>
+      <li><strong>중요하지 않다고 생각한 부분 (high frequency) 이 이미지 인식에 영향을 준다.</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="고찰">고찰</h2>
+<ul>
+  <li>이러한 현상은 CNN 구조상의 잘못인가 혹은 loss function의 잘못인가?</li>
+  <li>CNN의 filter의 크기가 매우 작아서(3*3) 쪼그만 픽셀도 다 feature로 받아들이는 것 아닐까?</li>
+</ul>
+
+</article>
+
+
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Measuring+the+Tendency+of+CNNs+to+Learn+Surface+Statistical+Regularities+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F29%2FTendency.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Measuring+the+Tendency+of+CNNs+to+Learn+Surface+Statistical+Regularities+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F29%2FTendency.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F29%2FTendency.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Measuring+the+Tendency+of+CNNs+to+Learn+Surface+Statistical+Regularities+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F29%2FTendency.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Measuring+the+Tendency+of+CNNs+to+Learn+Surface+Statistical+Regularities+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F29%2FTendency.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/03/29/Tendency.html') + '&title=Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/typography/">Typography</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/03/29/Tendency.html',
+    'title': 'Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

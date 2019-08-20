@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리</title>
+  <meta name="description" content="Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리  저자 : Nicholas Carlini, David Wagner (C&amp;W attack의 저자들)  학회 : arXiv  날짜 :...">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리  저자 : Nicholas Carlini, David Wagner (C&amp;W attack의 저자들)  학회 : arXiv  날짜 :..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리">
+  <meta name="twitter:description" content="Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리  저자 : Nicholas Carlini, David Wagner (C&amp;W attack의 저자들)  학회 : arXiv  날짜 :...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/03/16/Bypass.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/typography/">Typography</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">March 16, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="adversarial-examples-are-not-easily-detected-bypassing-ten-detection-methods-정리">Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리</h1>
+<ul>
+  <li>저자 : Nicholas Carlini, David Wagner (C&amp;W attack의 저자들)</li>
+  <li>학회 : arXiv</li>
+  <li>날짜 : 2017.05.20 (last revised 2017.11.01)</li>
+  <li>인용 : 277회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1705.07263.pdf">paper</a></li>
+</ul>
+
+<h2 id="서론">서론</h2>
+<ul>
+  <li>10개의 제안된 adversarial detection method 성능 확인 및 비교.
+    <ul>
+      <li>모든 제안된 기법들이 새로운 loss function에 의한 adversarial attack에 의해 실패할 수 있다.</li>
+      <li>기존에 얘기했던 것보다 detect는 훨씬 더 어려우며, 각 논문들에서 가정한 adversarial example들의 특성도 실제론 그렇지 않은 경우도 많음.</li>
+    </ul>
+  </li>
+  <li>기존 10개의 detection method에 대한 공격을 시도.
+    <ol>
+      <li>주어진 모델에 적용된 defense method에 대한 고려 없이 그냥 classification 모델만 공격.</li>
+      <li>제안 공격 : 각 defense에 대한 맞춤형 공격. Adversary가 defense를 속이기 위해 필요한 것들을 캡쳐하도록 하는 attacker-loss function 정의.</li>
+      <li>Transferrability : 방어 모델의 구조 및 파라미터를 몰라도 수행하도록(black-box attack 가능성)</li>
+    </ol>
+
+    <ul>
+      <li>결국 white-box, black-box setting에서 10개의 defense method를 모두 break함.</li>
+    </ul>
+  </li>
+  <li>Attacker의 3가지 환경에서 detection method의 성능을 평가함.
+    <ol>
+      <li>Zero-Knowledge : Detector의 존재를 아예 모름. C&amp;W attack 사용.</li>
+      <li>Perfect-Knowledge : Detector 존재 + parameter 접근 가능. Loss-function 선택 (제안)공격.</li>
+      <li>Limit-Knowledge : Detector 존재 알지만 parameter 접근 불가. 2.의 transferability.</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="defense-method-f-classification-model-d-detector">Defense Method (F: classification model, D: detector)</h2>
+<h3 id="1-adversarial-retraining">1. Adversarial Retraining</h3>
+<p>(1) : Clean(N class)에 대해 Fbase 학습 -&gt; F에 의해 adv img 생성 -&gt; clean + (adv img, N+1) 데이터로 Fsecured 학습.</p>
+
+<p>(2) : Fsecured 대신 이를 이용하여 새 binary model D를 학습.</p>
+<ul>
+  <li>학습 : MNIST</li>
+  <li>결과
+    <ul>
+      <li>Zero : (MNIST) (1),(2) : FGSM, JSMA : 100% 근방.</li>
+      <li>C&amp;W (1) 98.5%. (2) 98%</li>
+      <li>(CIFAR10) (1),(2) : 70%.</li>
+      <li>Perfect : (2) : classifier + defender = G 정의, 이에 대한 adv 생성. (1),(2) : attack 성공 100%.</li>
+      <li>Limit : 대체 모델 R1, R2  R1으로 adv 생성  R2 평가. (1),(2) : attack 성공 98%.</li>
+    </ul>
+  </li>
+  <li>단점
+    <ul>
+      <li>Image input. Input의 차원이 크므로 detector 학습이 오래 걸릴 것이다.</li>
+    </ul>
+  </li>
+</ul>
+
+ 	<img src="https://user-images.githubusercontent.com/26705935/46799258-4a938780-cd8f-11e8-983c-b31e1fe160c5.png" alt="image" />
+
+<ul>
+  <li>G Model : Classifier, detector 구분되어 있는 NN 모델에 사용됨</li>
+</ul>
+
+<hr />
+
+<h3 id="2-examining-convolution-layers">2. Examining Convolution Layers</h3>
+<ul>
+  <li>각 conv layer의 feature들로 yes/no를 도출하는 detector 학습.</li>
+  <li>Only CIFAR</li>
+  <li>결과
+    <ul>
+      <li>실제 구현 시, detector 학습하는 게 hyperparameter에 매우 sensitive하다.</li>
+      <li>Zero : C&amp;W, 81% positive rate, 28% false positive rate. 원 논문에서 말한 99%는 약한 공격에 대함이었다. 성능 좋지 않음.</li>
+      <li>Perfect : 위의 G 모델에 C&amp;W 사용. 공격 성공.</li>
+      <li>Limited : 위의 transferability. 84%~98% (low and high confidence adv example) attack 가능.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="3-pca-detection">3. PCA Detection</h3>
+<ul>
+  <li>PCA는 N dim을 k dim으로 linear transformation하는 방법.</li>
+</ul>
+
+<p>(1) Input Image PCA</p>
+<ul>
+  <li>가정 : Adv image place a higher weight on the larger principal components than clean image.</li>
+  <li>MNIST, C&amp;W 공격으로 adv 만들어서 각 principal component의 분포를 봄.</li>
+  <li>원 논문 저자 말이 맞지만, 이건 MNIST가 border pixel이 대부분 0이어서 그럼. CIFAR 데이터에서는 차이가 없다.</li>
+  <li>결국 MNIST용임.</li>
+</ul>
+
+<p>(2) Dimension Reduction</p>
+<ul>
+  <li>N dim –&gt; K dim으로 linear transformation하고, 이를 이용하여 FCNN training: first K component만을 보는게 attacker입장에서 제한이 될 수 있음.</li>
+  <li>FCNN : 2 hidden layers of 100 units. 26개의 다른 model (K:9~784).</li>
+  <li>결과(Zero) : 25 dimension 이하는 낮고, 25이상은 97% 이상의 detect accuracy.</li>
+  <li>Perfect : 99.5% 공격 성공률.</li>
+</ul>
+
+<p>(3) PCA 사용하여 더 낮은 차원의 PCA 공간으로 mapping하고, 이 값으로 classifier 학습.</p>
+<ul>
+  <li>CNN. 25차원 이상에서 99% 이상의 정확도.</li>
+</ul>
+
+<p>(4) Hidden Layer PCA</p>
+<ul>
+  <li>Conv layer 다음에 PCA를 적용. 각 Ci는 i번째 conv에 PCA 적용 값으로 학습한 SVM 모델.</li>
+  <li>ImageNet에는 되나, MNIST, CIFAR에는 안됨.
+    <ul>
+      <li>Zero
+        <ul>
+          <li>L-BFGS. 80% true positive rate, 0% false positive rate</li>
+          <li>C&amp;W, MNIST : 62% true positive rate, 37% false positive rate. 92% false positive rate</li>
+          <li>C&amp;W, CIFAR : 56%, 40%, 98% false positive rate</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>C&amp;W 공격에 대해서는 잘 안됨.</li>
+</ul>
+
+<hr />
+
+<h3 id="4-distribution-detection">4. Distribution Detection</h3>
+<ul>
+  <li>clean과 adv의 분포를 이용하여 detect. Classical Statistical Method.</li>
+</ul>
+
+<p>(1) Maximum Mean Discrepancy</p>
+<ul>
+  <li>MMD : 분포를 감지. But 계산량이 많음.
+    <ul>
+      <li>a= MMD(X1, X2)  X1의 1개와 X2의 1개를 서로 shuffle 한 Y1, Y2 –&gt; b= MMD(Y1, Y2)</li>
+      <li>a&lt;b면 다른 distribution이다를 감지하여 shuffle을 reject한다.</li>
+    </ul>
+  </li>
+  <li>MMD가 정확히 걸러내는가를 보기 위해 X1, X2에 random하게 해서 실험 진행.
+    <ul>
+      <li>Zero : 반복. C&amp;W로 100개만 되도 안됨. CIFAR도 안됨.</li>
+    </ul>
+  </li>
+  <li>이 방법은 큰 수정이 있지 않는 이상 잘 안 된다.</li>
+</ul>
+
+<p>(2) Kernel Density Estimation</p>
+<ul>
+  <li>
+    <p>NN의 마지막 hidden layer output으로 GMM 모델을 사용.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/46954157-cf9dda00-d0ca-11e8-8bfb-8e86cf380cf7.png" alt="image" /></p>
+
+    <ul>
+      <li>Xt: t label을 가지는 training set, Fn-1(x) : output of final hidden layer x.</li>
+      <li>Input x에 대해서 t label x들까지의 거리를 측정.</li>
+      <li>KDE(x)가 특정 threshold보다 작으면 adversarial, 크면 natural.</li>
+    </ul>
+  </li>
+  <li>last hidden layer output은 image의 high-level semantic 정보를 담는다. Original image보다 더 잘될 것.</li>
+  <li>결과
+    <ul>
+      <li>Zero : C&amp;W, MNIST는 잘되는데 CIFAR는 안됨. (CIFAR에서는 80%이상의 adv가 KDE가 t보다 컸음)</li>
+      <li>Perfect : 새로운 loss function 만들어서 공격했더니 MNIST에서도 공격이 잘 된다.</li>
+      <li>Limited : 공격 성공.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="5-normalization-detection">5. Normalization Detection</h3>
+<p>(1) Dropout Randomization</p>
+<ul>
+  <li>Bayesian Neural Network Uncertainty : NN의 uncertainty를 측정.
+    <ul>
+      <li>Randomization in Network의 가정: Random value(dropout)에 대해서도 clean이 성능이 좋아야 됨.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/46954257-1390df00-d0cb-11e8-8ebb-10aa8ed23693.png" alt="image" /></p>
+
+    <ul>
+      <li>Input x를 L번 넣어서 계산. Fr은 dropout을 적용한 network. Fr이 항상 같은 결과면 U(x) = 0.</li>
+      <li>X에 대해서 판단하려면, threshold t를 정해서 L번 시행해서 U(x)가 t보다 크면 adv.</li>
+    </ul>
+  </li>
+  <li>결국 x를 dropout하고 넣은 결과가 변동이 크면 adv, 아니면 clean이라고 판단.</li>
+  <li>결과
+    <ul>
+      <li>MNIST FGSM, JSMA : 96% (false positive rate 1% 이하)</li>
+      <li>Zero : C&amp;W, MNIST : 75%, CIFAR : 95%</li>
+      <li>Perfect : 98% success 공격</li>
+      <li>Limited : MNIST 90%, CIFAR에 대해서는 not broken.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>(2) Mean Blur</p>
+<ul>
+  <li>3*3으로 blur 해서 classifier에 넣기. Author는 “매우 간단하다” 라고 하고 있음.</li>
+  <li>결과
+    <ul>
+      <li>Zero : C&amp;W에서 80%의 adv는 판단 못함. High-confidence adv ex에만 적용 가능.</li>
+      <li>Perfect : CNN에 3*3 conv 추가한 모델을 이용해서 공격. 잘 뚫림.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="결론">결론</h2>
+<ul>
+  <li>Dropout Randomization이 CIFAR에서 generation(역공격)하기 너무 어려웠다.
+    <ul>
+      <li>Randomization이 미래다.</li>
+    </ul>
+  </li>
+  <li>MNIST 특성이 CIFAR에도 있는 것은 아니다.
+    <ul>
+      <li>특히 KDE는 M에 잘되고 C에 너무 안됨.</li>
+    </ul>
+  </li>
+  <li>Detection NN은 너무 충분히 공격 가능하다.</li>
+  <li>Raw하게 pixel value를 갖고 하는 건 효과적이지 않다.</li>
+</ul>
+
+<h2 id="조언">조언</h2>
+<ul>
+  <li>강한 공격 가지고 실험하라. FGSM, JSMA는 하지 말아라.</li>
+  <li>White-box attack이 실패함을 보여라.</li>
+  <li>False positive, true positive rate을 보여라.</li>
+  <li>MNIST 말고 다른 dataset도 해봐라.</li>
+  <li>소스 코드를 공개하라.</li>
+</ul>
+
+</article>
+
+
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Adversarial+Examples+Are+Not+Easily+Detected%3A+Bypassing+Ten+Detection+Methods+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F16%2FBypass.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Adversarial+Examples+Are+Not+Easily+Detected%3A+Bypassing+Ten+Detection+Methods+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F16%2FBypass.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F16%2FBypass.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Adversarial+Examples+Are+Not+Easily+Detected%3A+Bypassing+Ten+Detection+Methods+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F16%2FBypass.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Adversarial+Examples+Are+Not+Easily+Detected%3A+Bypassing+Ten+Detection+Methods+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F16%2FBypass.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/03/16/Bypass.html') + '&title=Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/typography/">Typography</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/03/16/Bypass.html',
+    'title': 'Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

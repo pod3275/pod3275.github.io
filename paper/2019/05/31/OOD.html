@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리</title>
+  <meta name="description" content="Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리  저자 : Kimin Lee, Honglak Lee, Kibok Lee, Jinwoo Shin  학회 : ICLR 2018 ...">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리  저자 : Kimin Lee, Honglak Lee, Kibok Lee, Jinwoo Shin  학회 : ICLR 2018 ..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리">
+  <meta name="twitter:description" content="Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리  저자 : Kimin Lee, Honglak Lee, Kibok Lee, Jinwoo Shin  학회 : ICLR 2018 ...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/05/31/OOD.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/typography/">Typography</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">May 31, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="training-confidence-calibrated-classifiers-for-detecting-out-of-distribution-samples-정리">Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리</h1>
+<ul>
+  <li>저자 : Kimin Lee, Honglak Lee, Kibok Lee, Jinwoo Shin</li>
+  <li>학회 : ICLR 2018</li>
+  <li>날짜 : 2017.11.26 (last revised 2018.02.23)</li>
+  <li>인용 : 50회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1603.06560.pdf">paper</a></li>
+</ul>
+
+<h2 id="1-introduction">1. Introduction</h2>
+<p><strong>모델의 Uncertainty</strong></p>
+<ul>
+  <li>기계학습 또는 딥러닝 모델의 <em>uncertainty</em>란, 학습된 모델이 학습 과정에서 보지 못한 데이터에 대해 도출한 결과에 대해 얼마나 믿을 것인지를 나타내는 요소.</li>
+  <li>간단히, <strong>모델의 신뢰성</strong>.</li>
+  <li>자금 투자 혹은 의료 분야에서 기계학습 모델이 사용되는 경우, 모델이 도출한 결과의 영향력이 매우 크기 때문에 uncertainty를 통한 모델의 신뢰성 측정은 중요함.</li>
+</ul>
+
+<h2 id="2-related-works">2. Related Works</h2>
+
+<ul>
+  <li>Uncertainty 측정 방법</li>
+</ul>
+
+<p><strong>1) Softmax Probability</strong></p>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/58702782-b8092c80-83e1-11e9-9da6-690f58e13c26.png" alt="image" /></p>
+
+<ul>
+  <li>Softmax 값, 즉 <strong>분류 모델의 classification probability</strong>를 통해, 주어진 입력에 대해 모델이 얼마나 확신을 가지고 대답할 수 있는지 판단할 수 있음.</li>
+  <li>하지만 그림과 같이, 학습 과정에서 보지 못했던 입력에 대해 높은 classification probability로 틀려버리는 경우가 있기 때문에, 단순하게 softmax 값만으로는 uncertainty를 정확히 측정할 수 없음.</li>
+</ul>
+
+<p><strong>2) Threshold-based Detector</strong></p>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/58703289-27335080-83e3-11e9-9bfa-23822ca5c281.png" alt="image" /></p>
+
+<ul>
+  <li>2015년 <a href="https://ieeexplore.ieee.org/document/7439470">논문</a> 및 다른 논문들에서 연구됨.</li>
+  <li>입력 데이터가 학습 데이터 분포에 해당하는지(<em>in-distrubution</em>), 학습 데이터 분포 밖인지(<em>out-of-distribution</em>)를 판별하는 연구.</li>
+  <li>모델의 softmax 값을 기반으로 score를 계산하여, 특정 <em>threshold</em>보다 높으면 입력을 in-distribution data, 낮으면 입력을 out-of-distribution data로 판단.</li>
+  <li>한계점: 모델 학습 데이터(in-distrubution data)를 어떻게 잡냐에 따라 성능이 좌지우지됨.</li>
+</ul>
+
+<h2 id="3-proposed-methods">3. Proposed Methods</h2>
+<h3 id="3-1-objective">3-1. Objective</h3>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/58784462-73b6a000-861e-11e9-9c26-3f9b3d3656ce.png" alt="image" /></p>
+
+<ul>
+  <li><strong>In-distribution data</strong>: 학습에 따라 모델이 유추하는 <strong>classification probability</strong>를 그대로 출력.</li>
+  <li><strong>Out-of-distribution data</strong>: 모델에 따른 classification probability를 <strong>uniform distrubution</strong>이 되도록 함.</li>
+</ul>
+
+<h3 id="3-2-confidence-loss">3-2. Confidence Loss</h3>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/58799053-30b8f480-863f-11e9-96fa-36c12fd8fc4c.png" alt="image" /></p>
+
+<ul>
+  <li>3-1.을 만족시키기 위해 모델 학습에 사용되는 Loss.
+    <ul>
+      <li>In-distribution data는 <em>NLL(Negative Log Likelihood)</em> loss.</li>
+      <li>Out-of-distribution data는 uniform distrubution과의 KL divergence. (KL divergence: 분포 간의 거리)</li>
+    </ul>
+  </li>
+  <li>
+    <p>간단한 실험</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/58881153-8c08e680-8714-11e9-877e-908d28d1420b.png" alt="image" /></p>
+
+    <ul>
+      <li>SVHN (in-dist dataset), MNIST (out-of-dist dataset) 을 사용한 간단한 CNN 모델.</li>
+      <li>기존 cross entropy loss만을 썼을 때 (왼쪽 그래프), unseen data의 가장 높은 softmax값이 0.9처럼 높은 값을 갖는 경우가 많음.</li>
+      <li>제안된 Confidence loss를 썼을 때 (오른쪽 그래프), <strong>unseen data의 가장 높은 softmax값은 대체적으로 낮음</strong>.</li>
+    </ul>
+  </li>
+  <li>그렇다면 모델 학습에서 사용되는 out-of-distribution dataset을 어떻게 설정할 것인가?
+    <ul>
+      <li>다른 dataset을 사용하는 것이 아니라, <strong>GAN (Generative Adversarial Networks) 으로 만들자.</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-3-gan-for-generating-ood-samples">3-3. GAN for generating OOD samples</h3>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/58881050-4d732c00-8714-11e9-9220-33baf8004ecb.png" alt="image" /></p>
+
+<ul>
+  <li>(a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,</li>
+  <li>(b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion data 분포와 동일하게 나타나지 않음.</li>
+  <li>(c): 따라서 out-of-distrubtion data를 그림과 같이 <strong>in-distrubtion data에 최대한 밀접하여 설정</strong>을 하면,</li>
+  <li>
+    <p>(d): 모델의 decision boundary를 in-distrubtion data 분포와 일치하도록 할 수 있음.</p>
+  </li>
+  <li>
+    <p>이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 생성하는 <strong>GAN 모델</strong> 학습 loss.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/58880352-a8a41f00-8712-11e9-8db0-ed2ca05dcfe0.png" alt="image" /></p>
+
+    <ul>
+      <li><strong>OOD loss (a)</strong>: G가 생성하는 데이터에 대한 모델의 결과가 uniform distrubtion과 같아지도록 분류 모델을 학습.</li>
+      <li><strong>GAN loss (b)</strong>: G가 생성하는 데이터가 기존 데이터와 비슷한 모양이도록 생성 모델을 학습.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/58880622-4f88bb00-8713-11e9-8831-4cc6fcc91788.png" alt="image" /></p>
+
+    <ul>
+      <li>왼쪽: 위의 loss에서 (b)만 있는 경우. 기존 GAN의 생성 데이터.</li>
+      <li>오른쪽: 위의 loss에서 (a), (b) 모두 사용한 경우.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-4-최종-joint-confidence-loss">3-4. 최종 Joint Confidence loss</h3>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/58880791-b73f0600-8713-11e9-8523-188236c159f3.png" alt="image" /></p>
+
+<ul>
+  <li>분류 모델과 생성 모델을 <strong>번갈아가며 학습</strong>함.
+    <ul>
+      <li>분류 모델 (theta) 학습 시 생성 모델 (G, D) 고정 –&gt; (c) + (d) 사용.</li>
+      <li>생성 모델 (G, D) 학습 시 분류 모델 (theta) 고정 –&gt; (d) + (e) 사용.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="4-experiments">4. Experiments</h2>
+<ul>
+  <li>Dataset 및 모델
+    <ul>
+      <li><a href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR-10</a>, <a href="http://ufldl.stanford.edu/housenumbers/">SVHN</a>, <a href="https://tiny-imagenet.herokuapp.com/">TinyImageNet</a>, LSUN</li>
+      <li>VGGNet</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="4-1-without-gan-loss">4-1. Without GAN loss</h3>
+<ul>
+  <li>In-distrubtion data, out-of-distrubtion data 모두 기존의 데이터셋을 이용함 : GAN 생성 제외.</li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/58950713-5fafa180-87ca-11e9-8ee0-b6c61a865fd5.png" alt="image" /></p>
+
+    <ul>
+      <li>SVHN은 숫자가 포함된 이미지 데이터셋이고, 나머지는 사진 데이터셋임.</li>
+      <li>SVHN(in-dist), CIFAR10(out-of-dist) : “숫자는 in-distrubtion이고 나머지 사진같이 생긴건 OOD이다.” 라고 학습되었기 때문에, 사진 데이터인 TinyImageNet, LSUN 등에서 잘함.</li>
+      <li>CIFAR10(out-of-dist), SVHN(in-dist) : “사진같이 생긴 것중에 CIFAR10만 in-distrubtion이고 나머지 사진 혹은 숫자는 OOD이다.” 라고 학습되었기 때문에, <strong>같은 사진 domain</strong>인 TinyImageNet, LSUN 등에서 잘 못함.</li>
+    </ul>
+  </li>
+  <li>즉, OOD 데이터셋이랑 <strong>같은 domain을 갖는 unseen image에 대해서는 잘 못함.</strong></li>
+</ul>
+
+<h3 id="4-2-include-gan-loss">4-2. Include GAN loss</h3>
+<ul>
+  <li>GAN을 사용하여 OOD data를 생성함으로써 모델을 학습.</li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/59179288-87bd4d00-8b9c-11e9-86a5-42bee4a49c87.png" alt="image" /></p>
+
+    <ul>
+      <li>각 그래프 위의 OOD: 의 dataset은 training이 아닌 test 단계에서의 OOD를 의미함.</li>
+      <li>모든 상황에서 저자들이 제안한 joint confidence loss를 통한 모델 학습이 제일 좋았음.</li>
+      <li>GAN이 생성한 OOD를 학습과정에서 추가함에 따라 <strong>모델의 원래 분류 성능이 어떤지는 표시 안함.</strong></li>
+    </ul>
+  </li>
+  <li>
+    <p>Interpretability</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/59179484-1b8f1900-8b9d-11e9-87b9-6dfba9deb431.png" alt="image" /></p>
+
+    <ul>
+      <li>Guided gradient, 학습된 모델의 gradient를 이용하여, 입력 이미지 내에서 중요하게 생각하는 부분을 표시한 것.</li>
+      <li>Out of distribution data에 대해서 모두 검은색으로 표시되어, 모델 분류 작업을 안한다는 것을 알 수 있음.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="5-conclusion">5. Conclusion</h2>
+<ul>
+  <li><strong>Out-of-distribution data를 detect</strong>할 수 있는 모델의 학습 loss를 제안함.</li>
+  <li>In-distrubtion data를 기준으로 GAN을 이용하여 OOD data를 생성함.</li>
+  <li>OOD data에 대한 detection 성능은 기존 기법들에 비해 좋음.
+    <ul>
+      <li><strong>분류 모델의 성능 저하가 얼마나 되는지는 언급하지 않음.</strong></li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/out-of-distribution">out-of-distribution</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Training+Confidence-calibrated+Classifiers+for+Detecting+Out-of-Distribution+Samples+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F05%2F31%2FOOD.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Training+Confidence-calibrated+Classifiers+for+Detecting+Out-of-Distribution+Samples+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F05%2F31%2FOOD.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F05%2F31%2FOOD.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Training+Confidence-calibrated+Classifiers+for+Detecting+Out-of-Distribution+Samples+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F05%2F31%2FOOD.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Training+Confidence-calibrated+Classifiers+for+Detecting+Out-of-Distribution+Samples+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F05%2F31%2FOOD.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/05/31/OOD.html') + '&title=Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/typography/">Typography</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/05/31/OOD.html',
+    'title': 'Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

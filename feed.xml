@@ -1,0 +1,2229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>pod3275</title>
+    <description>pod3275의 머신 러닝 블로그
+</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 20 Aug 2019 21:38:44 +0900</pubDate>
+    <lastBuildDate>Tue, 20 Aug 2019 21:38:44 +0900</lastBuildDate>
+    <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Knowledge Distillation with Adversarial Samples Supporting Decision Boundary 정리</title>
+        <description>&lt;h1 id=&quot;knowledge-distillation-with-adversarial-samples-supporting-decision-boundary-정리&quot;&gt;Knowledge Distillation with Adversarial Samples Supporting Decision Boundary 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Byeongho Heo, Minsik Lee, Sangdoo Yun, Jin Young Choi&lt;/li&gt;
+  &lt;li&gt;학회 : AAAI 2019&lt;/li&gt;
+  &lt;li&gt;날짜 : 2018.05.15 (last revised 2018.12.14)&lt;/li&gt;
+  &lt;li&gt;인용 : 4회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1805.05532.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
+&lt;h3 id=&quot;1-1-knowledge-distillation&quot;&gt;1-1. Knowledge Distillation&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;딥러닝의 대가 Hinton 교수님의 2015년 &lt;a href=&quot;https://arxiv.org/pdf/1503.02531.pdf&quot;&gt;논문&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;이미 학습된 DNN (Deep Neural Network) 를 이용하여 새로운 DNN을 학습하는 방법.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62862896-3b2ff280-bd42-11e9-9db1-416e5bfe5dc3.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;이미 학습된 DNN = Teacher network (large)&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;새로 학습할 DNN = Student network (small)&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;일반적으로 large network에서 small network로 knowledge transfer가 이루어짐.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;학습 방법&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;(1) Teacher network를 학습한다.&lt;/p&gt;
+
+    &lt;p&gt;(2) 각 data에 대해, teacher network를 통해 얻는 &lt;em&gt;classification probability&lt;/em&gt; (softmax 이전 layer의 output) 를 이용하여 &lt;strong&gt;&lt;em&gt;temperature probability&lt;/em&gt;&lt;/strong&gt; 를 계산 및 저장한다.&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Temperature probability&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62863147-ed67ba00-bd42-11e9-8260-7498a0bdab8d.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;증류 (Distillation) 에서 temperature 용어를 따옴.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;(3) Student network는 기존 데이터의 &lt;em&gt;original labels&lt;/em&gt; 와 (2)에서 구한 &lt;em&gt;temperature probability&lt;/em&gt;를 이용하여, &lt;strong&gt;&lt;em&gt;KD loss&lt;/em&gt;&lt;/strong&gt; (&lt;strong&gt;&lt;em&gt;Knowldege Distillation loss&lt;/em&gt;&lt;/strong&gt;) 를 통해 학습한다.&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;KD loss&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62863558-176dac00-bd44-11e9-98ff-594a6a2969ba.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;결과&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;MNIST 데이터 분류
+        &lt;ul&gt;
+          &lt;li&gt;Baseline 모델 (3 layers DNN, 784-800-800-10) : 146개의 test error.&lt;/li&gt;
+          &lt;li&gt;Teacher network (3 layers DNN, 784-1200-1200-10) : 67개의 test error.&lt;/li&gt;
+          &lt;li&gt;Student network with teacher (Baseline과 같은 구조) : 74개의 test error.&lt;/li&gt;
+          &lt;li&gt;쌩으로 학습했을 때 (146개) 보다, teacher를 사용했을 때 (74개) 더 성능이 좋음.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;MNIST without “3”
+        &lt;ul&gt;
+          &lt;li&gt;위의 teacher를 이용하여, “3”에 해당하는 데이터 없이 student network를 학습.&lt;/li&gt;
+          &lt;li&gt;결과는 109개의 test error. 특히 1010개의 “3” test data 중 14개만 틀림.&lt;/li&gt;
+          &lt;li&gt;Classification probability를 통해 학습하기 때문에, 직접적인 label 데이터가 없어도 &lt;strong&gt;label간의 상관관계를 어느 정도 파악할 수 있음.&lt;/strong&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;MNIST with only “7” and “8”
+        &lt;ul&gt;
+          &lt;li&gt;“7”과 “8”에 해당하는 데이터만으로 student network를 학습.&lt;/li&gt;
+          &lt;li&gt;무려 13.2%의 test error. 엄청난 성능을 보임.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;결과적으로, student network는 teacher network보다 &lt;strong&gt;작지만 비슷한 성능&lt;/strong&gt;을 보일 수 있다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;사용&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;주된 용도: 거의 동등한 성능을 보이면서, &lt;strong&gt;모델의 크기를 줄이고자 할 때 사용.&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;Knowledge Distillation으로 학습한 student 모델이, adversarial attack (적대적 공격) 에 강인한 모습을 보인다는 &lt;a href=&quot;https://arxiv.org/pdf/1511.04508.pdf&quot;&gt;논문&lt;/a&gt;이 2016년 발표됨. (&lt;em&gt;Defensive Distillation&lt;/em&gt;)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;문제점&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Knowldege Distillation에 관한 기존 연구들은 대부분, 위의 &lt;em&gt;KD loss&lt;/em&gt;를 상황 및 데이터에 알맞게 변형한 loss들을 제안하였음.&lt;/li&gt;
+      &lt;li&gt;이는 단순한 수식의 변형일 뿐더러, 효과 (성능 상승) 가 미미했고, 특정 상황 혹은 데이터에 specific하다는 한계를 보임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;이 논문에서는 더욱 효과적인 Knowledge Distillation 방법을 제안함.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;모델의 결정 경계 (decision boundary) 근처에 있는 데이터&lt;/strong&gt;를 이용.&lt;/li&gt;
+      &lt;li&gt;특히,  &lt;strong&gt;adversarial attack&lt;/strong&gt;은 특정 데이터를 모델의 decision boundary 근처로 이동하게 함.&lt;/li&gt;
+      &lt;li&gt;즉, adversarial attack을 기반으로 &lt;strong&gt;Boundary Supporting Sample (BSS)&lt;/strong&gt; 를 생성.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-related-works-adversarial-attack&quot;&gt;2. Related Works: Adversarial Attack&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62939101-6d595700-be0b-11e9-93b8-fe562b6f3d4d.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;2014년 Ian Goodfellow의 &lt;a href=&quot;https://arxiv.org/pdf/1412.6572.pdf&quot;&gt;논문&lt;/a&gt;에서 처음 언급됨.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Adversarial attack (적대적 공격)&lt;/strong&gt; : 입력 이미지에 사람이 구분하기 힘든 noise를 섞음으로써 모델로 하여금 결과를 다르게 하는 것.
+    &lt;ul&gt;
+      &lt;li&gt;또는 그러한 이미지를 생성하는 방법.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;위의 그림: “panda” label을 갖는 그림에 noise를 추가하여 생성된 그림은 “gibbon” label을 가짐. (&lt;a href=&quot;https://arxiv.org/pdf/1412.6572.pdf&quot;&gt;출처&lt;/a&gt;)&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;생성된 이미지 = adversarial image (example) = natural image + &lt;strong&gt;noise (perturbation)&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;분류
+    &lt;ul&gt;
+      &lt;li&gt;공격자의 상황에 따라 두 가지로 나뉨.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62939044-4569f380-be0b-11e9-920f-b1590c528239.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;p&gt;그림: &lt;a href=&quot;https://arxiv.org/pdf/1708.03999.pdf&quot;&gt;출처&lt;/a&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;strong&gt;1. White-box attack&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;공격자가 모델의 구조, parameter를 알고, 모델의 loss를 통해 gradient를 계산할 수 있는 경우.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;일반적으로, &lt;strong&gt;입력에 따른 모델의 loss의 gradient를 계산하여, 이의 반대 방향으로 입력을 update 하는 방식.&lt;/strong&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;ex) &lt;em&gt;FGSM (Fast Gradient Sign Method)&lt;/em&gt; attack&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62938398-f53e6180-be09-11e9-9259-06a3d4b8e027.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;$x^* $ = adversarial image, $x$ = natural image, $J(x, y)$ = cross-entropy loss, $\epsilon$ = step size.&lt;/li&gt;
+      &lt;li&gt;FGSM 이후로 다양한 종류의 attack 기법이 제안됨 (&lt;a href=&quot;https://arxiv.org/pdf/1607.02533.pdf&quot;&gt;BIM&lt;/a&gt;, &lt;a href=&quot;https://arxiv.org/pdf/1511.07528.pdf&quot;&gt;JSMA&lt;/a&gt;, &lt;a href=&quot;https://arxiv.org/pdf/1511.04599.pdf&quot;&gt;DeepFool&lt;/a&gt;, &lt;a href=&quot;https://arxiv.org/pdf/1608.04644.pdf&quot;&gt;C&amp;amp;W&lt;/a&gt;, …)&lt;/li&gt;
+      &lt;li&gt;직관적인 loss, 안정적인 gradient descent method를 기반으로 하기 때문에, 매우 높은 공격 성공률을 보임.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;strong&gt;2. Black-box attack&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;공격자가 모델에 대한 모든 정보를 모르고, 오로지 &lt;strong&gt;특정 입력에 대한 결과만 얻을 수 있는 경우. (query)&lt;/strong&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;대표적으로 2가지 방식
+        &lt;ul&gt;
+          &lt;li&gt;&lt;strong&gt;대체 모델 (substitute model) 을 통한 공격&lt;/strong&gt; : 원래 모델로부터 query를 날려 얻은 결과로 새로운 구조의 모델 학습 및 공격 (&lt;a href=&quot;https://arxiv.org/pdf/1602.02697.pdf&quot;&gt;논문&lt;/a&gt;)&lt;/li&gt;
+          &lt;li&gt;&lt;strong&gt;Gradient estimation&lt;/strong&gt; 을 통한 공격 : 경사의 기울기 구하는 개념으로 gradient를 estimation하여 구함으로써, white-box attack과 같은 방식으로 공격 (&lt;a href=&quot;https://arxiv.org/pdf/1805.11770.pdf&quot;&gt;논문&lt;/a&gt;, 정리)&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;정확한 수식을 통해 최적화하는 것이 아니기 때문에, 낮은 공격 성공률을 보임.&lt;/li&gt;
+      &lt;li&gt;하지만 대체 모델을 통한 공격은 대부분의 모델에서 통하기 때문에, 방어하기 어려움.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Discussion
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial example이 왜 발생하는가 에 대한 많은 분석들이 나옴.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;가장 그럴싸한 분석&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62940728-279e8d80-be0f-11e9-8ce3-1ba257ffa9ee.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;Adversarial attack에 강인한 모델 학습 관련한 2017년 &lt;a href=&quot;https://arxiv.org/pdf/1706.06083.pdf&quot;&gt;논문&lt;/a&gt;에서 설명한 그림.&lt;/li&gt;
+          &lt;li&gt;점: 실제 데이터, 사각형: 사람이 볼 때, 실제 데이터(점)와 구분할 수 없는 영역. (&lt;strong&gt;$l_\infty$ ball&lt;/strong&gt;)&lt;/li&gt;
+          &lt;li&gt;모든 데이터는 $l_\infty$ ball 이 존재하기 때문에, 2번째 그림의 아래 별과 같이 실제로는 파란색인데 초록색 class를 나타내는 데이터가 존재함.&lt;/li&gt;
+          &lt;li&gt;이것이 adversarial example임.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;즉, &lt;strong&gt;adverarial example은 모델의 결정 경계 (decision boundary) 근처에 존재함.&lt;/strong&gt;&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62941417-ead39600-be10-11e9-9d05-54735dfa9de2.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;실제로 white-box attack 과정을 봐도, 매 step 마다 조금씩 움직이다가 모델의 결과가 바뀌는 순간 멈춤.&lt;/li&gt;
+          &lt;li&gt;다르게 생각하면, &lt;strong&gt;adversarial example은 모델의 decision boundary에 대한 정보를 가지고 있음.&lt;/strong&gt;&lt;/li&gt;
+          &lt;li&gt;이러한 정보를 활용하여 Knowledge Distillation을 하면 더 잘 할 것.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-proposed-methods&quot;&gt;3. Proposed Methods&lt;/h2&gt;
+&lt;h3 id=&quot;boundary-supporting-sample-bss&quot;&gt;Boundary Supporting Sample (BSS)&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62943434-6cc5be00-be15-11e9-9d89-e841e68cfb7e.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Student network가 좋은 performance를 갖기 위해선, decision boundary가 teacher network의 decision boundary와 비슷해야 함.&lt;/li&gt;
+  &lt;li&gt;이를 위해, 모델의 decision boundary 정보를 가지고 있는 데이터를 사용한 Knowldege Distillation 제안.
+    &lt;ul&gt;
+      &lt;li&gt;일종의 distillation 에서의 data augmentation.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Boundary Supporting Sample (BSS)&lt;/strong&gt;: teacher network의 decision boundary 근처에 존재하는 데이터.
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial example과 비슷한 개념이고, 생성 방식도 비슷하지만, 약간 다름.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;제안 기법 4가지 구성
+    &lt;ul&gt;
+      &lt;li&gt;Iterative scheme to find BSS.&lt;/li&gt;
+      &lt;li&gt;Knowledge Distillation using BSS.&lt;/li&gt;
+      &lt;li&gt;BSS 기반 KD와 관련한 다양한 issue들.&lt;/li&gt;
+      &lt;li&gt;두 모델의 decision boundary의 유사도를 측정하는 metrics.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-1-iterative-scheme-to-find-bss&quot;&gt;3-1. Iterative Scheme to Find BSS&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62943986-b1058e00-be16-11e9-81a9-bf75b112fdfd.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;그림과 같이, teacher network를 기반으로 특정 데이터 (base sample) 로부터 adversairl sample을 생성함.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;생성은 white-box attack 방식과 같이, x에 따른 loss의 gradient를 통한 gradient descent method.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;BSS 생성의 loss function&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62944397-88ca5f00-be17-11e9-9328-1b50a75fcd93.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;b: base sample의 class, k: (b가 아닌) target class.&lt;/li&gt;
+      &lt;li&gt;$f_b(x)$: x의 classification score (softmax 이전 값들) 중 b class에 해당하는 값.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;$f_k(x)$: x의 classification score (softmax 이전 값들) 중 k class에 해당하는 값.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Loss를 최소화함 == b class 확률보다 k class 확률을 높임 == 결과가 k class가 되도록 함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;GDM with loss&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63001739-3e94bc80-beaf-11e9-975a-1bf848828367.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;(- 항의 $\eta$ 앞쪽 곱): gradient 크기, (가장 왼쪽 분수): gradient의 방향.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;$\epsilon$: loss가 (-)가 되게 하기 위함 == x가 decision boundary를 넘어가게 하기 위함.&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63002088-16598d80-beb0-11e9-8c26-3fc1989811e6.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;테일러 급수를 이용하여 정리해보면 위와 같이 negative loss가 가능해짐.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;GDM step을 멈추는 조건&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63004025-705c5200-beb4-11e9-8d39-837d74bcdff9.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;(a): loss가 (-)가 되면. BSS로 채택함. (accept)&lt;/li&gt;
+      &lt;li&gt;(b): x가 다른 class 경계 안으로 들어가면. BSS가 아니므로 버림. (reject)&lt;/li&gt;
+      &lt;li&gt;(c): 너무 많은 step을 가면. 그 쪽 decision boundary가 너무 멀기 때문에 버림. (reject)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-knowledge-distillation-using-bss&quot;&gt;3-2. Knowledge Distillation using BSS&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;이미 학습된 teacher classifier ($f_t$) 를 이용한, student classifier ($f_s$) 의 학습 loss $L(n)$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63003443-17d88500-beb3-11e9-899a-6c67bd6af5f7.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;$L_{cls}(n)$: 원본 데이터 ($(x_n, c_n)$) 의 hard label (true label, $y^{true}$) 을 학습.&lt;/li&gt;
+  &lt;li&gt;$L_{KD}(n)$: 원본 데이터에 대한 $f_t$의 temperature probability를 학습.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;$L_{BS}(n, k)$: BSS ($\dot{x}_n^k$) 에 대한 $f_t$의 temperature probability를 학습.&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Decision boundary 정보를 갖는 BSS를 학습에 이용함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;$\alpha, \beta$ 는 loss의 영향력을 나타내는 hyperparameter이고, $p_n^k$는 target class k 가 선택될 확률임. (3-3에서 설명)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-3-various-issues-on-using-bsss&quot;&gt;3-3. Various Issues on using BSSs&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;How to choose Base Sample?&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;모든 데이터를 base sample로 하여 각각의 BSS를 구하는 게 아니고, 괜찮을 것으로 보이는 애들만 선택하여 그에 대한 BSS를 구함.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;선택되는 base sample $C$ 의 조건:&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63004954-8539e500-beb6-11e9-9e22-33313e746688.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;즉, BSS를 생성하는 기준인 base sample은 teacher network가 맞추고, (학습 과정 속 현재의) student network도 맞추는 데이터.&lt;/li&gt;
+      &lt;li&gt;Student network 학습 batch 내에서, 위와 같은 조건을 만족하는 N개의 base sample을 뽑음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;How to choose Target Class k?&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;BSS를 생성하는 과정에서, target class는 아래와 같은 확률 분포 하에서 하나를 sampling 함.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63005358-4ce6d680-beb7-11e9-9e6b-44397f712582.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;$p_n^k$: target class로 k가 선택될 확률.
+        &lt;ul&gt;
+          &lt;li&gt;Teacher network를 기준으로 base class가 아닌 다른 class들의 probability 비율.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;즉, base class와 비슷하다고 판단되는 (가장 가까운) class를 target class로 잡음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-4-metrices-for-similarity-of-decision-boundaries&quot;&gt;3-4. Metrices for Similarity of Decision Boundaries&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;두 decision boundary의 유사도를 측정하는 두 가지 metrics 제안.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Magnitude Similarity (&lt;strong&gt;&lt;em&gt;MagSim&lt;/em&gt;&lt;/strong&gt;) and Amgle Similarity (&lt;strong&gt;&lt;em&gt;AngSim&lt;/em&gt;&lt;/strong&gt;)&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63005847-4a38b100-beb8-11e9-92bf-f0ee75408fcf.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;$\bar{x}_n^{k, t} = \dot{x}_n^{k, t} - x_n$ : Perturbation vector.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;em&gt;MagSim&lt;/em&gt;, &lt;em&gt;AngSim&lt;/em&gt; $\in [0, 1]$, 높을수록 더 유사함.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Base sample로부터 두 모델의 decision boundary까지를 이은 vector들의 크기 및 각도를 비교.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-experiments&quot;&gt;4. Experiments&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;이미지 분류 모델 Knowledge Distillation 실험
+    &lt;ul&gt;
+      &lt;li&gt;데이터: CIFAR10, ImageNet (32*32), TinyImageNet&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;비교 기법
+    &lt;ul&gt;
+      &lt;li&gt;Original: Classification loss (원래 데이터의 true label) 만으로 학습함.&lt;/li&gt;
+      &lt;li&gt;Hinton: Classification loss + (기존) KD loss 로 학습함.&lt;/li&gt;
+      &lt;li&gt;FITNET, AT, FSP: Hinton 기법에 부가적인 요소를 추가한 distillation 기법들.&lt;/li&gt;
+      &lt;li&gt;FSP: layer-wise correlation matrix를 이용하는 기법으로, 실험에서 본 논문 제안 기법과 결합함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Teacher, student network 종류&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63018844-c2ad6b00-bed4-11e9-870a-3f16ee017063.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;결과 Student 분류 성능&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63018938-0607d980-bed5-11e9-8dbd-5a2e86555211.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;기존의 distillation 기법들에 비해 제안 기법 혹은 FSP와 결합한 기법의 성능이 높음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Student의 generalization 평가&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;가정: &lt;strong&gt;적은 데이터 만으로 높은 성능을 보인다면 generalization을 잘 한 것이다.&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;CIFAR10 학습 데이터의 양을 100%에서 20%까지 줄이면서 student의 성능 평가.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63019191-98a87880-bed5-11e9-941c-3fd7892a7c4c.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;그래프: 학습 데이터 양에 따라, Original 기법과 비교한 성능 개선 정도.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;학습 데이터가 적은 상황에서, student를 그냥 학습한 것에 비한 성능 개선율이 매우 높음.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;두 decision boundary 간의 유사도 측정&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;MagSim&lt;/em&gt; and &lt;em&gt;AngSim&lt;/em&gt; using CIFAR10 dataset.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63020465-28035b00-bed9-11e9-8e0e-3f6f477a4048.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Original 기법이나 Hinton 기법에 비해 높은 유사도를 보임.
+        &lt;ul&gt;
+          &lt;li&gt;&lt;em&gt;다른 기법들은 왜 비교하지 않았는가?&lt;/em&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;BSS == Adversarial attack?&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;BSS를 찾는 과정을, 기존의 adversarial attack 기법으로 대체하면 어떻게 되는가?&lt;/li&gt;
+      &lt;li&gt;즉, BSS = adversarial example 이며, distillation에 adversarial training을 적용한 것.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/63019599-ccd06900-bed6-11e9-8ed2-59a12a9b513f.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;실험 결과 제안 기법이 기존 adversarial attack을 적용한 것보다 우수한 distillation 성능을 보임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;5-conclusion&quot;&gt;5. Conclusion&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;Knowledge Distillation&lt;/em&gt; 이란 이미 학습된 모델을 이용하여 새로운 모델을 효율적으로 학습하는 기법임.
+    &lt;ul&gt;
+      &lt;li&gt;일반적으로 이미 학습된 모델 (&lt;em&gt;teacher network&lt;/em&gt;) 은 크기가 크고, 새로 학습할 모델 (&lt;em&gt;student network&lt;/em&gt;) 은 크기가 작은 것으로 설정함.&lt;/li&gt;
+      &lt;li&gt;비슷한 성능을 보이면서 &lt;strong&gt;모델의 크기를 줄일 수 있음.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;본 논문에서는 모델의 decision boundary 정보를 포함하고 있는 데이터를 생성 및 이용하는, 더욱 효과적인 distillation 기법을 제안함.
+    &lt;ul&gt;
+      &lt;li&gt;적대적 공격 (Adversarial attack) 개념을 기반으로 &lt;strong&gt;&lt;em&gt;Boundary Supporting Sample (BSS)&lt;/em&gt;&lt;/strong&gt; 를 생성.&lt;/li&gt;
+      &lt;li&gt;생성된 BSS를 이용하여 student network를 학습하는 distillation loss 제안.&lt;/li&gt;
+      &lt;li&gt;두 모델의 decision boundary의 유사도를 측정하는 두 measures 제안.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Knowledge Distillation 결과 모델의 정확도 및 일반화 성능을 높임.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 02 Aug 2019 06:05:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/08/02/KDwithADVsamples.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/08/02/KDwithADVsamples.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Fast AutoAugment 정리</title>
+        <description>&lt;h1 id=&quot;fast-autoaugment-정리&quot;&gt;Fast AutoAugment 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Sungbin Lim, Ildoo Kim, Taesup Kim, Chiheon Kim, Sungwoong Kim&lt;/li&gt;
+  &lt;li&gt;학회 : ICML 2019 (AutoML Workshop)&lt;/li&gt;
+  &lt;li&gt;날짜 : 2019.05.01 (last revised 2019.05.25)&lt;/li&gt;
+  &lt;li&gt;인용 : 2회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1905.00397.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
+&lt;h3 id=&quot;1-1-data-augmentation&quot;&gt;1-1. Data Augmentation&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Augmenation = Generalization = Avoid Overfitting&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Overfitting = 모델이 학습 데이터를 너무 따라가서, test 성능이 낮게 나타나는 경우. (조금 더 자세한 설명은 &lt;a href=&quot;https://pod3275.github.io/paper/2019/05/30/Dropout.html&quot;&gt;여기&lt;/a&gt;)&lt;/li&gt;
+      &lt;li&gt;일반적으로 학습 데이터의 개수가 많으면, overfitting을 피하기 쉽다. = 데이터 manifold를 일반화하기 쉽다.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61942756-06e3d480-afd5-11e9-92b2-53867c7b72ca.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;그림 &lt;a href=&quot;https://hackernoon.com/memorizing-is-not-learning-6-tricks-to-prevent-overfitting-in-machine-learning-820b091dc42&quot;&gt;출처&lt;/a&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;따라서, 학습 데이터의 양과 다양성을 늘려서 generalization을 이룩하자 = &lt;strong&gt;Augmenatation&lt;/strong&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61942967-67731180-afd5-11e9-8e07-9ab7cd0705a3.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;그림 &lt;a href=&quot;https://www.kakaobrain.com/blog/64&quot;&gt;출처&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;그림과 같이, 한 장의 고양이 사진을 이용하여 다양한 고양이 사진들을 생성할 수 있음.&lt;/li&gt;
+      &lt;li&gt;다양한 augmentation 기법들(&lt;a href=&quot;https://arxiv.org/pdf/1708.04552.pdf&quot;&gt;Cutout&lt;/a&gt;, &lt;a href=&quot;https://arxiv.org/pdf/1803.01229.pdf&quot;&gt;GAN 기반 기법&lt;/a&gt; 등)이 제안되었고, 모델의 성능을 높이고 있음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;그렇다고 너무 막 생성하면 안됨.
+    &lt;ul&gt;
+      &lt;li&gt;모델 성능을 최대로 높이려면 augmentation도 잘 해야한다.&lt;/li&gt;
+      &lt;li&gt;즉, 전문가의 지식이 필요하다. (여기서, hyperparameter tuning과 비슷한 모습을 보임)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-2-autoaugment&quot;&gt;1-2. AutoAugment&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;2018년 Google Brain &lt;a href=&quot;https://arxiv.org/pdf/1805.09501.pdf&quot;&gt;논문&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61943777-27ad2980-afd7-11e9-8a16-d6d4a7ac192a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;RNN (Recurrent Neural Network) + RL (Reinforcement Learning)&lt;/p&gt;
+
+    &lt;p&gt;(1) Augmentation 기법을 출력하는 RNN controller 생성.&lt;/p&gt;
+
+    &lt;p&gt;(2) 이를 통해 얻은 augmentation 기법을 학습 데이터에 적용.&lt;/p&gt;
+
+    &lt;p&gt;(3) 모델을 학습 및 성능을 평가하여 reward(R)를 얻음.&lt;/p&gt;
+
+    &lt;p&gt;(4) 계산된 reward를 통해 RNN controller 학습.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Augmentation 기법을 policy, sub-policy 단위로 나누어 search space를 체계화함.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61944104-d9e4f100-afd7-11e9-815f-ef55113a9ac4.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Fast AutoAugment에도 비슷한 단위로 적용됨.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;약간 NAS (Neural Architecture Search), 특히 &lt;a href=&quot;https://arxiv.org/pdf/1802.03268.pdf&quot;&gt;ENAS&lt;/a&gt;와 방식이 비슷함.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;성능 개선은 매우 높지만 (몇몇은 SOTA 갱신), &lt;strong&gt;시간이 너무 오래걸린다&lt;/strong&gt; 는 단점이 있음.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61944699-457b8e00-afd9-11e9-85d1-bbf46f956048.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;RNN 한 번 업데이트를 위해 분류 모델을 full로 학습시켜야 함.&lt;/li&gt;
+      &lt;li&gt;몇 천 GPU 시간이 걸림.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-3-pba-population-based-augmentation&quot;&gt;1-3. PBA (Population Based Augmentation)&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;2019년 arXiv &lt;a href=&quot;https://arxiv.org/pdf/1905.05393.pdf&quot;&gt;논문&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;기존의 Hyperparameter optimization 기법 중, &lt;a href=&quot;https://pod3275.github.io/paper/2019/03/19/PBT.html&quot;&gt;PBT&lt;/a&gt;(Population Based Training) 알고리즘을 기반으로 함.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/51183079-8d777500-1913-11e9-958e-b26d1f285c6f.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;p&gt;(1) { 동일한 모델 + 다른 augmentation 기법 적용 } X 여러 개 를 동시에 학습.&lt;/p&gt;
+
+    &lt;p&gt;(2) 중간 지점에서 각 모델의 성능을 비교.&lt;/p&gt;
+
+    &lt;p&gt;(3) 성능이 높은 모델의 parameter를 복제하고 (exploit), 적용된 augmentation 기법에 약간의 변형을 줌. (explore)&lt;/p&gt;
+
+    &lt;p&gt;(4) 동시 학습 진행. (2)와 (3)을 반복.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61946652-23383f00-afde-11e9-8798-d4b9f018f7eb.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;AutoAugment 보다 높은 성능 개선 및 짧은 실행 시간 기록.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-proposed-method&quot;&gt;2. Proposed Method&lt;/h2&gt;
+&lt;h3 id=&quot;fast-autoaugment&quot;&gt;Fast AutoAugment&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf&quot;&gt;TPE&lt;/a&gt; (Bayesian Optimization과 비슷한 black-box optimization 기법) 기반의 빠르고 효과적인 augmentation policy search 기법 제안.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-1-search-space&quot;&gt;2-1. Search Space&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Operation &lt;em&gt;O&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Augmentation 기법 단위.&lt;/li&gt;
+      &lt;li&gt;각 operation은 확률 &lt;em&gt;p&lt;/em&gt; 와 세기 $\lambda$ 값을 가짐. (&lt;em&gt;p&lt;/em&gt;, $\lambda$ $\in$ [0,1])&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Sub-policy $\tau$ $\in$ S
+    &lt;ul&gt;
+      &lt;li&gt;$N_\tau$ 개의 operation들.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61947495-449a2a80-afe0-11e9-9dc0-a737071e794a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;이미지에 적용 시, 각 operation을 확률에 따라 순서대로 적용.&lt;/li&gt;
+      &lt;li&gt;하나의 sub-policy = 하나의 이미지 생성. (위의 그림에서, 오른쪽 4장의 이미지 중 하나.)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Policy $T$
+    &lt;ul&gt;
+      &lt;li&gt;$N_T$ 개의 sub-policy들.&lt;/li&gt;
+      &lt;li&gt;하나의 policy = $N_T$ 개의 이미지 생성.&lt;/li&gt;
+      &lt;li&gt;우리가 찾고 싶은 최종.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-2-search-strategy&quot;&gt;2-2. Search Strategy&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;핵심 개념
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Augmenation은 학습 데이터 분포 중 빵꾸난 데이터를 만드는 것.&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;즉, train data ($D_{train}$) 와 validation data ($D_{valid}$) 의 데이터 분포(density)를 맞춰주는 역할.
+        &lt;ul&gt;
+          &lt;li&gt;$D_{train}$ 에 augmentation 적용 == $D_{valid}$&lt;/li&gt;
+          &lt;li&gt;&lt;strong&gt;(반대로 생각해서) $D_{valid}$ 에 augmentation 적용 == $D_{train}$&lt;/strong&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;실제로는 $D_{train}$만 이용해서 augmentation policy 찾을 거니까
+    &lt;ul&gt;
+      &lt;li&gt;$D_{train} = D_M \cup D_A$ 로 나눔.&lt;/li&gt;
+      &lt;li&gt;목표: $D_M$ 의 density == Augmented $D_A$ 의 density.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;데이터의 density 비교&lt;/strong&gt;를 어떻게 하는가?
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;학습된 model 을 이용하자.&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;$T_* = \arg\max_{T}{R(\theta^{*} \vert T(D_{A}))}$
+        &lt;ul&gt;
+          &lt;li&gt;$\theta^{*}$ : $D_M$ 으로 학습한 모델의 parameter.&lt;/li&gt;
+          &lt;li&gt;$R(\theta \vert D)$ : 데이터 D의 모델 $\theta$ 에 대한 정확도(accuracy).&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;즉, $D_M$ 으로 학습한 모델을 기준으로, augmented $D_{A}$ 에 대한 성능이 높은, 그런 policy를 찾자.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;기존 Augmentation 개념과 반대로 생각함.
+    &lt;ul&gt;
+      &lt;li&gt;기존 개념: &lt;strong&gt;학습 데이터에 augmentation을 적용&lt;/strong&gt;한 데이터로 학습된 모델을 기준으로, 검증 데이터에 대한 성능이 높은 augmentation policy가 최적.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;제안 개념: 학습 데이터로 학습된 모델을 기준으로, &lt;strong&gt;검증 데이터에 augmentation을 적용&lt;/strong&gt;한 데이터에 대한 성능이 높은 augmentation policy가 최적.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;이렇게 하면, 모델을 재학습할 필요가 없음 : 시간 단축 가능.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-3-algorithm&quot;&gt;2-3. Algorithm&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61948934-2cc4a580-afe4-11e9-9d8d-f3b311189bfc.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;단계&lt;/p&gt;
+
+    &lt;p&gt;(1) 학습 데이터 $D_{train}$을 k개의 묶음으로 (class 비율을 맞추어) 나눔. 각각의 묶음은 $D_M$과 $D_A$로 이루어짐.&lt;/p&gt;
+
+    &lt;p&gt;(2) $D_M$으로 모델 학습($\theta$) 및 &lt;em&gt;Bayesian Optimization&lt;/em&gt; 을 통해 $L(\theta \vert T(D_{A}))$ 가 최소가 되는 policy $T$를 search함.&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;$L(\theta \vert T(D_{A}))$ : 모델 $\theta$에 대한 $T(D_{A})$ 데이터의 검증 loss.&lt;/li&gt;
+      &lt;li&gt;Bayesian Optimization : &lt;a href=&quot;https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf&quot;&gt;TPE&lt;/a&gt; 사용.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;(3) 성능이 좋은 &lt;em&gt;N&lt;/em&gt;개의 policy들을 병합함. (&lt;strong&gt;$T_*^{(k)}$&lt;/strong&gt;)&lt;/p&gt;
+
+    &lt;p&gt;(4) (2)와 (3)을 &lt;em&gt;T&lt;/em&gt;번 반복하여 모든 결과 policy를 병합함.&lt;/p&gt;
+
+    &lt;p&gt;(4) 각 k-fold에 대해 (2)~(4)를 반복하여, 모든 결과 policy를 하나로 병합함. (&lt;strong&gt;$T_*$&lt;/strong&gt;)&lt;/p&gt;
+
+    &lt;p&gt;(5) (4)의 결과를 $D_{train}$에 적용한 augmented data로 모델을 재학습함.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;알고리즘&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61948960-3f3edf00-afe4-11e9-9948-4ab5472ba92b.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;이점&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;학습된 모델 1개만을 이용&lt;/strong&gt;하여 최적의 policy 탐색.&lt;/li&gt;
+      &lt;li&gt;즉, Bayesian Optimization 과정에서, 성능이 높을 것으로 기대되는 augmentation policy를 &lt;strong&gt;뽑아낼 때마다 모델을 학습시킬 필요가 없음.&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;탐색 시간이 매우 단축&lt;/strong&gt;됨.&lt;/li&gt;
+      &lt;li&gt;또한 search space를 numerical한 공간으로 표현하였기 때문에 (&lt;em&gt;p&lt;/em&gt;, $\lambda$ $\in$ [0,1]), Bayesian Optimization의 특성과 잘 맞음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-experiments&quot;&gt;3. Experiments&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;4가지 이미지 데이터에 대한 분류 모델에 augmentation 적용.
+    &lt;ul&gt;
+      &lt;li&gt;CIFAR-10, CIFAR-100, (reduced) SVHN, (reduced) ImageNet&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-1-hyperparameters-설정&quot;&gt;3-1. Hyperparameters 설정&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Operation 종류 = 16 (Shear X, Rotate, Invert, …)&lt;/li&gt;
+  &lt;li&gt;$N_{\tau}$ (sub-policy 내의 operation 수) = 2&lt;/li&gt;
+  &lt;li&gt;$N_{T}$ (policy내 sub-policy 수) = 5&lt;/li&gt;
+  &lt;li&gt;k (fold 수) = 5, &lt;em&gt;T&lt;/em&gt; (각 fold data마다 반복 횟수) = 2&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;B (TPE를 뽑아내는 후보 개수) = 200, &lt;em&gt;N&lt;/em&gt; (각 반복마다 성능이 좋은 policy 저장할 개수) = 10&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;즉, 최종적으로 &lt;strong&gt;100개의 policy&lt;/strong&gt;를 찾으며, 이에 따라 1장의 data로부터 500장의 augmented data가 생성됨.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-실험-결과&quot;&gt;3-2. 실험 결과&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;정확도 향상&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62288917-63913480-b498-11e9-8dc8-b956517a7590.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Baseline : Augmentation을 적용하지 않은 것, &lt;a href=&quot;https://arxiv.org/pdf/1708.04552.pdf&quot;&gt;Cutout&lt;/a&gt; : 가장 널리 사용되는 augmentation 기법&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/1805.09501.pdf&quot;&gt;AA&lt;/a&gt; : AutoAugment, &lt;a href=&quot;https://arxiv.org/pdf/1905.05393.pdf&quot;&gt;PBA&lt;/a&gt; : Population Based Augmentation&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Fast AA의 transfer : Wide-ResNet-40-2 모델과 조금 축소한 데이터를 이용하여 찾은 augmentation 기법들을 그대로 적용한 것.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;제안된 기법인 &lt;strong&gt;Fast AA는 Baseline 및 기존 augmentation 기법보다 좋은 성능&lt;/strong&gt;을 보임.&lt;/li&gt;
+      &lt;li&gt;또한 &lt;strong&gt;AA 및 PBA보다 높진 않지만, 이에 준하는 성능&lt;/strong&gt;을 보임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;속도&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62290114-83762780-b49b-11e9-91a2-1fa3c7fe2aa7.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;이 논문의 핵심 = AutoAugment에 비하여 &lt;strong&gt;탐색 속도의 엄청난 개선&lt;/strong&gt;.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;AA보다 빠르다는 &lt;strong&gt;PBA에 준하는 속도&lt;/strong&gt;를 보임. 다음은 PBA 논문에 있는 탐색 속도.&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/62289185-0649b300-b499-11e9-8c21-02811ccd79eb.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;PBA와 Fast AA의 속도 비교는 (reduced) ImageNet 이용한 실험에서 제대로 비교해봐야 할 것 같음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-conclusions&quot;&gt;4. Conclusions&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;딥러닝 모델의 overfitting을 피하기 위한 generalization 기법들 중, 데이터 단계에서 적용할 수 있는 augmentation의 자율 최적화에 관한 연구.&lt;/li&gt;
+  &lt;li&gt;기존의 AutoAugment라는 augmentation 최적화 기법은 강화학습을 통해 RNN controller를 학습 구조로서, 탐색 시간이 매우 오래걸린다는 단점이 있음.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;“Augmentation은 데이터 분포의 빈 공간을 채우는 것”&lt;/strong&gt; 이라는 개념 하에, augmetation 기법을 검증 데이터에 적용 및 한 번 학습된 모델로 augmentation 기법 성능 평가.&lt;/li&gt;
+  &lt;li&gt;탐색 결과 마다 모델을 학습할 필요가 없기 때문에, 최적화에 소요되는 &lt;strong&gt;총 소요 시간이 감소&lt;/strong&gt;함.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;다양한 이미지 분류 데이터에 대한 실험 결과, AutoAugment 및 PBA에 준하는 성능과 함께 단축된 소요 시간을 보임.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Auto Augmentation 연구는 후에 &lt;strong&gt;NAS (Neural Architecture Search, 신경망 구조 탐색) 분야에 접목&lt;/strong&gt;되어, 모델의 일반화 및 자율 최적화 기법에 관한 연구가 진행될 필요가 있음.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;(개인적인 생각)
+    &lt;ul&gt;
+      &lt;li&gt;BO를 뽑아낼 때마다 매 번 학습을 할 필요가 없는 것은 매우 큰 장점인듯 함.&lt;/li&gt;
+      &lt;li&gt;하지만 검증 데이터에 augmentation 기법을 적용하고, 이미 학습된 모델로 loss를 계산하는 것이 과연 그 augmentation 기법에 대한 성능을 100% 반영하는지에 대한 의문이 듦.&lt;/li&gt;
+      &lt;li&gt;두 가지 데이터의 density matching 관점에서 봤을 때 어느 정도 이해는 되지만, 필요충분조건에 대한 수학적인 증명이 필요하다고 생각됨.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 13 Jul 2019 06:50:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/07/13/FastAutoAugment.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/07/13/FastAutoAugment.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Dropout on CNN</title>
+        <description>&lt;h1 id=&quot;dropout-on-cnn&quot;&gt;Dropout on CNN&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;CNN에 dropout이 적용되는 여러 변형들을 제안한 논문들을 정리.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
+&lt;h3 id=&quot;1-1-overfitting--generalization&quot;&gt;1-1. Overfitting &amp;amp; Generalization&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;딥러닝 모델은 데이터가 많을수록 높은 성능을 낸다는 특성을 가짐.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61128424-c6705b00-a4ec-11e9-8493-ae0009f4a688.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;출처:&lt;a href=&quot;https://towardsdatascience.com/why-deep-learning-is-needed-over-traditional-machine-learning-1b6a99177063&quot;&gt;링크&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;하지만 데이터가 많다고 해서 모델 성능이 항상 좋은 건 아님.&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;모델의 복잡도(혹은 power)가 높으면 학습에서 본 데이터를 너무 따라가는 경향이 있음.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;“Overfitting”&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/59351118-9ea89e80-8d58-11e9-8272-93cd60955fc4.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;출처:&lt;a href=&quot;https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html&quot;&gt;링크&lt;/a&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Overfitting을 방지하자 = &lt;strong&gt;Generalization&lt;/strong&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-2-dropout&quot;&gt;1-2. Dropout&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;대표적인 generalization 기법 = &lt;strong&gt;Dropout&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;2014년 JMLR &lt;a href=&quot;http://jmlr.org/papers/volume15/srivastava14a.old/srivastava14a.pdf&quot;&gt;논문&lt;/a&gt;.&lt;/li&gt;
+      &lt;li&gt;신경망의 overfitting을 방지하기 위한 기법.&lt;/li&gt;
+      &lt;li&gt;학습 과정에서 특정 node들을 p의 확률로 사용하겠다 (1-p의 확률로 제거하겠다). 0&amp;lt;p&amp;lt;1.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/59435006-a5521700-8e27-11e9-881e-5b8c0e8049b7.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Dropout을 적용하면 적용하지 않은 것과 비교하여 각 node들의 output 값이 1/p배만큼 증가함.&lt;/li&gt;
+      &lt;li&gt;따라서, test 과정에서는 모든 weight를 사용함 + weight들에 p배를 곱함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dropout의 효과 (실험 결과)&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/59604294-c166f880-9146-11e9-91f5-dc121c30aeb1.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;위 뿐만 아니라 다양한 분야에서 dropout 적용을 통해 성능 개선을 뚜렷하게 보임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;왜 잘하는가?
+&lt;strong&gt;1) Ensemble&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;매 번 node가 랜덤하게 제거되는데, 각각이 독립적인 model이라고 볼 수 있음.&lt;/li&gt;
+      &lt;li&gt;즉, dropout을 적용하여 학습된 model은 독립적인 작은 model들의 ensemble 효과를 볼 수 있다는 주장.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;strong&gt;2) Avoiding co-adaptation&lt;/strong&gt;&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Co-adaptation: 학습 후 네트워크 내의 각 node들이 너무 서로 비슷한 역할을 하는 것.&lt;/li&gt;
+      &lt;li&gt;Dropout은 결과적으로 각 node가 서로 다른 것을 학습하도록 함으로써, 네트워크 전체를 utilize할 수 있게 함.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61128212-4813b900-a4ec-11e9-9e8e-3afaf8bc0e50.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;그림: 중간 feature들(hidden node들의 output)의 시각화.&lt;/li&gt;
+      &lt;li&gt;Dropout을 적용했을 때 feature들이 각기 다른 모양을 갖고, 좀 더 밝은 것(높은 값)을 확인할 수 있음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-3-dropout의-변형&quot;&gt;1-3. Dropout의 변형&lt;/h3&gt;
+&lt;h4 id=&quot;1-dropconnect&quot;&gt;1) DropConnect&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;2013년 ICML &lt;a href=&quot;http://proceedings.mlr.press/v28/wan13.pdf&quot;&gt;논문&lt;/a&gt; (사실 dropout 논문인 2014년보다 먼저 나왔음.).&lt;/li&gt;
+  &lt;li&gt;Dropout의 조금 더 일반화된 version.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Node 제거 –&amp;gt; Weight 제거.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61128245-5cf04c80-a4ec-11e9-937e-a0426affe05c.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;출처: &lt;a href=&quot;https://m.blog.naver.com/laonple/220827359158&quot;&gt;링크&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;학습 과정에서 특정 weight를 p의 확률로 사용 (1-p의 확률로 제거). 0&amp;lt;p&amp;lt;1.&lt;/li&gt;
+      &lt;li&gt;Dropout과 동일하게 test 과정에서 모든 weight를 사용 + 모든 weight에 p배함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;DropConnect 성능&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61127948-a8562b00-a4eb-11e9-94c8-d4e9c9fe1aea.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Dropout보다 조금 더 좋다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;2-drop-path&quot;&gt;2) Drop-path&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;2017년 ICLR &lt;a href=&quot;https://arxiv.org/pdf/1605.07648.pdf&quot;&gt;논문&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;FractalNet이라는 모델 제안 + Drop-path 적용.
+    &lt;ul&gt;
+      &lt;li&gt;FractalNet: 하나의 연산을 그림과 같이 2개로 나누고, 각각의 연산에도 적용.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61128287-78f3ee00-a4ec-11e9-87d7-6a8efdf75961.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Drop-path&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61128306-87420a00-a4ec-11e9-8691-b438f96aeb45.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;FractalNet의 한 path (a층부터 b층까지의 connection 경로) 내의 weight을 모두 제거하는 방식의 dropout.&lt;/li&gt;
+      &lt;li&gt;Fractal 구조인 경우에 한정되어 적용 가능.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-4-cnn에서의-dropout&quot;&gt;1-4. CNN에서의 Dropout&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;CNN에서 Dropout은 보통 pooling layer 혹은 맨 마지막 dense layer에 적용함.
+    &lt;ul&gt;
+      &lt;li&gt;Convolution layer에는 적용하지 않음.&lt;/li&gt;
+      &lt;li&gt;이유는 convolution 연산을 통해 데이터의 spatial feature를 추출하기 때문에, 단순히 노드(output) 몇 개를 지우는 것으로는 추출한 일부 correlated information을 완벽하게 지울 수 없음.&lt;/li&gt;
+      &lt;li&gt;실제로 convolution layer에 dropout을 적용하면 성능 증가가 크지 않음. (떨어지는 경우도 생김.)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;이에 따라 convolution layer에 적용할 수 있는 dropout 기반의 generalization 기법들이 제안됨.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;DropBlock, DropFilter, Spectral Dropout&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-dropblock&quot;&gt;2. DropBlock&lt;/h2&gt;
+&lt;h3 id=&quot;2-1-idea&quot;&gt;2-1. Idea&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;2018년 NIPS &lt;a href=&quot;http://papers.nips.cc/paper/8271-dropblock-a-regularization-method-for-convolutional-networks.pdf&quot;&gt;논문&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/60589434-7c90c200-9dd4-11e9-9538-2cd59c47f92d.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;(b): Convolution layer의 output units은 공간적으로 연관되있으므로 (spatially correlated), 랜덤하게 몇 개의 activations를 선택해서 지우는 것으로는 연관된 정보 (correlated information, 초록색)를 제대로 지울 수 없음.&lt;/li&gt;
+  &lt;li&gt;(c): 랜덤하게 몇 개가 아니라, 연속된 몇 개의 node들을 지우자. &lt;strong&gt;DropBlock&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-2-how-to-find-continuous-regions&quot;&gt;2-2. How to find “continuous regions”?&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/60589644-f759dd00-9dd4-11e9-9ac9-3ea87ef036a9.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61125274-670e4d00-a4e4-11e9-84bd-58df42e6395a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;(a): 초록색 내의 임의의 점을 center로 하여,&lt;/li&gt;
+  &lt;li&gt;(b): &lt;em&gt;block_size&lt;/em&gt; 를 한 변으로 하는 정사각형 region을 형성 및 값을 제거.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;block_size&lt;/em&gt; = 1 이면, Dropout.&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;block_size&lt;/em&gt; 가 모든 featrue map을 덮으면, SpatialDropout.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-3-results&quot;&gt;2-3. Results&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61123969-a9ce2600-a4e0-11e9-9464-3431374edae2.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;block_size&lt;/em&gt; = 7로 설정.&lt;/li&gt;
+  &lt;li&gt;Dropout, DropPath, SpatialDropout을 적용했을 때보다 성능이 좋음.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61124184-37117a80-a4e1-11e9-9bae-883178bbf6c5.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;위: input 이미지 내에서 class를 결정하는 영향력을 표시한 CAM.&lt;/li&gt;
+  &lt;li&gt;DropPath를 적용했을 때, 모델은 인간이 보는 것과 비슷한 것을 보고 판단할 수 있음.&lt;/li&gt;
+  &lt;li&gt;즉, DropPath은 모델로 하여금 spatially correlated information을 더 잘 catch할 수 있도록 함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-dropfilter-spatialdropout&quot;&gt;3. DropFilter (SpatialDropout)&lt;/h2&gt;
+&lt;h3 id=&quot;3-1-idea&quot;&gt;3-1. Idea&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;2018년 arXiv &lt;a href=&quot;https://arxiv.org/pdf/1810.09849.pdf&quot;&gt;논문&lt;/a&gt;. (&lt;strong&gt;거의 동일한 개념인 SpatialDropout은 2015년 CVPR에서 먼저 발표함.&lt;/strong&gt; &lt;a href=&quot;https://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Tompson_Efficient_Object_Localization_2015_CVPR_paper.pdf&quot;&gt;논문&lt;/a&gt;.)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Node간의 co-adaptation 문제는 같은 채널 내의 근처에 있는 값들에 의해서 발생하지만, 동일한 위치에 있는 다른 채널 간의 값들에 의해서 더 자주 발생함.&lt;/li&gt;
+  &lt;li&gt;즉, channel간의 correlation이 존재함.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;따라서 channel 하나를 통째로 drop하자. &lt;strong&gt;DropFilter&lt;/strong&gt;. (SpatialDropout과 동일함.)&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61125604-3aa70080-a4e5-11e9-8946-4e270b8ffb8a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;간단하게, 일정 확률로 channel을 지우자.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-scalefilter&quot;&gt;3-2. ScaleFilter&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Deep CNN의 경우, channel 하나를 통째로 날려버리는 것의 영향이 너무 큼.&lt;/li&gt;
+  &lt;li&gt;즉, retaining rate &lt;em&gt;p&lt;/em&gt; 의 의존도가 너무 큼.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;따라서, channel 하나를 모두 0으로 하지 말고, 값을 scaling 하자.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61125841-ddf81580-a4e5-11e9-95d5-cea63999e231.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;일정 확률로 0을 곱하는게 아니라, scaling 값을 곱하자.&lt;/li&gt;
+      &lt;li&gt;아무래도 이게 DropFilter이 SpatialDropout과 다른점 인듯.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-3-results&quot;&gt;3-3. Results&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61125984-3af3cb80-a4e6-11e9-8d04-d3881ba960c8.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;DropBlock과 비교하진 않았으나, 기존 dropout을 적용했을 때보다 좋은 성능을 보임.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61128366-a476d880-a4ec-11e9-8a39-ce6aed364af9.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Retaining rate (dropout keep prob.) &lt;em&gt;p&lt;/em&gt;의 설정에 따른 성능.&lt;/li&gt;
+  &lt;li&gt;기존 droput이나 DropFilter는 retaining rate &lt;em&gt;p&lt;/em&gt; 에 매우 민감하나, ScaleFilter는 비교적으로 어떻게 설정해도 좋은 성능을 보임.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-spectral-dropout&quot;&gt;4. Spectral Dropout&lt;/h2&gt;
+&lt;h3 id=&quot;4-1-idea&quot;&gt;4-1. Idea&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;2019년 Neural Networks &lt;a href=&quot;https://arxiv.org/pdf/1711.08591.pdf&quot;&gt;논문&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Neural Network의 activation 요소 중 “&lt;strong&gt;Weak&lt;/strong&gt;” 하고 “&lt;strong&gt;Noisy&lt;/strong&gt;” 한 것을 제거하자.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-2-methods&quot;&gt;4-2. Methods&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;주어진 이미지를 decorrelation transform (&lt;a href=&quot;https://idlecomputer.tistory.com/121&quot;&gt;DCT&lt;/a&gt;, Discrete Cosine Transform)을 이용하여 변환.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61127107-47c5ee80-a4e9-11e9-9f25-b9654fbc7414.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;(left) DCT의 과정. 입력 이미지와 베이스 이미지를 이용한 연산을 통해 주파수 이미지로 변환.&lt;/li&gt;
+      &lt;li&gt;(middle) 기본적으로 사용되는 베이스 이미지.&lt;/li&gt;
+      &lt;li&gt;(right) 나비 이미지에 대해, 가운데 베이스 이미지를 이용한 DCT 결과 주파수 이미지에 log scale한 이미지.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Spectral Dropout&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61127306-df2b4180-a4e9-11e9-952f-8b766eb29622.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Activation map을 DCT로 변환.&lt;/li&gt;
+  &lt;li&gt;변환된 주파수 이미지에서, 특정 threshold를 기준으로 값이 작은 것들을 제거.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;다시 역 DCT로 변환.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;결과적으로, &lt;strong&gt;low frequency 정보&lt;/strong&gt; (&lt;strong&gt;weak하고 noisy한 정보&lt;/strong&gt;) 를 일정 확률로 제거함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-3-results&quot;&gt;4-3. Results&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61127510-6b3d6900-a4ea-11e9-9ae0-a3fa26d7e228.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Dropout, Drop-Connect 보다 좋은 성능을 보임.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/61127657-dab35880-a4ea-11e9-9483-294eff72513a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Threshold 값은 모델마다 다르기 때문에, 최적의 값을 찾아야 함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;5-conclusion&quot;&gt;5. Conclusion&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;CNN 모델은 공간적으로 상관 정보 (spatially correlated information) 를 catch하기 때문에, 기존 dropout과는 다른 방식의 dropout 기법이 필요함.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;DropBlock&lt;/strong&gt;, &lt;strong&gt;DropFilter (SpatialDropout)&lt;/strong&gt;, &lt;strong&gt;Spectral Dropout&lt;/strong&gt; 등 다양한 CNN용 dropout 기법들이 제안됨.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 31 May 2019 06:23:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/05/31/Dropout.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/05/31/Dropout.html</guid>
+        
+        <category>CNN</category>
+        
+        <category>Dropout</category>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리</title>
+        <description>&lt;h1 id=&quot;training-confidence-calibrated-classifiers-for-detecting-out-of-distribution-samples-정리&quot;&gt;Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Kimin Lee, Honglak Lee, Kibok Lee, Jinwoo Shin&lt;/li&gt;
+  &lt;li&gt;학회 : ICLR 2018&lt;/li&gt;
+  &lt;li&gt;날짜 : 2017.11.26 (last revised 2018.02.23)&lt;/li&gt;
+  &lt;li&gt;인용 : 50회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1603.06560.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;모델의 Uncertainty&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;기계학습 또는 딥러닝 모델의 &lt;em&gt;uncertainty&lt;/em&gt;란, 학습된 모델이 학습 과정에서 보지 못한 데이터에 대해 도출한 결과에 대해 얼마나 믿을 것인지를 나타내는 요소.&lt;/li&gt;
+  &lt;li&gt;간단히, &lt;strong&gt;모델의 신뢰성&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;자금 투자 혹은 의료 분야에서 기계학습 모델이 사용되는 경우, 모델이 도출한 결과의 영향력이 매우 크기 때문에 uncertainty를 통한 모델의 신뢰성 측정은 중요함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-related-works&quot;&gt;2. Related Works&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Uncertainty 측정 방법&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;1) Softmax Probability&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58702782-b8092c80-83e1-11e9-9da6-690f58e13c26.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Softmax 값, 즉 &lt;strong&gt;분류 모델의 classification probability&lt;/strong&gt;를 통해, 주어진 입력에 대해 모델이 얼마나 확신을 가지고 대답할 수 있는지 판단할 수 있음.&lt;/li&gt;
+  &lt;li&gt;하지만 그림과 같이, 학습 과정에서 보지 못했던 입력에 대해 높은 classification probability로 틀려버리는 경우가 있기 때문에, 단순하게 softmax 값만으로는 uncertainty를 정확히 측정할 수 없음.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;2) Threshold-based Detector&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58703289-27335080-83e3-11e9-9bfa-23822ca5c281.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;2015년 &lt;a href=&quot;https://ieeexplore.ieee.org/document/7439470&quot;&gt;논문&lt;/a&gt; 및 다른 논문들에서 연구됨.&lt;/li&gt;
+  &lt;li&gt;입력 데이터가 학습 데이터 분포에 해당하는지(&lt;em&gt;in-distrubution&lt;/em&gt;), 학습 데이터 분포 밖인지(&lt;em&gt;out-of-distribution&lt;/em&gt;)를 판별하는 연구.&lt;/li&gt;
+  &lt;li&gt;모델의 softmax 값을 기반으로 score를 계산하여, 특정 &lt;em&gt;threshold&lt;/em&gt;보다 높으면 입력을 in-distribution data, 낮으면 입력을 out-of-distribution data로 판단.&lt;/li&gt;
+  &lt;li&gt;한계점: 모델 학습 데이터(in-distrubution data)를 어떻게 잡냐에 따라 성능이 좌지우지됨.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-proposed-methods&quot;&gt;3. Proposed Methods&lt;/h2&gt;
+&lt;h3 id=&quot;3-1-objective&quot;&gt;3-1. Objective&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58784462-73b6a000-861e-11e9-9c26-3f9b3d3656ce.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;In-distribution data&lt;/strong&gt;: 학습에 따라 모델이 유추하는 &lt;strong&gt;classification probability&lt;/strong&gt;를 그대로 출력.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Out-of-distribution data&lt;/strong&gt;: 모델에 따른 classification probability를 &lt;strong&gt;uniform distrubution&lt;/strong&gt;이 되도록 함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-confidence-loss&quot;&gt;3-2. Confidence Loss&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58799053-30b8f480-863f-11e9-96fa-36c12fd8fc4c.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;3-1.을 만족시키기 위해 모델 학습에 사용되는 Loss.
+    &lt;ul&gt;
+      &lt;li&gt;In-distribution data는 &lt;em&gt;NLL(Negative Log Likelihood)&lt;/em&gt; loss.&lt;/li&gt;
+      &lt;li&gt;Out-of-distribution data는 uniform distrubution과의 KL divergence. (KL divergence: 분포 간의 거리)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;간단한 실험&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58881153-8c08e680-8714-11e9-877e-908d28d1420b.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;SVHN (in-dist dataset), MNIST (out-of-dist dataset) 을 사용한 간단한 CNN 모델.&lt;/li&gt;
+      &lt;li&gt;기존 cross entropy loss만을 썼을 때 (왼쪽 그래프), unseen data의 가장 높은 softmax값이 0.9처럼 높은 값을 갖는 경우가 많음.&lt;/li&gt;
+      &lt;li&gt;제안된 Confidence loss를 썼을 때 (오른쪽 그래프), &lt;strong&gt;unseen data의 가장 높은 softmax값은 대체적으로 낮음&lt;/strong&gt;.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;그렇다면 모델 학습에서 사용되는 out-of-distribution dataset을 어떻게 설정할 것인가?
+    &lt;ul&gt;
+      &lt;li&gt;다른 dataset을 사용하는 것이 아니라, &lt;strong&gt;GAN (Generative Adversarial Networks) 으로 만들자.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-3-gan-for-generating-ood-samples&quot;&gt;3-3. GAN for generating OOD samples&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58881050-4d732c00-8714-11e9-9220-33baf8004ecb.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;(a): in-distrubtion data (파란색, 빨간색) 와 out-of-distrubtion data (초록색) 을 그림과 같이 설정하면,&lt;/li&gt;
+  &lt;li&gt;(b): 모델 학습 이후 decision boundary가 그림과 같이, in-distrubtion data 분포와 동일하게 나타나지 않음.&lt;/li&gt;
+  &lt;li&gt;(c): 따라서 out-of-distrubtion data를 그림과 같이 &lt;strong&gt;in-distrubtion data에 최대한 밀접하여 설정&lt;/strong&gt;을 하면,&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;(d): 모델의 decision boundary를 in-distrubtion data 분포와 일치하도록 할 수 있음.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;이러한 조건을 만족하는 OOD (Out-Of-Distribution) data를 생성하는 &lt;strong&gt;GAN 모델&lt;/strong&gt; 학습 loss.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58880352-a8a41f00-8712-11e9-8db0-ed2ca05dcfe0.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;OOD loss (a)&lt;/strong&gt;: G가 생성하는 데이터에 대한 모델의 결과가 uniform distrubtion과 같아지도록 분류 모델을 학습.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;GAN loss (b)&lt;/strong&gt;: G가 생성하는 데이터가 기존 데이터와 비슷한 모양이도록 생성 모델을 학습.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58880622-4f88bb00-8713-11e9-8831-4cc6fcc91788.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;왼쪽: 위의 loss에서 (b)만 있는 경우. 기존 GAN의 생성 데이터.&lt;/li&gt;
+      &lt;li&gt;오른쪽: 위의 loss에서 (a), (b) 모두 사용한 경우.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-4-최종-joint-confidence-loss&quot;&gt;3-4. 최종 Joint Confidence loss&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58880791-b73f0600-8713-11e9-8523-188236c159f3.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;분류 모델과 생성 모델을 &lt;strong&gt;번갈아가며 학습&lt;/strong&gt;함.
+    &lt;ul&gt;
+      &lt;li&gt;분류 모델 (theta) 학습 시 생성 모델 (G, D) 고정 –&amp;gt; (c) + (d) 사용.&lt;/li&gt;
+      &lt;li&gt;생성 모델 (G, D) 학습 시 분류 모델 (theta) 고정 –&amp;gt; (d) + (e) 사용.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-experiments&quot;&gt;4. Experiments&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Dataset 및 모델
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://www.cs.toronto.edu/~kriz/cifar.html&quot;&gt;CIFAR-10&lt;/a&gt;, &lt;a href=&quot;http://ufldl.stanford.edu/housenumbers/&quot;&gt;SVHN&lt;/a&gt;, &lt;a href=&quot;https://tiny-imagenet.herokuapp.com/&quot;&gt;TinyImageNet&lt;/a&gt;, LSUN&lt;/li&gt;
+      &lt;li&gt;VGGNet&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-1-without-gan-loss&quot;&gt;4-1. Without GAN loss&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;In-distrubtion data, out-of-distrubtion data 모두 기존의 데이터셋을 이용함 : GAN 생성 제외.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58950713-5fafa180-87ca-11e9-8ee0-b6c61a865fd5.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;SVHN은 숫자가 포함된 이미지 데이터셋이고, 나머지는 사진 데이터셋임.&lt;/li&gt;
+      &lt;li&gt;SVHN(in-dist), CIFAR10(out-of-dist) : “숫자는 in-distrubtion이고 나머지 사진같이 생긴건 OOD이다.” 라고 학습되었기 때문에, 사진 데이터인 TinyImageNet, LSUN 등에서 잘함.&lt;/li&gt;
+      &lt;li&gt;CIFAR10(out-of-dist), SVHN(in-dist) : “사진같이 생긴 것중에 CIFAR10만 in-distrubtion이고 나머지 사진 혹은 숫자는 OOD이다.” 라고 학습되었기 때문에, &lt;strong&gt;같은 사진 domain&lt;/strong&gt;인 TinyImageNet, LSUN 등에서 잘 못함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;즉, OOD 데이터셋이랑 &lt;strong&gt;같은 domain을 갖는 unseen image에 대해서는 잘 못함.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-2-include-gan-loss&quot;&gt;4-2. Include GAN loss&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;GAN을 사용하여 OOD data를 생성함으로써 모델을 학습.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/59179288-87bd4d00-8b9c-11e9-86a5-42bee4a49c87.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;각 그래프 위의 OOD: 의 dataset은 training이 아닌 test 단계에서의 OOD를 의미함.&lt;/li&gt;
+      &lt;li&gt;모든 상황에서 저자들이 제안한 joint confidence loss를 통한 모델 학습이 제일 좋았음.&lt;/li&gt;
+      &lt;li&gt;GAN이 생성한 OOD를 학습과정에서 추가함에 따라 &lt;strong&gt;모델의 원래 분류 성능이 어떤지는 표시 안함.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Interpretability&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/59179484-1b8f1900-8b9d-11e9-87b9-6dfba9deb431.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Guided gradient, 학습된 모델의 gradient를 이용하여, 입력 이미지 내에서 중요하게 생각하는 부분을 표시한 것.&lt;/li&gt;
+      &lt;li&gt;Out of distribution data에 대해서 모두 검은색으로 표시되어, 모델 분류 작업을 안한다는 것을 알 수 있음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;5-conclusion&quot;&gt;5. Conclusion&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Out-of-distribution data를 detect&lt;/strong&gt;할 수 있는 모델의 학습 loss를 제안함.&lt;/li&gt;
+  &lt;li&gt;In-distrubtion data를 기준으로 GAN을 이용하여 OOD data를 생성함.&lt;/li&gt;
+  &lt;li&gt;OOD data에 대한 detection 성능은 기존 기법들에 비해 좋음.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;분류 모델의 성능 저하가 얼마나 되는지는 언급하지 않음.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 31 May 2019 06:23:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/05/31/OOD.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/05/31/OOD.html</guid>
+        
+        <category>out-of-distribution</category>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Hyperband; A Novel Bandit-Based Approach to Hyperparameter Optimization 정리</title>
+        <description>&lt;h1 id=&quot;hyperband-a-novel-bandit-based-approach-to-hyperparameter-optimization-정리&quot;&gt;Hyperband; A Novel Bandit-Based Approach to Hyperparameter Optimization 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Lisha Li, Kevin Jamieson, Giulia DeSalvo,Afshin Rostamizadeh, Ameet Talwalkar&lt;/li&gt;
+  &lt;li&gt;학회 : JMLR 2018&lt;/li&gt;
+  &lt;li&gt;날짜 : 2016.05.21 (last revised 2018.06.18)&lt;/li&gt;
+  &lt;li&gt;인용 : 198회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1603.06560.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
+&lt;h3 id=&quot;1-1-hyperarameter&quot;&gt;1-1. Hyperarameter&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;모델의 &lt;em&gt;hyperparameter&lt;/em&gt;란 학습 과정에 의해 변하지 않는 값으로 모델의 구조, 학습 과정 등을 정의함.
+    &lt;ul&gt;
+      &lt;li&gt;ex) &lt;em&gt;# of layers, # of hidden nodes, learning rate, l2 regularization lambda&lt;/em&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;주어진 모델에 대해 최고의 성능을 내도록 하는 hyperparameter는 모델 type, 데이터 종류 등의 환경에 따라 매우 다름.
+    &lt;ul&gt;
+      &lt;li&gt;즉, 무슨 환경에서든 항상 최적인 hyperparameter 값은 존재하지 않음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;또한 학습을 끝낸 모델의 성능은 hyperparameter 설정에 따라 천차만별임.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58179450-2fa0d280-7ce3-11e9-8fb1-caf5e08b802c.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;그림: 모델의 hyperparameter 설정에 따른 성능의 변동&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;따라서 특정 기계 학습을 잘 쓰려면, 주어진 환경에서 최적의 hyperparameter 설정은 필수적임.&lt;/li&gt;
+  &lt;li&gt;기존에는 하나하나 찾아보거나 (소위 trial-and-error) 구간을 나누어서 찾아봤지만 (&lt;a href=&quot;https://towardsdatascience.com/grid-search-for-model-tuning-3319b259367e&quot;&gt;grid search&lt;/a&gt;) 시간이 너무 오래 걸리고, 결과 모델의 성능도 좋진 않음.&lt;/li&gt;
+  &lt;li&gt;따라서 &lt;strong&gt;모델의 hyperparameter를 최적화하는 기법&lt;/strong&gt;에 관한 연구가 진행됨.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-2-hyperparameter-optimization&quot;&gt;1-2. Hyperparameter optimization&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Bayesian Optimization&lt;/em&gt;&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;가장 유명한 hyperarameter 최적화 기법&lt;/li&gt;
+      &lt;li&gt;모델의 hyperarameter에 따른 모델의 성능 함수를 &lt;strong&gt;확률 모델로 regression&lt;/strong&gt;하고, 모델의 성능이 높을 것으로 기대되는 hyperarameter 설정 point를 도출하여 탐색함. (한글로 잘 정리되어있는 블로그 &lt;a href=&quot;http://research.sualab.com/introduction/practice/2019/02/19/bayesian-optimization-overview-1.html&quot;&gt;참고&lt;/a&gt;)&lt;/li&gt;
+      &lt;li&gt;장점 : (이전 정보를 활용하기 때문에) 결과 모델의 성능이 높다.&lt;/li&gt;
+      &lt;li&gt;단점 : 오래걸린다.
+        &lt;ul&gt;
+          &lt;li&gt;기본적으로 탐색이 &lt;strong&gt;순차적&lt;/strong&gt;으로 진행됨. (탐색하고, 확률 모델 update하고, 다음 탐색 point 찾고, …)&lt;/li&gt;
+          &lt;li&gt;확률 모델 regression할 때 &lt;em&gt;Gaussian Process Regression&lt;/em&gt;을 사용하는데, &lt;em&gt;GP Regression&lt;/em&gt;의 time complexity가 관측한 데이터의 세제곱임. (후에 다른 regression 기법을 적용한 &lt;a href=&quot;https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf&quot;&gt;&lt;em&gt;TPE&lt;/em&gt;&lt;/a&gt;가 제안됨)&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;저자가 말하는 Bayesian Optimization의 단점
+    &lt;ul&gt;
+      &lt;li&gt;일반적으로 모델 학습할 때, accuracy 혹은 loss의 변동을 보면서 성능이 높을 모델이다 아니다를 판단할 수 있음.&lt;/li&gt;
+      &lt;li&gt;그런데 Bayesian Optimization은 &lt;strong&gt;특정 budget(epoch, data등 학습에 투입되는 자원, epoch라고 봐도 무방함)만큼을 반드시 소모&lt;/strong&gt;하여 학습을 일정한 수준까지 해야함&lt;/li&gt;
+      &lt;li&gt;즉, &lt;strong&gt;budget의 낭비&lt;/strong&gt;로 인해 탐색 시간이 길다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;새로운 hyperparameter optimization 기법 제시
+    &lt;ul&gt;
+      &lt;li&gt;모델 학습 과정에서 중간 accuracy 혹은 loss를 보고, &lt;strong&gt;좋을 것으로 예상되는 모델&lt;/strong&gt;을 선출 및 선출된 모델에 더 많은 budget을 할당하자.&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;Hyperparameter optimization problem&lt;/em&gt;을 &lt;em&gt;multi-armed bandit problem&lt;/em&gt;로 대치.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-backgrounds&quot;&gt;2. Backgrounds&lt;/h2&gt;
+&lt;h3 id=&quot;2-1-multi-armed-bandit-problem&quot;&gt;2-1. Multi-armed bandit problem&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;em&gt;One-armed bandit&lt;/em&gt; (외팔이 강도)&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58404464-211a3880-80a0-11e9-8c1c-0d593fb5cf57.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;하나의 레버를 가지고 있는 슬롯머신을 일컫는 말.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Multi-armed bandit problem&lt;/em&gt;&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;여러 개의 슬롯 머신(&lt;em&gt;arms&lt;/em&gt;)을 당길 수 있는 상황.&lt;/li&gt;
+      &lt;li&gt;각각의 슬롯 머신을 당겨서 얻을 수 있는 &lt;em&gt;reward&lt;/em&gt;는 서로 다름.&lt;/li&gt;
+      &lt;li&gt;Reward는 어떤 확률 분포에 의해 draw되는 &lt;em&gt;random variable&lt;/em&gt;임.&lt;/li&gt;
+      &lt;li&gt;제한 시간 내에 (혹은 제한 횟수 내에) 최대의 reward를 얻기 위해서는 슬롯 머신을 어떤 순서로 당겨야 할까?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;문제는 arm마다 보상이 다르고, 한 번의 당김에서 하나의 arm의 reward 값만 관측 가능하다는 것.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;&lt;em&gt;Exploration vs Exploitation&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58408165-38f5ba80-80a8-11e9-95db-efb6bb385e7f.png&quot; alt=&quot;image&quot; /&gt; (사진 &lt;a href=&quot;https://medium.com/user-experience-ux-experts/you-probably-dont-know-how-to-really-create-great-experiences-e991fbc56767&quot;&gt;출처&lt;/a&gt;)&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;최적화 문제에서 대두되는 두 가지 중요한 요소.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Exploration&lt;/strong&gt;: 더 높은 reward를 내는 슬롯 머신을 찾기 위해, 기존에 당기지 않은 새로운 슬롯 머신을 당겨보는 것.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Exploitation&lt;/strong&gt;: 높은 reward를 얻기 위해, 지금까지 당긴 슬롯 머신 중 가장 높은 reward를 내는 머신을 다시 당기는 것.&lt;/li&gt;
+      &lt;li&gt;Exploration과 Exploitation은 서로 &lt;strong&gt;trade-off 관계&lt;/strong&gt;에 있음.&lt;/li&gt;
+      &lt;li&gt;따라서 두 가지 요소를 조화롭게 적용하는 최적화 정책(policy)은 필수적임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-2-non-stochastic-best-arm-identification&quot;&gt;2-2. Non-stochastic Best Arm Identification&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;이 논문은 아니고, 같은 저자의 &lt;a href=&quot;https://arxiv.org/pdf/1502.07943.pdf&quot;&gt;이전 논문&lt;/a&gt; 내용임.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Best arm identification problem&lt;/em&gt;&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;(&lt;em&gt;Multi-armed banit problem&lt;/em&gt;) 제한 시간 내에 최대의 reward 얻기.
+–&amp;gt; (&lt;em&gt;Best arm identification problem&lt;/em&gt;) 최소의 regret을 내는 arm을 찾기.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;문제의 환경 분류: &lt;em&gt;Stochastic&lt;/em&gt; and &lt;em&gt;Non-stochastic setting&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;em&gt;Stochastic setting&lt;/em&gt;&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58405341-2d06fa00-80a2-11e9-9d43-47fc93dfa9f8.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;각 arm의 regret이 수렴한다.(converge)&lt;/li&gt;
+          &lt;li&gt;수렴하는 정도(convergence rate)를 알고 있다.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;em&gt;Non-stochastic setting&lt;/em&gt;&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58405393-46a84180-80a2-11e9-9039-fd75a150dcbf.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;각 arm의 regret이 수렴한다.&lt;/li&gt;
+          &lt;li&gt;수렴하는 정도(convergence rate)를 모른다.&lt;/li&gt;
+          &lt;li&gt;하나의 arm을 당기는 cost는 매우 높다.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;하이퍼파라미터 최적화 문제는 &lt;em&gt;non-stochastic setting&lt;/em&gt;과 유사함.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-3-multi-armed-bandit-problem과-하이퍼파라미터-최적화-문제&quot;&gt;2-3. Multi-armed bandit problem과 하이퍼파라미터 최적화 문제&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;Best arm identification problem&lt;/em&gt; –&amp;gt; 하이퍼파라미터 최적화
+    &lt;ul&gt;
+      &lt;li&gt;arms = 하이퍼파라미터 설정들&lt;/li&gt;
+      &lt;li&gt;number of pulling the arm = 하이퍼파라미터 설정에 할당되는 budget&lt;/li&gt;
+      &lt;li&gt;regret = 중간까지 학습한 모델의 (intermediate) validation loss&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;즉, regret의 최종 수렴 값이 가장 낮은 arm을 찾는다. == 최종 loss가 가장 낮은 하이퍼파라미터 설정을 찾는다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;3-proposed-methods&quot;&gt;3. Proposed Methods&lt;/h2&gt;
+&lt;h3 id=&quot;3-1-successive-halving-algorithm-sha&quot;&gt;3-1. Successive Halving Algorithm (SHA)&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;본 논문의 제안 기법은 아니고, 저자들의 &lt;a href=&quot;https://arxiv.org/pdf/1502.07943.pdf&quot;&gt;이전 논문&lt;/a&gt;에서 제안한 하이퍼파라미터 최적화 해결책.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;제한된 시간&lt;/strong&gt;에서 최소의 loss를 갖는 모델의 하이퍼파라미터 설정을 찾는 것이 목표.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58406124-e0242300-80a3-11e9-91ab-0033790cb037.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;총 탐색에 소요되는 budget 설정. (&lt;em&gt;B&lt;/em&gt;)&lt;/li&gt;
+      &lt;li&gt;n개의 하이퍼파라미터 설정을 랜덤하게 뽑음. (&lt;em&gt;Sk&lt;/em&gt;)&lt;/li&gt;
+      &lt;li&gt;S0의 모델들에 동일한 budget을 할당. (&lt;em&gt;rk&lt;/em&gt;)&lt;/li&gt;
+      &lt;li&gt;학습 및 중간 loss 추출.&lt;/li&gt;
+      &lt;li&gt;중간 loss를 기준으로, 성능이 좋지 않은 하이퍼파라미터 설정을 반 만큼 버림. (&lt;em&gt;Sk+1&lt;/em&gt;)&lt;/li&gt;
+      &lt;li&gt;하나의 하이퍼파라미터 설정이 남을 때까지 2, 3, 4, 5를 반복.&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;이해가 안가면 숫자를 대입해보면 됨.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58406834-73118d00-80a5-11e9-86e9-3a9dbf4213ae.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;랜덤하게 16개를 뽑아서 1 epoch 만큼 학습하고 좋은 8개를 추출함.&lt;/li&gt;
+      &lt;li&gt;추출된 8개를 2 epochs 만큼 학습하고 (1 epoch 만큼 더 학습) 좋은 4개를 추출함.&lt;/li&gt;
+      &lt;li&gt;추출된 4개를 4 epochs 만큼 학습하고 (2 epochs만큼 더 학습) 좋은 2개를 추출함.&lt;/li&gt;
+      &lt;li&gt;추출된 2개를 8 epochs 만큼 학습하고 (4 epochs만큼 더 학습) 좋은 1개를 추출함. –&amp;gt; 결과!&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;이게 왜 수렴하는가?&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58407899-ac4afc80-80a7-11e9-9001-545d74d87457.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;최종 loss(수렴 값)과 현재 loss의 차이에 대한 함수가 &lt;em&gt;non-increasing function&lt;/em&gt;이라고 가정.&lt;/li&gt;
+      &lt;li&gt;특정 &lt;em&gt;t&lt;/em&gt; 이상의 budget을 할당하여 학습된 모델의 중간 loss를 비교하는 것만으로도, 최종 loss의 대소관계를 알 수 있다는 것을 증명.&lt;/li&gt;
+      &lt;li&gt;그렇다면 대소관계가 반영되는 &lt;em&gt;t&lt;/em&gt;는 얼마인지 어떻게 알 수 있는가?
+        &lt;ul&gt;
+          &lt;li&gt;이에 대해 총 소요 budget &lt;em&gt;B&lt;/em&gt;를 충분히 크게 잡으면 best arm이 보장된다는 것을 증명함. (생략)&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;총 소요 budget을 크게 잡기 위해 &lt;em&gt;doubling trick&lt;/em&gt;을 적용.
+        &lt;ul&gt;
+          &lt;li&gt;말 그대로 그냥 &lt;em&gt;B&lt;/em&gt;를 2&lt;em&gt;B&lt;/em&gt;로 하여 돌리고, 3&lt;em&gt;B&lt;/em&gt;로 하여 돌리고, …&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;SHA의 단점
+    &lt;ul&gt;
+      &lt;li&gt;알고리즘 자체의 hyperparameter(input) : &lt;em&gt;B&lt;/em&gt;와 &lt;em&gt;n&lt;/em&gt;.&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;B&lt;/em&gt;와 &lt;em&gt;n&lt;/em&gt;(정확히는 &lt;em&gt;B/n&lt;/em&gt;)에 따라서 &lt;strong&gt;exploration과 exploitation의 비율&lt;/strong&gt;이 정해짐.&lt;/li&gt;
+      &lt;li&gt;따라서 알고리즘 성능을 위해 &lt;em&gt;B&lt;/em&gt;와 &lt;em&gt;n&lt;/em&gt;이라는 hyperparameter 설정이 굉장히 중요해짐.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;그래서 이 논문에서 제안한 것이 “&lt;strong&gt;&lt;em&gt;Hyperband&lt;/em&gt;&lt;/strong&gt;” 입니다. (이제야 이 논문을 처음 언급;; )&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;3-2-hyperband&quot;&gt;3-2. Hyperband&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;B&lt;/em&gt;와 &lt;em&gt;n&lt;/em&gt;의 설정에 따라 성능이 크게 변한다는 SHA의 단점을 보완한 알고리즘.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;간단하게, &lt;strong&gt;SHA의 연속&lt;/strong&gt;.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58550865-b573cf00-8249-11e9-90c7-3c0efad3ea5d.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;하나의 하이퍼파라미터 설정에 최대로 할당할 budget 설정. (&lt;em&gt;R&lt;/em&gt;)&lt;/li&gt;
+      &lt;li&gt;SHA의 매 step마다 줄어드는 설정의 개수 (혹은 늘어나는 budget의 비율) 설정. (&lt;em&gt;etha&lt;/em&gt;, SHA에서는 2)&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;R&lt;/em&gt;과 &lt;em&gt;etha&lt;/em&gt;에 따라서 SHA를 반복할 개수 (1 SHA = 1 &lt;em&gt;bracket&lt;/em&gt;으로 명명) 및 각 SHA의 처음 step에서 초기화하는 설정의 개수와 할당되는 budget이 계샨됨.&lt;/li&gt;
+      &lt;li&gt;각 bracket의 SHA 모두 실행.&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;이것도 숫자 대입.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58551212-7d20c080-824a-11e9-85de-1dccebc5e1af.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;R&lt;/em&gt;=81, &lt;em&gt;etha&lt;/em&gt;=3일 때, 총 5번의 SHA를 반복하며 (5 &lt;em&gt;brackets&lt;/em&gt;), 각 bracket의 처음 설정 수 및 할당 budget이 달라짐.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;특징
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;B&lt;/em&gt;와 &lt;em&gt;n&lt;/em&gt;을 설정하지 않고 &lt;em&gt;R&lt;/em&gt; 하나만 설정하는 것으로도, &lt;strong&gt;다양한 exploration 및 exploitation 비율을 반영한 search&lt;/strong&gt;를 진행할 수 있음.
+        &lt;ul&gt;
+          &lt;li&gt;특히 &lt;em&gt;R&lt;/em&gt;은 한 하이퍼파라미터 설정에 할당되는 최대 budget이기 때문에, 사용자 입장에서 따로 생각할 필요 없이 학습하고 싶은 만큼 값을 설정하면 됨.&lt;/li&gt;
+          &lt;li&gt;&lt;em&gt;R&lt;/em&gt;을 한 단위로 보고, 다양하게 설정 가능. (예를 들어, 1&lt;em&gt;R&lt;/em&gt; = 10 epochs 학습)&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;각 bracket들을 &lt;strong&gt;parallel하게 수행&lt;/strong&gt;할 수 있음.
+        &lt;ul&gt;
+          &lt;li&gt;&lt;strong&gt;전체 탐색 시간을 단축&lt;/strong&gt;시킬 수 있음.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Budget은 학습에 사용되는 자원으로, 제한될 수 있는 다양한 것들이 budget이 될 수 있음.
+        &lt;ul&gt;
+          &lt;li&gt;학습 iterations(학습 시간), 학습 dataset 개수, 학습 데이터의 feature, 등…&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;etha&lt;/em&gt;는 다양한 값이 될 수 있으나, 저자들은 3 또는 4에서 좋은 결과를 얻었다고 말함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-experiments&quot;&gt;4. Experiments&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;제안 알고리즘인 Hyperband의 유효성 및 우수성 검증.&lt;/li&gt;
+  &lt;li&gt;비교 모델은 3개의 Bayesian Optimization 기법
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://github.com/automl/SMAC3&quot;&gt;&lt;em&gt;SMAC&lt;/em&gt;&lt;/a&gt;, &lt;a href=&quot;https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf&quot;&gt;&lt;em&gt;TPE&lt;/em&gt;&lt;/a&gt;, &lt;a href=&quot;https://github.com/JasperSnoek/spearmint&quot;&gt;&lt;em&gt;Spearmint&lt;/em&gt;&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;Baseline 모델: random search, random 2X. (사용 budget이 2배)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Budget을 뭘로 잡냐에 따라 3가지 다른 실험을 진행.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-1-budget--학습-iterations&quot;&gt;4-1. Budget = 학습 iterations&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;8개의 하이퍼파라미터를 가진 Convolutional Neural Network (CNN) 모델을 tuning.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;R&lt;/em&gt; (budget) 단위 및 &lt;em&gt;etha&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;1&lt;em&gt;R&lt;/em&gt; = 100 mini-batch iterations&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;etha&lt;/em&gt; = 4&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;사용 데이터셋 및 &lt;em&gt;R&lt;/em&gt;값
+    &lt;ul&gt;
+      &lt;li&gt;CIFAR10 (&lt;em&gt;R&lt;/em&gt;=300), MRBI (&lt;em&gt;R&lt;/em&gt;=300), SVHN (&lt;em&gt;R&lt;/em&gt;=600)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58552107-89a61880-824c-11e9-9492-9ff8b32315f5.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Random search보다 20배 빠르다.&lt;/li&gt;
+      &lt;li&gt;다른 하이퍼파라미터 최적화 기법들보다 수렴이 빠르며, 성능이 비슷하거나 좋고, varation도 적었다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-2-budget--학습-dataset-크기&quot;&gt;4-2. Budget = 학습 dataset 크기&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;6개의 하이퍼파라미터를 가진 ernel-based classification 모델을 tuning.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;R&lt;/em&gt; (budget) 단위 및 &lt;em&gt;etha&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;1&lt;em&gt;R&lt;/em&gt; = 100 training data points&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;etha&lt;/em&gt; = 4&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;사용 데이터셋 및 &lt;em&gt;R&lt;/em&gt;값
+    &lt;ul&gt;
+      &lt;li&gt;CIFAR10 (&lt;em&gt;R&lt;/em&gt;=400)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58552420-531ccd80-824d-11e9-85d8-1013b3c89489.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Bayesian Optimizatio보다 30배 빠르다.&lt;/li&gt;
+      &lt;li&gt;Random search보다 70배 빠르다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;4-3-budget--feature-subsample&quot;&gt;4-3. Budget = feature subsample&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;4-2.와 같은 모델 tuning.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;R&lt;/em&gt; (budget) 단위 및 &lt;em&gt;etha&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;1&lt;em&gt;R&lt;/em&gt; = 100 features&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;etha&lt;/em&gt; = 4&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;사용 데이터셋 및 &lt;em&gt;R&lt;/em&gt;값
+    &lt;ul&gt;
+      &lt;li&gt;CIFAR10 (&lt;em&gt;R&lt;/em&gt;=1000)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/58552547-9f680d80-824d-11e9-9682-e1c1d72dd770.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Bayesian Optimization보다 6배 빠르다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;5-conclusion&quot;&gt;5. Conclusion&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Hyperparameter optimization 문제를 &lt;strong&gt;non-stochastic best arm identification 문제&lt;/strong&gt;로 대응함.
+    &lt;ul&gt;
+      &lt;li&gt;중간 loss function의 variation이 &lt;em&gt;non-decreasing function&lt;/em&gt;이라는 가정.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Hyperband 알고리즘 제안.
+    &lt;ul&gt;
+      &lt;li&gt;기존에 제안된 Successive Halving Algorithm의 연속.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;다양한 exploration vs exploitation 비율을 반영한 탐색&lt;/strong&gt;을 진행.&lt;/li&gt;
+      &lt;li&gt;결과적으로 Bayesian Optimization보다 &lt;strong&gt;빠른 수렴&lt;/strong&gt;이 가능함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;(내가 본)특징
+    &lt;ul&gt;
+      &lt;li&gt;빠른 수렴이 가능하기 때문에 모델 tuning 시간이 제한된 환경에서 좋은 성능을 효율적으로 낼 수 있음.&lt;/li&gt;
+      &lt;li&gt;하지만 제한되지 않은 환경에서는 기존 최적화 기법들이 더 높은 성능을 냄.&lt;/li&gt;
+      &lt;li&gt;이것은 Hyperband의 &lt;strong&gt;bracket (매 SHA를 반복하는 것) 들 간의 정보 교환&lt;/strong&gt;이 없기 때문임.&lt;/li&gt;
+      &lt;li&gt;즉, 기탐색에서 얻은 정보를 활용하지 않기 때문에, 맨 땅에 계속 헤딩하는 식임.&lt;/li&gt;
+      &lt;li&gt;그렇다고 정보를 교환한다는 것은, 각 bracket을 parallel하게 연산할 수 없기 때문에 탐색 시간이 느려질 것임.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Bracket간의 정보 교환 vs (parallel 연산을 통한) 탐색 시간 단축&lt;/strong&gt; 의 조화가 핵심.
+        &lt;ul&gt;
+          &lt;li&gt;사실 이를 해결하여 Bayesian Optimization과 Hypeerband를 결합한 &lt;a href=&quot;https://arxiv.org/pdf/1807.01774.pdf&quot;&gt;BOHB&lt;/a&gt; 알고리즘이 이미 제안됨. 참고!&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 23 May 2019 06:20:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/05/23/Hyperband.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/05/23/Hyperband.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Unsupervised Machine Translation Using Monolingual Corpora Only 정리</title>
+        <description>&lt;h1 id=&quot;unsupervised-machine-translation-using-monolingual-corpora-only-정리&quot;&gt;Unsupervised Machine Translation Using Monolingual Corpora Only 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Guillaume Lample, Alexis Conneau, Ludovic Denoyer, Marc’Aurelio Ranzato&lt;/li&gt;
+  &lt;li&gt;학회 : ICLR 2018&lt;/li&gt;
+  &lt;li&gt;날짜 : 2017.10.31 (last revised 2018.04.13)&lt;/li&gt;
+  &lt;li&gt;인용 : 120회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1711.00043.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;서론&quot;&gt;서론&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;현재까지 deep learning 분야의 많은 연구로 NMT(Neural Machine Translation)의 성능은 가면 갈수록 좋아지고 있다.&lt;/li&gt;
+  &lt;li&gt;특히, attention 기법이 나타나면서부터 성능은 껑-충 뛰었다. (attention 모델 : &lt;a href=&quot;https://github.com/pod3275/Paper-Review/blob/master/Seminar/%5B3%5D%20A%20Convolutional%20Attention%20Network%20for%20Extreme%20Summarization%20of%20Source%20Code/%5B3%5D%20Review.md&quot;&gt;참고&lt;/a&gt;)&lt;/li&gt;
+  &lt;li&gt;허나 그들은 학습을 위해 많은 양의 parallel corpora(두 언어로 번역되어 있는 평행한 문장 쌍의 두 말뭉치)를 필요로 한다.&lt;/li&gt;
+  &lt;li&gt;parallel corpora를 만들려면 전문가의 지식이 있어야 하고, 잘 안쓰이는 언어는 종종 존재하지 않기도 한다.&lt;/li&gt;
+  &lt;li&gt;monolingual corpora(하나의 언어로 되어있는 말뭉치)만으로도 학습할 수 있는 기계 번역 모델을 제시한다.
+    &lt;ul&gt;
+      &lt;li&gt;자세히는, &lt;strong&gt;학습할 수 있는 방법&lt;/strong&gt;을 제안한다. (사실, loss function이 곧 모델이긴 하다.)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;notation&quot;&gt;Notation&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;도메인(언어) : source, target.&lt;/li&gt;
+  &lt;li&gt;Ws, Wt : source, target 도메인으로 되어있는 단어들.&lt;/li&gt;
+  &lt;li&gt;Zs, Zt : Ws, Wt의 word embedding 값.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Encoder, Decoder.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42151545-52be727e-7e18-11e8-86a0-e2b0efea1248.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;모델&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;/assets/unsup1.png&quot; title=&quot;seq-to-seq&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Sequence-to-sequence 모델 with attention.&lt;/li&gt;
+      &lt;li&gt;encoder : bi-directional LSTM, decoder : LSTM, 3 layers.&lt;/li&gt;
+      &lt;li&gt;source encoder = target encoder, source decoder = target decoder.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;제안-기법&quot;&gt;제안 기법&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;간단하게 요약하면, 두 개의 서로 다른 언어로 된 문장을 하나의 latent space에 매핑한 후, 이를 연결함으로써 번역이 되도록 함.&lt;/li&gt;
+  &lt;li&gt;3가지 단계 : Denoising Auto-encoding, Cross Domain Training, Adversarial Training&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;1-denoising-auto-encoding&quot;&gt;(1) Denoising Auto-encoding&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;어떤 언어로 된 input 문장 x를 latent space에 mapping하는 작업.&lt;/li&gt;
+  &lt;li&gt;input x에 noise model(C(x))를 추가한 x^를 encode하고, 이를 다시 decode했을 때 나오는 값과 x의 차이가 loss function.&lt;/li&gt;
+  &lt;li&gt;noise를 섞는 이유
+    &lt;ul&gt;
+      &lt;li&gt;more powerful한 feature를 찾기 위함. robust한 representation을 나타내기 위함.&lt;/li&gt;
+      &lt;li&gt;저자들은 “Without noise, model does not learn any useful structure in data.” 라고 말함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42151866-55554174-7e19-11e8-8ac4-27a18e681d43.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;C(x) : noise model : Pwd (word drop rate), k (permutation) 라는 hyperparameter.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-cross-domain-training&quot;&gt;(2) Cross Domain Training&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;두 언어 l1, l2에 대해, l1의 문장을 l2의 문장으로 번역하는(서로 matching 시키는) 작업.&lt;/li&gt;
+  &lt;li&gt;l1으로 된 문장 x &lt;br /&gt;
+–&amp;gt; 현재의 MT모델 M을 이용하여 l2언어로 번역한 문장 y = M(x) &lt;br /&gt;
+–&amp;gt; noise model을 이용하여 noise를 추가한 C(y) sampled &lt;br /&gt;
+–&amp;gt; C(y)를 다시 l1으로 번역하였을 때 x가 나오도록 함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42152296-a4d995dc-7e1a-11e8-9529-0042148b4fb3.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;3-adversarial-training&quot;&gt;(3) Adversarial Training&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;input 문장은 언어의 종류에 상관 없이 같은 latent space에 mapping 되어야 한다.&lt;/li&gt;
+  &lt;li&gt;(1), (2) 만으로는 서로 다른 두 언어 사이 strict한 matching을 하기 어렵다.&lt;/li&gt;
+  &lt;li&gt;Discriminator 이용
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;주어진 latent vector가 l1에서 비롯된건지 l2에서 비롯된건지 구분해냄.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;학습 : &lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42152453-18d76950-7e1b-11e8-90b6-4806dc9e3a7a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Encoder는 이러한 Discriminator를 속이는 방향으로 학습됨.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42152486-345532ac-7e1b-11e8-89e6-6d3cce55cae7.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;왜? (개인적인 의견)
+    &lt;ul&gt;
+      &lt;li&gt;더 확실한 mapping 및 latent space 상에서의 일치를 위해.&lt;/li&gt;
+      &lt;li&gt;두 언어 사이 경계를 허물기 위해 : 어떤 언어로든 번역 가능하다. starGAN같은 구조.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 09 Apr 2019 03:15:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/04/09/UnsupervisedNMT.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/04/09/UnsupervisedNMT.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Learning Graph Representations with Embedding Propagation 정리</title>
+        <description>&lt;h1 id=&quot;learning-graph-representations-with-embedding-propagation-정리&quot;&gt;Learning Graph Representations with Embedding Propagation 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Alberto García-Durán, Mathias Niepert&lt;/li&gt;
+  &lt;li&gt;학회 : NIPS 2017&lt;/li&gt;
+  &lt;li&gt;날짜 : 2017.10.09&lt;/li&gt;
+  &lt;li&gt;인용 : 29회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://papers.nips.cc/paper/7097-learning-graph-representations-with-embedding-propagation.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;서론&quot;&gt;서론&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Graph data를 vector에 mapping하는 기법.&lt;/li&gt;
+  &lt;li&gt;기존 기법 : Embedding Propagation (EP)
+    &lt;ul&gt;
+      &lt;li&gt;Unsupervised learning.&lt;/li&gt;
+      &lt;li&gt;주변 node 사이에서 message passing을 통해 graph의 vector representations(embeddings)을 학습함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;제안-모델&quot;&gt;제안 모델&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자의 제안 기법 : EP-B
+    &lt;ul&gt;
+      &lt;li&gt;loss function의 modify.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41190973-132312ca-6c23-11e8-9fc9-f6b45d86b7ac.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;위와 같이 label이 여러개고, 각 label마다 label을 결정하는 값들도 여러개일 때, label 종류 별로 embedding을 따로 하는 방식.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41190991-5039bcea-6c23-11e8-831f-6433665c236f.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;위의 그림이 저자의 제안 기법.&lt;/li&gt;
+      &lt;li&gt;한 node의 embedding 값을 결정하는 건 그 node의 label 단어들의 embedding값들. h1(v)&lt;/li&gt;
+      &lt;li&gt;v와 v의 이웃node 사이 edge에 대해, 이웃한 모든 node의 label을 합쳐서, label당 하나의 embedding 값을 만듦. h1~(v)&lt;/li&gt;
+      &lt;li&gt;현재 v의 embeddimg 값(h1(v))과 v의 이웃 node에 의해 생성된 embedding 값(h1~(v))의 distance를 계산하고, 이를 역전파함으로써 v의 이웃 node의 embedding 값을 update함.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41191053-70946462-6c24-11e8-9c72-00bf2ecf6173.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;위는 저자 제안 기법의 loss function.&lt;/li&gt;
+      &lt;li&gt;’+’ 값만 고려하는 것이기 때문에, v와 이웃하지 않은 node사이 거리보다 v와 이웃한 node사이 거리를 더 작게하는 방향으로 update됨.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41191069-b4e0dea2-6c24-11e8-9ed2-2ae75ab76158.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;이렇게 각 node별로 label의 embedding값이 어느 정도 학습을 통해 정해지면, 그 node의 vector 표현은 그냥 label embedding값을 concatenate함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;실험&quot;&gt;실험&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;‘graph를 vector로 얼마나 잘 표현했는가?’에 대한 지표로, 기법을 통해 만들어진 vector 값을 이용하여 label의 classification 실험을 진행함.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41191100-49443378-6c25-11e8-83d7-05b0d7d5cdcf.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;위는 실험에서 비교 평가한 model의 hyperparameter 수 및 dataset의 구성. EP-B 모델의 hyperparameter수가 2개로 굉장히 적고, parameter수도 적음을 알 수 있다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41191112-881dec7e-6c25-11e8-9501-a0eb00ca95a0.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;위는 실험 결과. Single-label classification에 대한 결과 표인데, EP-B 모델의 성능이 가장 좋거나 다른 state-of-the-art model과 유사함을 알 수 있다. Multi-label classification 실험 결과 또한 비슷하게 나타났다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;논의&quot;&gt;논의&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;node의 update 순서가 성능에 매우 중요한 영향을 줄 것 같은데, 이부분에 대해서는 논문에 언급되지 않았다.&lt;/li&gt;
+  &lt;li&gt;model의 성능 평가 실험에서, vector representation data를 이용한 classification이 과연 성능을 나타내는 좋은 실험일까?
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;만들어진 vector들이 기존 graph를 얼마나 잘 표현했는가를 측정하는 실험 또는 도표가 필요하다.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 04 Apr 2019 10:15:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/04/04/GraphRepresentations.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/04/04/GraphRepresentations.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>A Convolutional Attention Network for Extreme Summarization of Source Code 정리</title>
+        <description>&lt;h1 id=&quot;a-convolutional-attention-network-for-extreme-summarization-of-source-code-정리&quot;&gt;A Convolutional Attention Network for Extreme Summarization of Source Code 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Miltiadis Allamanis, Hao Peng, Charles Sutton&lt;/li&gt;
+  &lt;li&gt;학회 : ICML 2016&lt;/li&gt;
+  &lt;li&gt;날짜 : 2016.02.09 (last revised 2016.02.25)&lt;/li&gt;
+  &lt;li&gt;인용 : 107회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;http://proceedings.mlr.press/v48/allamanis16.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;서론&quot;&gt;서론&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Attention 모델
+    &lt;ul&gt;
+      &lt;li&gt;새로 만들어지는 output을 input의 어떤 부분을 집중하여 만들 것인지 판단.&lt;/li&gt;
+      &lt;li&gt;각 input마다 attention weight을 줌으로써 새로 생성되는 output이 input의 어떤 부분을 중요하게 생각했는지를 부여함.&lt;/li&gt;
+      &lt;li&gt;요약문 생성, 번역 등의 task에서 활발히 쓰이고 있다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Attention 문제
+    &lt;ul&gt;
+      &lt;li&gt;attention이 특정 부분에 가중치가 쏠림으로써, 그 부분에 연관된 것만 계속해서 생산해낸다.&lt;/li&gt;
+      &lt;li&gt;OOV(Out-Of-Vocabulary, input corpus에서 자주 등장하는 단어의 set인 vocabulary에 없는 단어) 처리를 [UNK]로 하는 문제.&lt;/li&gt;
+      &lt;li&gt;이 논문에서는 두 번째 문제에 대한 해결을 다룬다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Translation-invariante features
+    &lt;ul&gt;
+      &lt;li&gt;요약, 번역 등의 task에서 input의 중요한 부분은 다른 단어로 대체되는 것이 아니라 &lt;strong&gt;그 단어 자체를 output으로 내도록 해야함.&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;OOV 또한 의미를 모르는 단어이므로, input 단어 그대로 output으로 내도록하면 처리할 수 있음.&lt;/li&gt;
+      &lt;li&gt;기존 attention 모델은 이러한 작업을 잘 못함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;논문의 task
+    &lt;ul&gt;
+      &lt;li&gt;주어진 source code 내용에 대한 method name(함수 이름)을 예측.&lt;/li&gt;
+      &lt;li&gt;요약 task의 OOV words에 대한 처리도 가능하도록 함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;제안-모델&quot;&gt;제안 모델&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Attention mechanism : 기존 attention 모델.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Copy mechansim&lt;/strong&gt; : input의 단어를 ouput으로 그대로 복사.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Meta mechanism : attention과 copy의 비율을 조절. (그냥 이름만 그럴싸함)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Copy Convolutional Attentional Model&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42079717-5e73e5cc-7bbb-11e8-9bdb-b97c791df81d.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;CNN으로 attention weight 계산 + GRU(Gated Recurrent Unit)로 output 생성.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1, 2, 3 layer : attention feature 계산&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42080939-18e16b52-7bbf-11e8-8fd0-97d91db1c5e4.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;1st layer : input 전체 c를 padding + convolution (Kl1)&lt;/li&gt;
+      &lt;li&gt;2nd layer : Convolution + h(t-1)과 element-wise multiplication : 이전 정보&lt;/li&gt;
+      &lt;li&gt;3rd layer : feature layer : L2를 normalized.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;식&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42081303-0bc73d1a-7bc0-11e8-8055-b83c3794e0d8.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;attention weight alpha 계산
+    &lt;ul&gt;
+      &lt;li&gt;Katt와 convolution 및 softmax로 attention weight인 alpha 계산.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;copy weight k 계산
+    &lt;ul&gt;
+      &lt;li&gt;Kcopy와 convolution 및 softmax로 copy weight인 k 계산. k도 일종의 attention weight임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;lambda : meta-attention
+    &lt;ul&gt;
+      &lt;li&gt;attention과 copy 사이 비율을 조절. 이것도 Klambda에 의해 학습되는 parameter.&lt;/li&gt;
+      &lt;li&gt;Pos2Voc : c(input)에서 단어를 copy하는 것.&lt;/li&gt;
+      &lt;li&gt;ToMap : V(vocabulary)에서 단어를 가져오는 것.&lt;/li&gt;
+      &lt;li&gt;lambda가 1에 가까우면 copy를 하겠다. 0에 가까우면 attention으로 예측을 하겠다.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Objective function&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42081592-cfb4b5d6-7bc0-11e8-9f4a-1e5eefd37c5e.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;mt : target 단어, ht-1 : 이전 hidden state 값, c : input 전체&lt;/li&gt;
+  &lt;li&gt;I : binary vector
+    &lt;ul&gt;
+      &lt;li&gt;target 단어 mt가 input 중 어딘가(ci)에 있으면 1, 아니면 0&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;u : hyperparameter
+    &lt;ul&gt;
+      &lt;li&gt;simple attention model의 결과가 UNK이고 target 단어 mt가 input에 있으면 매우 작은 값 exp(-10), 아니면 1.&lt;/li&gt;
+      &lt;li&gt;Copy를 용이하게 학습하기 위함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;즉, input이 proper noun(고유명사, OOV 등)이면 k(copy)의 확률만 보고, 아니면 alpha+k(attention + copy)의 확률을 봄.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;실험&quot;&gt;실험&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;데이터 : Github 오픈 소스의 11개의 java project source code.&lt;/li&gt;
+  &lt;li&gt;Measure : F1 score
+    &lt;ul&gt;
+      &lt;li&gt;F1 score : classification에서 사용되는 measure. precision과 recall로 계산.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;비교 : tf-idf 모델, biRNN attention 모델&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;결과&quot;&gt;결과&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42082116-249f820a-7bc2-11e8-8f28-09ca72a704ae.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;conv-attention : attention을 CNN으로 계산 + copy가 없음.&lt;/li&gt;
+  &lt;li&gt;제안 모델인 copy-attention이 제일 좋았다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/42082190-4cbc1ab4-7bc2-11e8-8dcb-d96cffcef257.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;use, browser, cache는 OOV : lambda가 1에 가까워지고, 오로지 k만을 보고, 진한 부분에서 copy를 함으로써 output을 얻어낸다.&lt;/li&gt;
+  &lt;li&gt;set, end는 vocabulary 단어 : lambda가 0에 가까워지고, alpha와 k 모두에서 봄으로써 output을 얻어낸다.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;결론-및-토의&quot;&gt;결론 및 토의&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;OOV 혹은 input의 중요한 부분을 &lt;strong&gt;copy 하는 기능&lt;/strong&gt;을 attention에 추가 함으로써, OOV에 대한 처리 해결.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;번역 task는 copy가 의미 없을텐데, OOV는 어떻게 처리하는가? 아니면 의미가 있나?&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;OOV를 다룬 다른 2017년 논문이 있다.
+    &lt;ul&gt;
+      &lt;li&gt;Attention weight 분포 + OOV 두 문제 모두 다룸.&lt;/li&gt;
+      &lt;li&gt;Copy라는 방법은 유사하지만, 이 논문은 모든 단어에 대해 alpha(attention) + k(copy) 를 고려하여 output을 냄.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 30 Mar 2019 06:00:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/03/30/ConvAttentionSummary.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/03/30/ConvAttentionSummary.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리</title>
+        <description>&lt;h1 id=&quot;measuring-the-tendency-of-cnns-to-learn-surface-statistical-regularities-정리&quot;&gt;Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Jason Jo, Yoshua Bengio&lt;/li&gt;
+  &lt;li&gt;학회 : arXiv&lt;/li&gt;
+  &lt;li&gt;날짜 : 2017.11.30&lt;/li&gt;
+  &lt;li&gt;인용 : 31회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1711.11561.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;서론&quot;&gt;서론&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;CNN을 공격(제 기능을 하지 못하도록)하는 여러 방법들.
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial example : noise를 섞어서, 인간은 알아볼 수 있는데 기계학습 모델은 알아보지 못하도록 하는 것&lt;/li&gt;
+      &lt;li&gt;Universal example : 한 class를 대상으로 하는 adversarial example과는 달리, 전체 dataset에 대해 적용할 수 있는 noise 모델&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Noise를 섞는 공격 방법은, noise를 통해 classification의 경계를 이동하는 것이라고 분석한다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;기존까진 CNN이 filter를 통해 high-level abstraction을 수행하여 어떤 특정 패턴을 인식하고 이를 통해 classification 등의 task를 수행하는 것이라고 생각되어었으나, 이렇게 되면 adversarial example에 공격당하는 것을 설명하지 못한다.
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;따라서, 저자들은 CNN의 generalization이 training 및 test dataset에 공통적으로 있는 low level의 무언가 (저자에 따르면, superficial cues) 에 집중하고, 이를 통해 학습하여 성능을 나타내는 것이라고 말한다.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;실험&quot;&gt;실험&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Mapping 함수 &lt;em&gt;F : x (original data)&lt;/em&gt; –&amp;gt; &lt;em&gt;x’ (noise data)&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;F를 fourier filtering을 이용함 : wave를 여러 파장의 단위 신호의 합으로 나타냄. 신호의 분할.&lt;/li&gt;
+  &lt;li&gt;Radial masking : 가운데 (low frequency) 부분을 제외한 나머지 부분 (high frequency) 을 날려버리기&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Uniformly random masking : p의 확률로 랜덤하게 살리거나 날려버리기&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41142287-18d01068-6b30-11e8-8543-d293310a58fa.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;모델 : Preact ResNet 학습 및 인식&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;결과&quot;&gt;결과&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;학습을 어떤 dataset (original, radial, random data) 로 하든, radial masking을 적용한 data에 대해 인식률이 너무 낮음.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/41142258-0145ab6a-6b30-11e8-957f-6e3aebd943bf.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Radial masking을 적용한 것 = 이미지에서 high frequency (중요하지 않은 부분) 가 사라진 것&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;중요하지 않다고 생각한 부분 (high frequency) 이 이미지 인식에 영향을 준다.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;고찰&quot;&gt;고찰&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;이러한 현상은 CNN 구조상의 잘못인가 혹은 loss function의 잘못인가?&lt;/li&gt;
+  &lt;li&gt;CNN의 filter의 크기가 매우 작아서(3*3) 쪼그만 픽셀도 다 feature로 받아들이는 것 아닐까?&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Fri, 29 Mar 2019 06:40:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/03/29/Tendency.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/03/29/Tendency.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Synthetic and Natural Noise Both Break Neural Machine Translation 정리</title>
+        <description>&lt;h1 id=&quot;synthetic-and-natural-noise-both-break-neural-machine-translation-정리&quot;&gt;Synthetic and Natural Noise Both Break Neural Machine Translation 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Yonatan Bellnkov, Yonatan Bisk&lt;/li&gt;
+  &lt;li&gt;학회 : ICLR 2018&lt;/li&gt;
+  &lt;li&gt;날짜 : 2017.11.06 (last revised 2018.02.24)&lt;/li&gt;
+  &lt;li&gt;인용 : 47회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1711.02173.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-human-robust-language-processing-system&quot;&gt;1. Human robust language processing system&lt;/h2&gt;
+&lt;p&gt;인간은 오타, 스펠링 오류, 철자 누락 등의 에러가 섞인 텍스트에 놀랍도록 robust한 언어 체계 시스템을 가지고 있다. (Rawlinson, 1976) 다음 문장을 보면 이해가 잘 될 것이다.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;“Aoccdrnig to a rscheearch at Cmabrigde Uinervtisy, it deosn’t mttaer in waht oredr the ltteers in a wrod are, the olny iprmoetnt tihng is taht the frist and lsat ltteer be at the rghit pclae.”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;위의 문장은 단어에 에러가 많이 섞여 있지만, 딱 봤을 때 잘 읽힌다.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;According to a research at Cambridge University, it doesn’t matter in what order the letters in a word are, the only important thing is that the first and last letter be at the right place.)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;하지만 기계 학습 기반의 기계 번역 시스템은 이 문장의 의미를 제대로 해석하지 못한다. 이 문장을 구글 번역기를 이용하여 한국어로 해석하였을 때, 다음과 같은 말도 안되는 문장이 나타난다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40490565-ce639ea8-5fa6-11e8-92b1-83ff1c3d7921.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;논문 서론에서는 &lt;strong&gt;인간의 robust한 언어 체계 시스템&lt;/strong&gt;의 특징을 설명한다. Saberi &amp;amp; Perrott (1999)에 의하면 robustness 특성은 audio에도 잘 적용된다고 한다. Rayner et al. (2006)은 &lt;strong&gt;noise 환경에서 텍스트를 읽는 능력이 단지 11%밖에 떨어지지 않는다&lt;/strong&gt;는 결과를 찾았으며, McCusker et. Al. (1981) 은 &lt;strong&gt;두 문자의 위치가 바뀐 형태는 인간에게 잘 인지되지 않는다&lt;/strong&gt;는 것을 확인하였다. 특히 중요한 것은, &lt;strong&gt;인간은 단어의 형태(word shape)에 크게 의존&lt;/strong&gt;하며, 단어의 맨 앞 문자와 뒷 문자를 고정시킨다면 그 의미를 쉽게 알아볼 수 있다는 것이다. (Mayall et al., 1997, Reicher, 1969; Pelli et al., 2003)&lt;/p&gt;
+
+&lt;p&gt;이러한 인간의 robust한 언어 시스템과는 달리, Neural Machine Translation (NMT) 시스템은 에러가 섞인 데이터에 매우 취약하다. 에러가 섞인 텍스트 데이터를 명시적으로 처리하지 않으면 기계 번역 시스템은 이의 의미를 파악하기 힘들다.&lt;/p&gt;
+
+&lt;p&gt;그럼에도 불구하고 저자들은 character-based NMT가 중요하다고 얘기한다. 두 가지 이유가 있는데, 사전에 없는 단어들에 대한 long-tailed distribution (긴 꼬리 분포?)을 생성하는 데 도움을 준다고 하며, 큰 word embedding 값을 계산하는 computational cost을 줄여준다고 한다. 첫 번째는 아마 특정 언어의 큰 줄기(전체적인 특징)을 파악할 수 있도록 해준다는 것 같다. 그래서 character-based NMT를 계속하여 사용해야 한다.&lt;/p&gt;
+
+&lt;p&gt;본 논문에서는 기존 NMT 모델의 robustness를 증가시키기 위한 두 가지 방안을 제시한다. 첫 번째는 &lt;strong&gt;word embedding 표현에 있어서 structure-invariant한 표현법을 제시&lt;/strong&gt;하는 것이고, 두 번째는 &lt;strong&gt;noise가 섞인 데이터를 이용하여 adversarial training&lt;/strong&gt;을 하는 것이다. 결국에는 자연적인(natural) 혹은 합성한(synthetic) noise가 포함된 텍스트를 training set으로 하여 NMT 모델을 학습시키는 방법이 가장 효과적이었다. &lt;strong&gt;본 논문의 point는 synthetic noise를 생성하는 방식이며, natural noise를 어떻게 최대한 cover할지에 대한 논의를 제기&lt;/strong&gt;한다.&lt;/p&gt;
+
+&lt;h2 id=&quot;2-adversarial-example&quot;&gt;2. Adversarial example&lt;/h2&gt;
+&lt;p&gt;Adversarial example은 머신 러닝 모델이 실 세계에서 적용되는 것이 매우 위험하다는 사실을 증명한다. 개념은 &lt;strong&gt;input에 아주 작은 변화&lt;/strong&gt;를 줌으로써 머신 러닝 모델이 이를 알아보지 못하여 전혀 다른 결과를 내놓게 만들고, 이를 통해 머신 러닝의 큰 실패를 유도하는 것이다. 예를 들어, 아래 그림과 같이 인간이 알아보지 못하는 아주 작은 change가 섞인 두 이미지를 classification하였을 때, 두 결과가 완전히 반대 혹은 서로 관련 없게 나타날 수 있다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494041-e95a0776-5fae-11e8-93ea-eab617f6dfdc.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;(출처 : https://blog.openai.com/adversarial-example-research/)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Adversarial example을 이용하여 머신 러닝 모델을 제 기능을 하지 못하도록 하는 것이 adversarial attack이다. Adversarial attack은 adversarial example을 생성하는 과정에서 모델의 parameter에 접근할 수 있냐 없냐에 따라 두 가지 종류로 나뉜다. White-box attack은 모델의 parameter에 접근하여 adversarial example을 생성한다. 반면에 Black-box attack은 parameter에 직접 접근하지 않고도 adversarial example을 생성 및 공격을 시도한다.&lt;/p&gt;
+
+&lt;p&gt;본 논문에서는 모델의 parameter에 접근하지 않고, NMT 모델에 대한 adversarial example을 생성하는 black-box 방식을 고안한다. 모델의 parameter, 즉 gradient에 접근하지 않고, 저자들은 합성(synthetic) error 혹은 자연(natural) error를 통해 adversarial example을 생성한다. 또한 생성한 adversarial example을 여러 조합으로 섞은 데이터셋을 training set으로 함으로써 adversarial training을 적용한다. 정확히 얘기하면 ensemble adversarial training이고, 이를 통해 NMT 모델의 robustness를 증가시킨다.&lt;/p&gt;
+
+&lt;h2 id=&quot;3-data-and-error&quot;&gt;3. Data and Error&lt;/h2&gt;
+&lt;p&gt;연구에서 사용한 데이터는 TED 강연의 parallel corpus이다. Parallel한 것은 같은 의미의 말을 다양한 언어로 표현되어 있기에 쓴 말인 것 같다. 데이터 셋의 크기는 아래와 같다. 언어는 프랑스어, 독일어, 체코어로 3가지의 언어로 된 말뭉치를 사용한다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494148-2194268a-5faf-11e8-97e3-2da9031a7246.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;다음은 본 논문의 point인, noise가 섞인 텍스트를 생성 방안이다. 저자들은 noise를 크게 &lt;strong&gt;자연적인(natural) noise&lt;/strong&gt;와 &lt;strong&gt;합성(synthetic) noise&lt;/strong&gt;로 나눈다. 자연 noise는 실제로 인간이 만들어내는 noise이고, 합성 noise는 여러 요인들에 의해 이렇게 만들어질 것이다 라고 예측하여 만들어낸 noise이다. 사실 “자연적”으로 만들어진다는 것의 정의가 모호하다고 생각한다. 인간이 “자연”스럽게 만드는 noise는 어떤 방식인가? 결국 keyboard로 입력하는 text라면 합성 noise와 크게 다를 바가 없지 않을까? 하지만 뒤의 결과를 보면 합성 noise는 cover되지만 자연 noise는 cover하지 못하는 현상을 볼 수 있다. 자연 noise에는 어떤 데이터들이 있는지, 그것이 합성 noise와 어떻게 다른 지 실제로 보고 싶은 생각이 들었다.&lt;/p&gt;
+
+&lt;p&gt;자연 noise는 기존의 (TED 말뭉치와는 다른)말뭉치에서 발생한, 수정 가능한 error(오타, 스펠링 오류, 문자 누락 등)을 추출한다. 이후 TED 말뭉치 내에서 변환할 수 있는 모든 단어들을 natural noise가 섞인 단어로 변환하였다. 변환 비율은 아래와 같다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494197-3d7c8414-5faf-11e8-8680-46f28b4a7314.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;합성 noise에 대해 저자들은 이를 만드는 4가지 방식을 제시한다. 각각 맨 앞과 맨 뒷문자를 제외한 두 문자의 위치를 바꾸는 Swap, 앞과 뒤를 제외한 중간 문자의 순서를 바꾸는 Mid, 앞과 뒤 문자를 포함하여 단어 내 모든 문자의 순서를 바꾸는 Rand 그리고 단어 내 한 문자를 키보드 상 가까이 있는 문자로 치환하는 Key이다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494212-47211246-5faf-11e8-9ddc-f17b40a3f939.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;만드는 구조를 보면 썩 괜찮아 보인다. 인간이 발생시키는 noise가 섞인 단어들을 어느정도 cover할 수 있을 것이라고 생각 들었다. 근데 막상 결과를 보면 natural noise를 cover하지 못하는 현상을 볼 수 있다.&lt;/p&gt;
+
+&lt;h2 id=&quot;4-첫-번째-실험&quot;&gt;4. 첫 번째 실험&lt;/h2&gt;
+&lt;p&gt;첫 번째 실험은 Vanilla text로 학습하고, noise text를 test set으로 하여 번역의 성능을 판별한다. 판별 기준은 BLEU score인데, &lt;strong&gt;BLEU score&lt;/strong&gt;는 기계 학습이 번역한 텍스트가 인간이 만들어 내는 것과 얼마나 유사한지를 기준으로 기계 학습의 성능을 측정하는 도표이다.&lt;/p&gt;
+
+&lt;p&gt;모델은 총 3가지의 서로 다른 NMT 모델을 사용하였다. &lt;strong&gt;Char2char 모델&lt;/strong&gt;(Lee et al., 2017)은 attention 기법을 이용한sequence-to-sequence model으로, 복잡한 encoder 및 standard recurrent decoder를 가진다. &lt;strong&gt;Nematus 모델&lt;/strong&gt;(Sennrich et al., 2017)은 WMT라는 기계 번역 워크샵에서 가장 우수한 성능을 보인 모델이다. 마지막으로 &lt;strong&gt;charCNN 모델&lt;/strong&gt;은 word representation 기반의 character cNN 모델이다. 이는 형태학적으로 풍부한 특성을 가진 언어에서 좋은 성능을 보인다고 한다. (Kim et al., 2015; Belinkov &amp;amp; Glass, 2016; Costa-juss’a &amp;amp; Fonollosa, 2016; Sajjad et al., 2017)&lt;/p&gt;
+
+&lt;p&gt;3가지 모델 및 위에서 설명한 데이터를 이용하여 한 실험의 결과는 당연히 아래 표와 같이 잘 안 나온다. 이것은 논문이 작성된 이유이기도 하다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40530594-5aec8f78-6034-11e8-82cc-66cb918270f1.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;특히 독일 사람은 noise가 섞인 text를 보고 robust한 system에 의해 그 의미를 잘 이해하는 반면, 3가지 NMT 모델은 모두 말이 되지 않는 번역 결과를 내놓는다. 이로써 기존의 기계 번역 시스템은 noise가 섞인 text에 매우 취약하다는 것을 보인다.&lt;/p&gt;
+
+&lt;p&gt;단순히 spell check를 한 후에 checking된 text를 번역하면 성공할 수 있지 않나? 라는 의문을 가진 사람들을 위해 저자는 친절하게 한 번 더 실험한다. Noise text를 google의 spell-checker로 spelling check를 하고, 그 text로 번역 성능을 평가한다. Spelling check를 했을 때, 안 한 noise text보다 BLEU 점수가 5점 가량 상승하지만, 여전히 vanilla text를 번역할 때보다 성능이 낮게 나타난다. 결과 표는 생략하겠다.&lt;/p&gt;
+
+&lt;h2 id=&quot;5-제안-기법&quot;&gt;5. 제안 기법&lt;/h2&gt;
+
+&lt;p&gt;기존 NMT 모델의 취약함 + spell checker로도 cover되지 않음을 보인 저자들은 자신들만의 방식을 제안한다.(사실 자신들만의 방식 이라기엔 기술적인 contribution은 별로 없다.)&lt;/p&gt;
+
+&lt;p&gt;첫 번째로 새로운 word embedding 표현법을 제안한다. 기존의 word embedding값을 얻는 방식은, 단어 내의 문자의 순서에 예민하다. 그래서 문자의 순서를 바꾸는 swap, middle, random인 합성 noise에 취약한 모습을 보였다. 저자들은 새로이 &lt;strong&gt;구조적으로 불변하는 단어 표현법(structure invariant word representation)&lt;/strong&gt; 을 제안한다. 말은 거창하지만, 그냥 단순히 단어의 embedding 값으로 단어를 구성하는 각 문자의 embedding 값의 average를 쓰자는 것이다. (&lt;strong&gt;meanChar 모델&lt;/strong&gt;이라고 저자들은 명명하였다.) 이렇게 되면 당연히 문자간의 순서에 independent해진다. 그럼에도 불구하고 다른 noise (keybord noise 혹은 natural noise)는 cover되지 않고, 낮은 성능을 보인다. 아쉽지만 이 방법은 accept되지 않는다.&lt;/p&gt;
+
+&lt;p&gt;두 번째는 학습 데이터에 noise가 섞인 text를 이용하자는 것이다. 이렇게 하면 noise가 섞인 text도 충분히 cover되어 높은 성능을 보일 것이다. 어찌 보면 당연한 소리다. 실험은 charCNN NMT 모델만을 이용하여 하였고, 아래 표와 같이 당연하게도 특정 종류의 noise로 학습한 모델은 그 종류의 noise에 대해 견고한 결과를 보인다. 하지만 한 종류의 noise로 학습한 모델은 다른 종류의 noise를 cover하지 못한다. 따라서 저자들은 여러 종류의 noise를 섞인 데이터로 모델을 학습시켰고, 결과적으로 &lt;strong&gt;random, keyboard, natural noise를 섞은 데이터&lt;/strong&gt;로 학습한 것이 두루두루 좋은 성능을 나타내는 것을 볼 수 있다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40530635-84953a78-6034-11e8-9c94-fbc021a4f1cb.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 28 Mar 2019 07:17:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/03/28/SyntheticNoise.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/03/28/SyntheticNoise.html</guid>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+  </channel>
+</rss>
