@@ -5,8 +5,8 @@ permalink: /category/paper/
 ---
 <ul class="posts-list">
 
-  {% assign category = page.category | default: page.title %}
   {% for post in site.categories[category] %}
+    {% assign category = page.category | default: page.title %}
     <li>
       <h3>
         <a href="{{ site.baseurl }}{{ post.url }}">
