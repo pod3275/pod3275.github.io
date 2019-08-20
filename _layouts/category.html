@@ -1,12 +1,9 @@
 ---
-layout: page
-title: "Paper"
-permalink: /category/paper/
+layout: default
 ---
 <ul class="posts-list">
-
+  {% assign category = page.category | default: page.title %}
   {% for post in site.categories[category] %}
-    {% assign category = page.category | default: page.title %}
     <li>
       <h3>
         <a href="{{ site.baseurl }}{{ post.url }}">
@@ -16,5 +13,4 @@ permalink: /category/paper/
       </h3>
     </li>
   {% endfor %}
-
 </ul>

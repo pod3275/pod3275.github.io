@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 20 Aug 2019 22:34:57 +0900</pubDate>
-    <lastBuildDate>Tue, 20 Aug 2019 22:34:57 +0900</lastBuildDate>
+    <pubDate>Tue, 20 Aug 2019 22:46:47 +0900</pubDate>
+    <lastBuildDate>Tue, 20 Aug 2019 22:46:47 +0900</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -1080,10 +1080,6 @@
         <link>http://localhost:4000/paper/2019/05/31/Dropout.html</link>
         <guid isPermaLink="true">http://localhost:4000/paper/2019/05/31/Dropout.html</guid>
         
-        <category>CNN</category>
-        
-        <category>Dropout</category>
-        
         
         <category>Paper</category>
         
@@ -1283,8 +1279,6 @@
         <pubDate>Fri, 31 May 2019 06:23:00 +0900</pubDate>
         <link>http://localhost:4000/paper/2019/05/31/OOD.html</link>
         <guid isPermaLink="true">http://localhost:4000/paper/2019/05/31/OOD.html</guid>
-        
-        <category>out-of-distribution</category>
         
         
         <category>Paper</category>
