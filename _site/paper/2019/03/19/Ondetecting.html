@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>On Detecting Adversarial Perturbations 정리</title>
+  <meta name="description" content="On detecting adversarial perturbations 정리  저자 : Jan Hendrik Metzen, Tim Genewein, Volker Fischer, Bastian Bischoff  학회 : arXiv  날짜 : 2017.02.14 (last revised...">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="On detecting adversarial perturbations 정리  저자 : Jan Hendrik Metzen, Tim Genewein, Volker Fischer, Bastian Bischoff  학회 : arXiv  날짜 : 2017.02.14 (last revised..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="On Detecting Adversarial Perturbations 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="On Detecting Adversarial Perturbations 정리">
+  <meta name="twitter:description" content="On detecting adversarial perturbations 정리  저자 : Jan Hendrik Metzen, Tim Genewein, Volker Fischer, Bastian Bischoff  학회 : arXiv  날짜 : 2017.02.14 (last revised...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/03/19/Ondetecting.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/typography/">Typography</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">On Detecting Adversarial Perturbations 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">March 19, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="on-detecting-adversarial-perturbations-정리">On detecting adversarial perturbations 정리</h1>
+<ul>
+  <li>저자 : Jan Hendrik Metzen, Tim Genewein, Volker Fischer, Bastian Bischoff</li>
+  <li>학회 : arXiv</li>
+  <li>날짜 : 2017.02.14 (last revised 2017.02.21)</li>
+  <li>인용 : 196회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1702.04267.pdf">paper</a></li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+<ul>
+  <li>기존의 adversarial defense method들
+    <ul>
+      <li>Goodfellow : Adversarial training : training data에 adversarial image도 포함.</li>
+      <li>Zheng : Objective function 식을 통해 특정 clean image와 이에 해당하는 adversarial image의 output이 비슷해지도록 학습함.</li>
+      <li>Papernot : Defensive distillation : FGSM과 L-BFGS에서는 잘 되나, C&amp;W에서 안됨.</li>
+    </ul>
+  </li>
+  <li>Adversarial defense가 아닌 detection method를 제안함.</li>
+</ul>
+
+<h2 id="proposed-method">Proposed Method</h2>
+<ul>
+  <li>DeepNN에 detector subnetwork를 추가. 이를 학습하여 주어진 input에 대한 adversarial detection 수행.</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/47154382-2569c080-d31d-11e8-837b-fad706e2285f.png" alt="image" /></p>
+
+<ul>
+  <li>Inputs from intermediate feature representations of the model.</li>
+  <li>
+    <p>Classification network + Detector.</p>
+  </li>
+  <li>단계
+    <ol>
+      <li>먼저 classification network를 clean image에 대해 학습.</li>
+      <li>동시에 각 data에 대한 adversarial image 생성 -&gt; 후에 dynamic하게 생성함.</li>
+      <li>Origin image : 0, adversarial image : 1 label의 output, classification network의 weight을 freeze하고 detector만 학습.</li>
+    </ol>
+  </li>
+  <li>질문
+    <ul>
+      <li><strong>Gradient-based attack 기법들은 classification network 뿐만 아니라 detector에 대해서도 gradient를 계산함으로써, 속일 수 있다.</strong></li>
+      <li>Classification model과 detector를 동시에 속이는 공격 기법이 dynamic adversary 공격.
+        <ul>
+          <li>FGSM과 비슷한 수식에, (1-sigma)Jcls + (sigma)Jdet</li>
+        </ul>
+      </li>
+      <li>이에 대한 defense를 제안.
+        <ul>
+          <li><strong>dynamic adversary training : 즉각적으로 adversarial이면 확률 0.5, 0.5로 맞춘다? 로 adversarial image를 생성해서, 이를 training.</strong></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="experiment-1-cifar10">Experiment 1. CIFAR10</h2>
+<ul>
+  <li>Classification Model 학습
+    <ul>
+      <li>32-layer ResNet</li>
+      <li>45000 training data + 100 epochs + SGD with momentum(=0.9), learning rate=0.1(after 41 epochs: 0.01, after 61 epochs: 0.001)</li>
+      <li>5000 validation data : Clean accuracy : 91.3%</li>
+      <li>이후 중간 단계의 feature를 input으로 받는 detector를 붙여서 학습함.</li>
+    </ul>
+  </li>
+  <li>Detector 학습
+    <ul>
+      <li>Detector : conv-&gt;mp-&gt;conv-&gt;mp-&gt;conv-&gt;conv-&gt;gap</li>
+      <li>20 epochs, 45000 training data, learning rate=0.0001 (classification model에 비해 많이 낮음. 의미 없을 수도.)</li>
+      <li>FGSM, Iterative FGSM 공격에 대한 epsilon : 1, 2, 3, 4</li>
+    </ul>
+  </li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/47154826-57c7ed80-d31e-11e8-8395-bb349e85725f.png" alt="image" /></p>
+
+    <ul>
+      <li>예측 성능이 낮은(강한) 공격에 대해서는 detect가 잘 됨.
+        <ul>
+          <li>예측 성능 30% 이하인 공격에 대해 80%, 10% 공격에 대해 90%의 detection.</li>
+          <li>기존 공격 기법들의 강한 정도 : FGSM &lt; Iterative FGSM &lt; DeepFool</li>
+        </ul>
+      </li>
+      <li>Detector의 위치에 따라 2&lt;1&lt;3&lt;0&lt;4 (classification model의 layer) 순으로 detect 성능이 좋음.
+        <ul>
+          <li>FGSM, Iterative FGSM에 대해서는 2가 제일 좋고, DeepFool은 4가 제일 좋음.</li>
+          <li>공격 방법마다 붙여야 되는 것 자체가 다르니까, 모두에 대한 공격에서 좋은 건 아니라는 것.</li>
+          <li>성능이 가장 낮았던 case는 0.77정도. (향후 연구에서 이거보단 좋아야 할 듯.)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>epsilon(hyperparameter) setting 실험 및 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/47155121-0d933c00-d31f-11e8-9bff-a4a8045fbaea.png" alt="image" /></p>
+
+    <ul>
+      <li>큰 epsilon의 공격에 의해 생성된 adversarial example로 학습하고, 작은 epsilon에 의한 adversarial example로 test하는 경우는 성능이 낮음.
+        <ul>
+          <li>공격의 epsilon은 크면 클수록 classification model 성능이 떨어져서 detect가 더 잘 됨.</li>
+          <li>따라서 classification model 기준으로 30% 아래의 accuracy를 만족 + 가장 작은 epsilon을 선택하는 것이 좋음.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>A로 학습하고 B를 test하는 실험 및 결과 (A, B는 공격 방법)
+    <ul>
+      <li>Transferrability 측정 실험.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/54531590-fee1ab80-49c8-11e9-9e9d-0bead252c3f3.png" alt="image" /></p>
+
+    <ul>
+      <li>Iterative FGSM에 의힌 adversarial image로 학습하고, FGSM에 의한 adversarial image로 test 하는건 잘 되지만, 반대는 성능이 낮음.
+        <ul>
+          <li>센 공격기법에 의한 adv example로 학습해야 함. (예를 들어 DeepFool)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="experiment-2-10-class-imagenet">Experiment 2. 10-class ImageNet</h2>
+<ul>
+  <li>Class를 10개로 줄인 이유
+    <ul>
+      <li>Computational power를 줄이기 + 너무 비슷한 class로 간단화 하는 adversary를 피하기 위함.</li>
+    </ul>
+  </li>
+  <li>Classification model
+    <ul>
+      <li>Pre-trained VGG16 + 10개 class만 선택하도록 하는 layer 추가.</li>
+    </ul>
+  </li>
+  <li>Detector
+    <ul>
+      <li>Classification model의 4번째 pooling layer에 붙임.</li>
+      <li>3*3 196개의 feature maps. 데이터 수는 명시 X.</li>
+      <li>500 epochs + Adam + lr=0.0001</li>
+    </ul>
+  </li>
+  <li>
+    <p>결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/47155681-37992e00-d320-11e8-8723-2cdf18aeccff.png" alt="image" /></p>
+
+    <ul>
+      <li>Detectability : 85%이상, Iterative(l2) 공격에 대한 detection이 아예 안됨.(0.5)</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/47155719-5697c000-d320-11e8-9646-da2d564e90e9.png" alt="image" /></p>
+  </li>
+</ul>
+
+<h2 id="discussion">Discussion</h2>
+<ul>
+  <li>Adversarial image와 clean image는 아주 작은 차이를 갖는데, 왜 이렇게 감지가 잘 되는가?
+    <ul>
+      <li>Detector는 특정 데이터가, 데이터 manifold 중심에서 인근 클래스 경계 방향으로 약간 벗어나는 입력을 감지한다.</li>
+      <li>Adversarial 이미지는 데이터 manifold 중심으로부터 특정 방향으로만 뻗어 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="결론">결론</h2>
+<ul>
+  <li>Noise를 덜 규칙적으로 만드는 공격 방법을 만들어라.</li>
+</ul>
+
+<h2 id="생각해본-단점">(생각해본) 단점</h2>
+<ul>
+  <li>CIFAR10, 10-class subset of ImageNet에 대해서만 test : class 수가 낮음.</li>
+  <li>Imagenet의 Iterative l2 공격이면 detect 안 됨.</li>
+  <li>학습되는 이미지의 공격 방법, e에 따라서 결과가 다름. (의미 없을 수도 있음)</li>
+  <li>(단점일려나) detector 또한 conv, pool의 CNN 형태 : output 직전 값으로 한 건 아님.</li>
+  <li>CNN 학습에 필요한 데이터 수가 많을 것 : 학습을 위해 adversarial image 수가 많이 요구된다.</li>
+</ul>
+
+</article>
+
+
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=On+Detecting+Adversarial+Perturbations+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F19%2FOndetecting.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=On+Detecting+Adversarial+Perturbations+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F19%2FOndetecting.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F19%2FOndetecting.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=On+Detecting+Adversarial+Perturbations+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F19%2FOndetecting.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=On+Detecting+Adversarial+Perturbations+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F19%2FOndetecting.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/03/19/Ondetecting.html') + '&title=On Detecting Adversarial Perturbations 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/typography/">Typography</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/03/19/Ondetecting.html',
+    'title': 'On Detecting Adversarial Perturbations 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

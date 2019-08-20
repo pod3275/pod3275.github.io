@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Population Based Training of Neural Networks 정리</title>
+  <meta name="description" content="Population Based Training of Neural Networks 정리  저자 : Max Jaderberg, Valentin Dalibard, Simon Osindero, et al.  학회 : arXiv  날짜 : 2017.11.27 (last revised 201...">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Population Based Training of Neural Networks 정리  저자 : Max Jaderberg, Valentin Dalibard, Simon Osindero, et al.  학회 : arXiv  날짜 : 2017.11.27 (last revised 201..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="Population Based Training of Neural Networks 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Population Based Training of Neural Networks 정리">
+  <meta name="twitter:description" content="Population Based Training of Neural Networks 정리  저자 : Max Jaderberg, Valentin Dalibard, Simon Osindero, et al.  학회 : arXiv  날짜 : 2017.11.27 (last revised 201...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/03/20/PBT.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/typography/">Typography</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Population Based Training of Neural Networks 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">March 20, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="population-based-training-of-neural-networks-정리">Population Based Training of Neural Networks 정리</h1>
+<ul>
+  <li>저자 : Max Jaderberg, Valentin Dalibard, Simon Osindero, et al.</li>
+  <li>학회 : arXiv</li>
+  <li>날짜 : 2017.11.27 (last revised 2017.11.28)</li>
+  <li>인용 : 87회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1711.09846.pdf">paper</a></li>
+  <li>모델의 hyperparameter optimization에 관한 논문.</li>
+  <li>(약간 다른 제목이지만) 저자가 직접 NIPS 2017에서 발표한 <a href="https://vimeo.com/250399261">자료</a>가 있음. (근데 NIPS 2017 accepted paper는 아님)</li>
+  <li>후에 발견 : 발표 유투브 <a href="https://www.youtube.com/watch?v=l-Ga0E9vldg">동영상</a>도 있음.</li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+<ul>
+  <li>모델의 <strong>hyperparameter</strong>란 학습 과정을 통해 변하지 않는 설정들을 의미함.
+    <ul>
+      <li>ex1) 학습에 관련된 hyperparameter로 learning rate, batch size 등.</li>
+      <li>ex2) 모델의 구조에 관련된 hyperparameter로 hidden layer의 node수, activation function의 종류 등.</li>
+    </ul>
+  </li>
+  <li>모델의 성능을 최대로 끌어 올리기 위해서, 좋은 hyperparameter setting은 필수적임.
+    <ul>
+      <li>기존에는 사람이 손으로 하나하나 다 튜닝해보고 찾아야 했음. (grid search의 일종)</li>
+      <li>최근 들어 <strong>hyperparameter optimization</strong> method에 대한 많은 연구가 진행 중임.</li>
+    </ul>
+  </li>
+  <li>기존 hyperparameter optimization method를 저자들은 두 가지로 나눔
+    <ul>
+      <li><strong>Parallel search</strong> : 서로 다른 hyperparameter set으로 설정된 모델을 동시에 학습하여 가장 좋은 것을 선택하기.</li>
+      <li><strong>Sequential optimization</strong> : 기존의 시행착오를 바탕으로 더 좋은 setting을 찾아보고 학습하여 성능 판단하기.</li>
+      <li>Parallel search는 많은 computational cost가 요구되고, sequential optimization은 많은 시간이 소요된다는 단점이 있음.</li>
+    </ul>
+  </li>
+  <li>저자들은 이 parallel search와 sequential search를 연결하는(bridge) 쉽고 좋은 기법을 제안함.
+    <ul>
+      <li><strong><em>Population Based Training (PBT)</em></strong></li>
+      <li><a href="http://jeongchul.tistory.com/571">Genetic algorithm</a>을 기반으로 하고 있음.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="related-works">Related Works</h2>
+<h3 id="1-optimization--exploitation-vs-exploration">1. Optimization : Exploitation vs. Exploration</h3>
+<ul>
+  <li>
+    <p>최적화 문제에 항상 등장하는 두 전략 exploitation과 exploration.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51182416-70da3d80-1911-11e9-9209-21aa71053d00.png" alt="image" /></p>
+  </li>
+  <li>Exploi<strong>t</strong>ation : 지금까지 찾았던 것들 중 bes<strong>t</strong>인 것을 더 탐구해보자.</li>
+  <li>Exploration : 새로운 정보를 얻기 위해 지금까지 찾은 것 말고 새로운 것을 탐색해보자.</li>
+  <li>Exploitation과 exploration은 trade-off 관계이다.
+    <ul>
+      <li>즉, 둘 다 잘 고려해야한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-sequential-optimization--bayesian-optimization">2. Sequential Optimization : Bayesian Optimization</h3>
+<ul>
+  <li>
+    <p>Bayesian optimization은 기존에 탐색했던 point들을 이용하여, 더 좋을 것으로 기대되는 point를 찾아서 탐색하는 방법임.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51182769-89972300-1912-11e9-97aa-96a89db47e70.png" alt="image" /></p>
+  </li>
+  <li>Hyperparameter optimization을 위한 대표적인 기법임.</li>
+  <li>
+    <p>목표</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51182492-bdbe1400-1911-11e9-8ee0-dfa23be5a18e.png" alt="image" /></p>
+
+    <ul>
+      <li>x는 hyperparameter set, f(x)는 모델의 최종 accuracy.</li>
+      <li>딥러닝 모델의 동작은 아무도 모르기 때문에, x에 대한 f(x)는 <strong>black-box function</strong>이다.</li>
+      <li>이렇게 내부 구조의 동작을 정의할 수 없는 f(x)를 <strong>Gaussian Process</strong>를 통해 확률적인 함수로 approximate한다.</li>
+    </ul>
+  </li>
+  <li>
+    <p>“더 좋을 것으로 기대” 라는 것을 정의하기 위한 함수 : <strong>activation function</strong></p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51182746-7e43f780-1912-11e9-9ae6-1255e871f65b.png" alt="image" /></p>
+
+    <ul>
+      <li>Exploitation과 exploration을 모두 고려한 함수.</li>
+      <li>Activation function의 argmax 점을 다음으로 search할 점으로 여김.</li>
+    </ul>
+  </li>
+  <li>성능은 좋음. 근데 <strong>매우 오래 걸림.</strong> 보통 1~3일.</li>
+</ul>
+
+<h3 id="3-parallel-search--random-search">3. Parallel search : Random search</h3>
+<ul>
+  <li>
+    <p>서로 다른 hyperparameter set으로 설정된 여러 개의 모델을 동시에 돌려서 가장 좋은 것 찾기.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51182858-dda20780-1912-11e9-8bf0-59a282e66faa.png" alt="image" /></p>
+  </li>
+  <li>Random search, grid search 등.
+    <ul>
+      <li>각 hyperparameter set이 좋은 set인지 나쁜 set인지도 모른 채 학습을 끝까지 진행해야 하기 때문에 낭비임.</li>
+      <li>이를 보완한 기법인 <em>Hyperband</em> : parallel search 기반의 대표적인 hyperparameter optimization 기법.</li>
+    </ul>
+  </li>
+  <li>같은 시간동안 돌렸을 때 bayesian optimization보다 성능 좋음. 하지만 <strong>이미 돌려본 것들에 대한 정보를 활용하지 못함.</strong></li>
+</ul>
+
+<h2 id="proposed-method">Proposed Method</h2>
+<ul>
+  <li><strong><em>Population Based Training (PBT)</em></strong></li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/51183079-8d777500-1913-11e9-958e-b26d1f285c6f.png" alt="image" /></p>
+
+<ol>
+  <li>몇 개를 한꺼번에 돌릴건지 결정한다. 각 모델 = worker.</li>
+  <li>각 worker에 대해 hyperparameter set과 모델의 weight을 랜덤하게 설정한다.</li>
+  <li>어느 step만큼 학습을 진행한다. 기존에 정한 threshold에 다다르면 각 worker에 대해 exploit &amp; explore 적용.</li>
+  <li><strong>Exploit</strong>
+    <ul>
+      <li>내 모델의 중간 성능이 안좋다 싶으면 좋은 것으로 완전히 대체하자!</li>
+      <li>2가지 전략
+        <ul>
+          <li><strong>Binary tournament</strong> : 랜덤하게 선택한 모델보다 안좋으면 그걸로 대체.</li>
+          <li><strong>Truncation selection</strong> : 내 모델 성능이 모든 worker중에 하위 20%면, 상위 20% worker들 중 랜덤하게 하나 골라서 그걸로 대체.</li>
+        </ul>
+      </li>
+      <li>모델의 weight과 hyperparameter set 둘 다 대체함. 좋으면 그대로 감.</li>
+    </ul>
+  </li>
+  <li><strong>Explore</strong>
+    <ul>
+      <li>랜덤하게 만들어버리자!</li>
+      <li><strong>Exploit이 적용된 모델에 대해서만 적용.</strong></li>
+      <li>2가지 전략
+        <ul>
+          <li><strong>Perturb</strong> : 특정 factor 만큼 곱해버리기.</li>
+          <li><strong>Resample</strong> : 그냥 다 무시하고 새로 뽑기.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>모델 학습이 끝날 때까지 3, 4, 5를 반복.</li>
+</ol>
+
+<ul>
+  <li>특징
+    <ul>
+      <li>Model selection(weight 학습)과 hyperparameter optimization을 동시에 진행.</li>
+      <li>Exploit은 non-differentiable하고 expensive한 metric에도 사용될 수 있음.
+        <ul>
+          <li>예를 들어, testset에 대한 정확도 뿐만 아니라, 기계 번역의 BLEU score, human normalized performance 등</li>
+        </ul>
+      </li>
+      <li>모든 worker는 explore(새로운 지역 탐색)의 benefit을 나눠 받음.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="experiments">Experiments</h2>
+<ul>
+  <li>3가지 learning problem에 대한 기존 모델에 PBT를 적용
+    <ul>
+      <li>RL(Reinforcement Learning), MT(Machine Translation), GAN(Generative Adversarial Networks)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="1-rl-reinforcement-learning">1. RL (Reinforcement Learning)</h3>
+<ul>
+  <li>강화학습의 neural network 구조의 agent를 학습.
+    <ul>
+      <li>강화학습: Expected episodic(임시적인, 중간) reward E를 maximize하는 action의 집합 policy를 찾자.</li>
+    </ul>
+  </li>
+  <li>3가지 task 및 모델
+    <ul>
+      <li>DeepMind Lab, UNREAL (Jaderberg et al., 2016)</li>
+      <li>Atari games, Feudal Networks (Vezhnevets et al., 2017)</li>
+      <li>StarCraft 2, A3C baseline agents (Vinyals et al., 2017)</li>
+    </ul>
+  </li>
+  <li>실험 setting
+    <ul>
+      <li>Hyperparameter : learning rate, entropy cost 등 4개.</li>
+      <li>Step : RMSProp의 1 step.</li>
+      <li>Baseline : 같은 worker 수로 random search하여 찾은 모델.</li>
+    </ul>
+  </li>
+  <li>
+    <p>결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51258936-748fc200-19ee-11e9-8ade-db88e2edbe0e.png" alt="image" /></p>
+
+    <ul>
+      <li>성능 향상이 있었다. Measure가 hunam normalized performance임.</li>
+      <li>추가적으로, PBT가 진행되면 될수록 hyperparameter 값의 특정한 변화(계속 내려간다든지)가 나타남.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-mt-machine-translation">2. MT (Machine Translation)</h3>
+<ul>
+  <li>
+    <p>State of the art 모델인 <em>Transformer</em> network (Vaswani et al., 2017, <a href="https://arxiv.org/pdf/1706.03762.pdf">paper</a>) 를 tuning 하자.</p>
+  </li>
+  <li>실험 setting
+    <ul>
+      <li>데이터 : <a href="http://www.statmt.org/wmt14/">WMT 2014</a>의 English-to-German parallel data.</li>
+      <li>Hyperparameter : learning rate 및 3개의 dropout rate.</li>
+      <li>Eval measure : BLEU score on WMT newstest2012 dataset.</li>
+      <li>Exploit : binary tournament / Explore : perturb.</li>
+      <li>Baseline : hand tuning 또는 Bayesian Optimization으로 최적화된 모델.</li>
+    </ul>
+  </li>
+  <li>
+    <p>결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51748683-865d1d80-20f0-11e9-8b8f-af5a41a88b20.png" alt="image" /></p>
+
+    <ul>
+      <li>아쉽지만 SOTA(State-Of-The-Art)는 아님. (기존 Transformer 모델이 너무 커서, 작은 모델로 실험함)</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51748770-c9b78c00-20f0-11e9-9b4b-dd91f37f8a22.png" alt="image" /></p>
+
+    <ul>
+      <li>learning rate 보면 학습을 하면 할수록 <strong>특정 형태</strong>를 띄는 걸 알 수 있음. (계속 내려감)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-gan">3. GAN</h3>
+<ul>
+  <li>위의 실험과 거의 동일, 결과도 동일해서 생략함.
+    <ul>
+      <li>결국 성능 향상은 있었다.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+<ul>
+  <li><strong><em>PBT(Population Based Training)</em></strong> 이라는 최적화 기법을 제시함.
+    <ul>
+      <li>유전 알고리즘을 기반으로 함.</li>
+      <li>Parallel search와 sequential optimization의 조합.</li>
+      <li>모델의 weight과 hyperparameter를 동시에 최적화.</li>
+      <li>Hyperparameter의 <strong>adaptive scheduling</strong>이 가능함.</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+
+
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Population+Based+Training+of+Neural+Networks+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F20%2FPBT.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Population+Based+Training+of+Neural+Networks+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F20%2FPBT.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F20%2FPBT.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Population+Based+Training+of+Neural+Networks+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F20%2FPBT.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Population+Based+Training+of+Neural+Networks+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F03%2F20%2FPBT.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/03/20/PBT.html') + '&title=Population Based Training of Neural Networks 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/typography/">Typography</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/03/20/PBT.html',
+    'title': 'Population Based Training of Neural Networks 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

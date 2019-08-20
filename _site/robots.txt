@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pod3275.github.io//sitemap.xml

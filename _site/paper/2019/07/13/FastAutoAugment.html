@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Fast AutoAugment 정리</title>
+  <meta name="description" content="Fast AutoAugment 정리  저자 : Sungbin Lim, Ildoo Kim, Taesup Kim, Chiheon Kim, Sungwoong Kim  학회 : ICML 2019 (AutoML Workshop)  날짜 : 2019.05.01 (last revised 201...">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Fast AutoAugment 정리  저자 : Sungbin Lim, Ildoo Kim, Taesup Kim, Chiheon Kim, Sungwoong Kim  학회 : ICML 2019 (AutoML Workshop)  날짜 : 2019.05.01 (last revised 201..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="Fast AutoAugment 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Fast AutoAugment 정리">
+  <meta name="twitter:description" content="Fast AutoAugment 정리  저자 : Sungbin Lim, Ildoo Kim, Taesup Kim, Chiheon Kim, Sungwoong Kim  학회 : ICML 2019 (AutoML Workshop)  날짜 : 2019.05.01 (last revised 201...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/07/13/FastAutoAugment.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true,
+  }
+});
+MathJax.Hub.Register.MessageHook("Math Processing Error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/typography/">Typography</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Fast AutoAugment 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">July 13, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="fast-autoaugment-정리">Fast AutoAugment 정리</h1>
+<ul>
+  <li>저자 : Sungbin Lim, Ildoo Kim, Taesup Kim, Chiheon Kim, Sungwoong Kim</li>
+  <li>학회 : ICML 2019 (AutoML Workshop)</li>
+  <li>날짜 : 2019.05.01 (last revised 2019.05.25)</li>
+  <li>인용 : 2회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1905.00397.pdf">paper</a></li>
+</ul>
+
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="1-1-data-augmentation">1-1. Data Augmentation</h3>
+<ul>
+  <li><strong>Augmenation = Generalization = Avoid Overfitting</strong>
+    <ul>
+      <li>Overfitting = 모델이 학습 데이터를 너무 따라가서, test 성능이 낮게 나타나는 경우. (조금 더 자세한 설명은 <a href="https://pod3275.github.io/paper/2019/05/30/Dropout.html">여기</a>)</li>
+      <li>일반적으로 학습 데이터의 개수가 많으면, overfitting을 피하기 쉽다. = 데이터 manifold를 일반화하기 쉽다.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61942756-06e3d480-afd5-11e9-92b2-53867c7b72ca.png" alt="image" /></p>
+
+    <ul>
+      <li>
+        <p>그림 <a href="https://hackernoon.com/memorizing-is-not-learning-6-tricks-to-prevent-overfitting-in-machine-learning-820b091dc42">출처</a></p>
+      </li>
+      <li>
+        <p>따라서, 학습 데이터의 양과 다양성을 늘려서 generalization을 이룩하자 = <strong>Augmenatation</strong></p>
+      </li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61942967-67731180-afd5-11e9-8e07-9ab7cd0705a3.png" alt="image" /></p>
+
+    <ul>
+      <li>그림 <a href="https://www.kakaobrain.com/blog/64">출처</a></li>
+      <li>그림과 같이, 한 장의 고양이 사진을 이용하여 다양한 고양이 사진들을 생성할 수 있음.</li>
+      <li>다양한 augmentation 기법들(<a href="https://arxiv.org/pdf/1708.04552.pdf">Cutout</a>, <a href="https://arxiv.org/pdf/1803.01229.pdf">GAN 기반 기법</a> 등)이 제안되었고, 모델의 성능을 높이고 있음.</li>
+    </ul>
+  </li>
+  <li>그렇다고 너무 막 생성하면 안됨.
+    <ul>
+      <li>모델 성능을 최대로 높이려면 augmentation도 잘 해야한다.</li>
+      <li>즉, 전문가의 지식이 필요하다. (여기서, hyperparameter tuning과 비슷한 모습을 보임)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="1-2-autoaugment">1-2. AutoAugment</h3>
+<ul>
+  <li>2018년 Google Brain <a href="https://arxiv.org/pdf/1805.09501.pdf">논문</a></li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/61943777-27ad2980-afd7-11e9-8a16-d6d4a7ac192a.png" alt="image" /></p>
+
+<ul>
+  <li>
+    <p>RNN (Recurrent Neural Network) + RL (Reinforcement Learning)</p>
+
+    <p>(1) Augmentation 기법을 출력하는 RNN controller 생성.</p>
+
+    <p>(2) 이를 통해 얻은 augmentation 기법을 학습 데이터에 적용.</p>
+
+    <p>(3) 모델을 학습 및 성능을 평가하여 reward(R)를 얻음.</p>
+
+    <p>(4) 계산된 reward를 통해 RNN controller 학습.</p>
+  </li>
+  <li>
+    <p>Augmentation 기법을 policy, sub-policy 단위로 나누어 search space를 체계화함.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61944104-d9e4f100-afd7-11e9-815f-ef55113a9ac4.png" alt="image" /></p>
+
+    <ul>
+      <li>Fast AutoAugment에도 비슷한 단위로 적용됨.</li>
+    </ul>
+  </li>
+  <li>약간 NAS (Neural Architecture Search), 특히 <a href="https://arxiv.org/pdf/1802.03268.pdf">ENAS</a>와 방식이 비슷함.</li>
+  <li>
+    <p>성능 개선은 매우 높지만 (몇몇은 SOTA 갱신), <strong>시간이 너무 오래걸린다</strong> 는 단점이 있음.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61944699-457b8e00-afd9-11e9-85d1-bbf46f956048.png" alt="image" /></p>
+
+    <ul>
+      <li>RNN 한 번 업데이트를 위해 분류 모델을 full로 학습시켜야 함.</li>
+      <li>몇 천 GPU 시간이 걸림.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="1-3-pba-population-based-augmentation">1-3. PBA (Population Based Augmentation)</h3>
+<ul>
+  <li>2019년 arXiv <a href="https://arxiv.org/pdf/1905.05393.pdf">논문</a></li>
+  <li>
+    <p>기존의 Hyperparameter optimization 기법 중, <a href="https://pod3275.github.io/paper/2019/03/19/PBT.html">PBT</a>(Population Based Training) 알고리즘을 기반으로 함.</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/51183079-8d777500-1913-11e9-958e-b26d1f285c6f.png" alt="image" /></p>
+
+    <p>(1) { 동일한 모델 + 다른 augmentation 기법 적용 } X 여러 개 를 동시에 학습.</p>
+
+    <p>(2) 중간 지점에서 각 모델의 성능을 비교.</p>
+
+    <p>(3) 성능이 높은 모델의 parameter를 복제하고 (exploit), 적용된 augmentation 기법에 약간의 변형을 줌. (explore)</p>
+
+    <p>(4) 동시 학습 진행. (2)와 (3)을 반복.</p>
+  </li>
+  <li>
+    <p>결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61946652-23383f00-afde-11e9-8798-d4b9f018f7eb.png" alt="image" /></p>
+
+    <ul>
+      <li>AutoAugment 보다 높은 성능 개선 및 짧은 실행 시간 기록.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="2-proposed-method">2. Proposed Method</h2>
+<h3 id="fast-autoaugment">Fast AutoAugment</h3>
+<ul>
+  <li><a href="https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf">TPE</a> (Bayesian Optimization과 비슷한 black-box optimization 기법) 기반의 빠르고 효과적인 augmentation policy search 기법 제안.</li>
+</ul>
+
+<h3 id="2-1-search-space">2-1. Search Space</h3>
+<ul>
+  <li>Operation <em>O</em>
+    <ul>
+      <li>Augmentation 기법 단위.</li>
+      <li>각 operation은 확률 <em>p</em> 와 세기 $\lambda$ 값을 가짐. (<em>p</em>, $\lambda$ $\in$ [0,1])</li>
+    </ul>
+  </li>
+  <li>Sub-policy $\tau$ $\in$ S
+    <ul>
+      <li>$N_\tau$ 개의 operation들.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61947495-449a2a80-afe0-11e9-9dc0-a737071e794a.png" alt="image" /></p>
+
+    <ul>
+      <li>이미지에 적용 시, 각 operation을 확률에 따라 순서대로 적용.</li>
+      <li>하나의 sub-policy = 하나의 이미지 생성. (위의 그림에서, 오른쪽 4장의 이미지 중 하나.)</li>
+    </ul>
+  </li>
+  <li>Policy $T$
+    <ul>
+      <li>$N_T$ 개의 sub-policy들.</li>
+      <li>하나의 policy = $N_T$ 개의 이미지 생성.</li>
+      <li>우리가 찾고 싶은 최종.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-2-search-strategy">2-2. Search Strategy</h3>
+<ul>
+  <li>핵심 개념
+    <ul>
+      <li><strong>Augmenation은 학습 데이터 분포 중 빵꾸난 데이터를 만드는 것.</strong></li>
+      <li>즉, train data ($D_{train}$) 와 validation data ($D_{valid}$) 의 데이터 분포(density)를 맞춰주는 역할.
+        <ul>
+          <li>$D_{train}$ 에 augmentation 적용 == $D_{valid}$</li>
+          <li><strong>(반대로 생각해서) $D_{valid}$ 에 augmentation 적용 == $D_{train}$</strong></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>실제로는 $D_{train}$만 이용해서 augmentation policy 찾을 거니까
+    <ul>
+      <li>$D_{train} = D_M \cup D_A$ 로 나눔.</li>
+      <li>목표: $D_M$ 의 density == Augmented $D_A$ 의 density.</li>
+    </ul>
+  </li>
+  <li><strong>데이터의 density 비교</strong>를 어떻게 하는가?
+    <ul>
+      <li><strong>학습된 model 을 이용하자.</strong></li>
+      <li>$T_* = \arg\max_{T}{R(\theta^{*} \vert T(D_{A}))}$
+        <ul>
+          <li>$\theta^{*}$ : $D_M$ 으로 학습한 모델의 parameter.</li>
+          <li>$R(\theta \vert D)$ : 데이터 D의 모델 $\theta$ 에 대한 정확도(accuracy).</li>
+        </ul>
+      </li>
+      <li>즉, $D_M$ 으로 학습한 모델을 기준으로, augmented $D_{A}$ 에 대한 성능이 높은, 그런 policy를 찾자.</li>
+    </ul>
+  </li>
+  <li>기존 Augmentation 개념과 반대로 생각함.
+    <ul>
+      <li>기존 개념: <strong>학습 데이터에 augmentation을 적용</strong>한 데이터로 학습된 모델을 기준으로, 검증 데이터에 대한 성능이 높은 augmentation policy가 최적.</li>
+      <li>
+        <p>제안 개념: 학습 데이터로 학습된 모델을 기준으로, <strong>검증 데이터에 augmentation을 적용</strong>한 데이터에 대한 성능이 높은 augmentation policy가 최적.</p>
+      </li>
+      <li><strong>이렇게 하면, 모델을 재학습할 필요가 없음 : 시간 단축 가능.</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-3-algorithm">2-3. Algorithm</h3>
+
+<p><img src="https://user-images.githubusercontent.com/26705935/61948934-2cc4a580-afe4-11e9-9d8d-f3b311189bfc.png" alt="image" /></p>
+
+<ul>
+  <li>
+    <p>단계</p>
+
+    <p>(1) 학습 데이터 $D_{train}$을 k개의 묶음으로 (class 비율을 맞추어) 나눔. 각각의 묶음은 $D_M$과 $D_A$로 이루어짐.</p>
+
+    <p>(2) $D_M$으로 모델 학습($\theta$) 및 <em>Bayesian Optimization</em> 을 통해 $L(\theta \vert T(D_{A}))$ 가 최소가 되는 policy $T$를 search함.</p>
+
+    <ul>
+      <li>$L(\theta \vert T(D_{A}))$ : 모델 $\theta$에 대한 $T(D_{A})$ 데이터의 검증 loss.</li>
+      <li>Bayesian Optimization : <a href="https://papers.nips.cc/paper/4443-algorithms-for-hyper-parameter-optimization.pdf">TPE</a> 사용.</li>
+    </ul>
+
+    <p>(3) 성능이 좋은 <em>N</em>개의 policy들을 병합함. (<strong>$T_*^{(k)}$</strong>)</p>
+
+    <p>(4) (2)와 (3)을 <em>T</em>번 반복하여 모든 결과 policy를 병합함.</p>
+
+    <p>(4) 각 k-fold에 대해 (2)~(4)를 반복하여, 모든 결과 policy를 하나로 병합함. (<strong>$T_*$</strong>)</p>
+
+    <p>(5) (4)의 결과를 $D_{train}$에 적용한 augmented data로 모델을 재학습함.</p>
+  </li>
+  <li>
+    <p>알고리즘</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/61948960-3f3edf00-afe4-11e9-9948-4ab5472ba92b.png" alt="image" /></p>
+  </li>
+  <li>
+    <p>이점</p>
+    <ul>
+      <li><strong>학습된 모델 1개만을 이용</strong>하여 최적의 policy 탐색.</li>
+      <li>즉, Bayesian Optimization 과정에서, 성능이 높을 것으로 기대되는 augmentation policy를 <strong>뽑아낼 때마다 모델을 학습시킬 필요가 없음.</strong></li>
+      <li><strong>탐색 시간이 매우 단축</strong>됨.</li>
+      <li>또한 search space를 numerical한 공간으로 표현하였기 때문에 (<em>p</em>, $\lambda$ $\in$ [0,1]), Bayesian Optimization의 특성과 잘 맞음.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="3-experiments">3. Experiments</h2>
+<ul>
+  <li>4가지 이미지 데이터에 대한 분류 모델에 augmentation 적용.
+    <ul>
+      <li>CIFAR-10, CIFAR-100, (reduced) SVHN, (reduced) ImageNet</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-1-hyperparameters-설정">3-1. Hyperparameters 설정</h3>
+<ul>
+  <li>Operation 종류 = 16 (Shear X, Rotate, Invert, …)</li>
+  <li>$N_{\tau}$ (sub-policy 내의 operation 수) = 2</li>
+  <li>$N_{T}$ (policy내 sub-policy 수) = 5</li>
+  <li>k (fold 수) = 5, <em>T</em> (각 fold data마다 반복 횟수) = 2</li>
+  <li>
+    <p>B (TPE를 뽑아내는 후보 개수) = 200, <em>N</em> (각 반복마다 성능이 좋은 policy 저장할 개수) = 10</p>
+  </li>
+  <li>즉, 최종적으로 <strong>100개의 policy</strong>를 찾으며, 이에 따라 1장의 data로부터 500장의 augmented data가 생성됨.</li>
+</ul>
+
+<h3 id="3-2-실험-결과">3-2. 실험 결과</h3>
+<ul>
+  <li>
+    <p><strong>정확도 향상</strong></p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/62288917-63913480-b498-11e9-8dc8-b956517a7590.png" alt="image" /></p>
+
+    <ul>
+      <li>Baseline : Augmentation을 적용하지 않은 것, <a href="https://arxiv.org/pdf/1708.04552.pdf">Cutout</a> : 가장 널리 사용되는 augmentation 기법</li>
+      <li><a href="https://arxiv.org/pdf/1805.09501.pdf">AA</a> : AutoAugment, <a href="https://arxiv.org/pdf/1905.05393.pdf">PBA</a> : Population Based Augmentation</li>
+      <li>
+        <p>Fast AA의 transfer : Wide-ResNet-40-2 모델과 조금 축소한 데이터를 이용하여 찾은 augmentation 기법들을 그대로 적용한 것.</p>
+      </li>
+      <li>제안된 기법인 <strong>Fast AA는 Baseline 및 기존 augmentation 기법보다 좋은 성능</strong>을 보임.</li>
+      <li>또한 <strong>AA 및 PBA보다 높진 않지만, 이에 준하는 성능</strong>을 보임.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>속도</strong></p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/62290114-83762780-b49b-11e9-91a2-1fa3c7fe2aa7.png" alt="image" /></p>
+
+    <ul>
+      <li>이 논문의 핵심 = AutoAugment에 비하여 <strong>탐색 속도의 엄청난 개선</strong>.</li>
+      <li>
+        <p>AA보다 빠르다는 <strong>PBA에 준하는 속도</strong>를 보임. 다음은 PBA 논문에 있는 탐색 속도.</p>
+
+        <p><img src="https://user-images.githubusercontent.com/26705935/62289185-0649b300-b499-11e9-8c21-02811ccd79eb.png" alt="image" /></p>
+      </li>
+      <li>PBA와 Fast AA의 속도 비교는 (reduced) ImageNet 이용한 실험에서 제대로 비교해봐야 할 것 같음.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="4-conclusions">4. Conclusions</h2>
+<ul>
+  <li>딥러닝 모델의 overfitting을 피하기 위한 generalization 기법들 중, 데이터 단계에서 적용할 수 있는 augmentation의 자율 최적화에 관한 연구.</li>
+  <li>기존의 AutoAugment라는 augmentation 최적화 기법은 강화학습을 통해 RNN controller를 학습 구조로서, 탐색 시간이 매우 오래걸린다는 단점이 있음.</li>
+  <li><strong>“Augmentation은 데이터 분포의 빈 공간을 채우는 것”</strong> 이라는 개념 하에, augmetation 기법을 검증 데이터에 적용 및 한 번 학습된 모델로 augmentation 기법 성능 평가.</li>
+  <li>탐색 결과 마다 모델을 학습할 필요가 없기 때문에, 최적화에 소요되는 <strong>총 소요 시간이 감소</strong>함.</li>
+  <li>
+    <p>다양한 이미지 분류 데이터에 대한 실험 결과, AutoAugment 및 PBA에 준하는 성능과 함께 단축된 소요 시간을 보임.</p>
+  </li>
+  <li>
+    <p>Auto Augmentation 연구는 후에 <strong>NAS (Neural Architecture Search, 신경망 구조 탐색) 분야에 접목</strong>되어, 모델의 일반화 및 자율 최적화 기법에 관한 연구가 진행될 필요가 있음.</p>
+  </li>
+  <li>(개인적인 생각)
+    <ul>
+      <li>BO를 뽑아낼 때마다 매 번 학습을 할 필요가 없는 것은 매우 큰 장점인듯 함.</li>
+      <li>하지만 검증 데이터에 augmentation 기법을 적용하고, 이미 학습된 모델로 loss를 계산하는 것이 과연 그 augmentation 기법에 대한 성능을 100% 반영하는지에 대한 의문이 듦.</li>
+      <li>두 가지 데이터의 density matching 관점에서 봤을 때 어느 정도 이해는 되지만, 필요충분조건에 대한 수학적인 증명이 필요하다고 생각됨.</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+
+
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Fast+AutoAugment+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F07%2F13%2FFastAutoAugment.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Fast+AutoAugment+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F07%2F13%2FFastAutoAugment.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F07%2F13%2FFastAutoAugment.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Fast+AutoAugment+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F07%2F13%2FFastAutoAugment.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Fast+AutoAugment+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F07%2F13%2FFastAutoAugment.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/07/13/FastAutoAugment.html') + '&title=Fast AutoAugment 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/typography/">Typography</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/out-of-distribution/">out-of-distribution</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cnn/">CNN</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/dropout/">Dropout</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">Paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/07/13/FastAutoAugment.html',
+    'title': 'Fast AutoAugment 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>
