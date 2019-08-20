@@ -3,7 +3,7 @@ layout: post
 title:  "Hyperband; A Novel Bandit-Based Approach to Hyperparameter Optimization 정리"
 date:   2019-05-22 21:20:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Hyperband; A Novel Bandit-Based Approach to Hyperparameter Optimization 정리

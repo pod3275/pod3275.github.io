@@ -3,7 +3,7 @@ layout: post
 title:  "Unsupervised Machine Translation Using Monolingual Corpora Only 정리"
 date:   2019-04-08 18:15:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Unsupervised Machine Translation Using Monolingual Corpora Only 정리

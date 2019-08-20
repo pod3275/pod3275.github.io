@@ -3,7 +3,7 @@ layout: post
 title:  "Fast AutoAugment 정리"
 date:   2019-07-12 21:50:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 use_math: true
 ---
 

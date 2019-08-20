@@ -3,7 +3,7 @@ layout: post
 title:  "Dropout on CNN"
 date:   2019-05-30 21:23:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Dropout on CNN

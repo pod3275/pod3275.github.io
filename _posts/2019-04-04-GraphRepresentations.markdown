@@ -3,7 +3,7 @@ layout: post
 title:  "Learning Graph Representations with Embedding Propagation 정리"
 date:   2019-04-04 01:15:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Learning Graph Representations with Embedding Propagation 정리

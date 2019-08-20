@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 20 Aug 2019 22:57:13 +0900</pubDate>
-    <lastBuildDate>Tue, 20 Aug 2019 22:57:13 +0900</lastBuildDate>
+    <pubDate>Tue, 20 Aug 2019 23:01:30 +0900</pubDate>
+    <lastBuildDate>Tue, 20 Aug 2019 23:01:30 +0900</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -451,7 +451,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/08/02/KDwithADVsamples.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -769,7 +769,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/07/13/FastAutoAugment.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -1081,7 +1081,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/05/31/Dropout.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -1281,7 +1281,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/05/31/OOD.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -1671,7 +1671,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/05/23/Hyperband.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -1789,7 +1789,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/04/09/UnsupervisedNMT.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -1884,7 +1884,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/04/04/GraphRepresentations.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -2046,7 +2046,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/03/30/ConvAttentionSummary.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -2118,7 +2118,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/03/29/Tendency.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     
@@ -2215,7 +2215,7 @@
         <guid isPermaLink="true">http://localhost:4000/paper/2019/03/28/SyntheticNoise.html</guid>
         
         
-        <category>Paper</category>
+        <category>paper</category>
         
       </item>
     

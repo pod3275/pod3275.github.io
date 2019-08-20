@@ -3,7 +3,7 @@ layout: post
 title:  "Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리"
 date:   2019-05-30 21:23:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리

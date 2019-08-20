@@ -3,7 +3,7 @@ layout: post
 title:  "A Convolutional Attention Network for Extreme Summarization of Source Code 정리"
 date:   2019-03-29 21:00:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # A Convolutional Attention Network for Extreme Summarization of Source Code 정리

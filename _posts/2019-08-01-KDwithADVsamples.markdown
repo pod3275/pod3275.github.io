@@ -3,7 +3,7 @@ layout: post
 title:  "Knowledge Distillation with Adversarial Samples Supporting Decision Boundary 정리"
 date:   2019-08-01 21:05:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 use_math: true
 ---
 

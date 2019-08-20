@@ -3,7 +3,7 @@ layout: post
 title:  "Synthetic and Natural Noise Both Break Neural Machine Translation 정리"
 date:   2019-03-27 22:17:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Synthetic and Natural Noise Both Break Neural Machine Translation 정리

@@ -3,7 +3,7 @@ layout: post
 title:  "Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리"
 date:   2019-03-28 21:40:00
 author: Sangheon Lee
-categories: Paper
+categories: paper
 ---
 
 # Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리
