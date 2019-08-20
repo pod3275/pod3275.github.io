@@ -4,6 +4,7 @@ title:  "Dropout on CNN"
 date:   2019-05-30 21:23:00
 author: Sangheon Lee
 categories: Paper
+tags: CNN, Dropout
 ---
 
 # Dropout on CNN

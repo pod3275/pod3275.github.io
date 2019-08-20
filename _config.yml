@@ -10,11 +10,11 @@ exclude:
 
 # Site settings
 title: pod3275
-subtitle: "pod3275의 블로그"
+subtitle: "pod3275의 머신 러닝 블로그"
 email: lawlee1@naver.com
 name: Sangheon Lee
 description: >
-  pod3275의 블로그.
+  pod3275의 머신 러닝 블로그
 # Base URL of site (i.e. /blog). It should always start with a slash,
 # and never end with a slash. Set it to a blank value if hosting at the
 # root of your server.
@@ -51,7 +51,7 @@ ga_tracking_id: "UA-145715679-1"
 # Category descriptions (for archive pages)
 descriptions:
   - cat: Paper
-    desc: "논문 설명 및 리뷰"
+    desc: "머신 러닝 논문 설명 및 리뷰"
 
 # Social icons and sharing options
 #
