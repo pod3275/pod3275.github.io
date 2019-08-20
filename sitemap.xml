@@ -100,30 +100,6 @@
     
     
     <url>
-        <loc>http://localhost:4000/tag/out-of-distribution/</loc>
-    </url>
-    
-    
-    
-    
-    
-    <url>
-        <loc>http://localhost:4000/tag/cnn/</loc>
-    </url>
-    
-    
-    
-    
-    
-    <url>
-        <loc>http://localhost:4000/tag/dropout/</loc>
-    </url>
-    
-    
-    
-    
-    
-    <url>
         <loc>http://localhost:4000/category/paper/</loc>
     </url>
     
