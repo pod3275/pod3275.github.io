@@ -5,6 +5,7 @@ date:   2019-05-30 21:23:00
 author: Sangheon Lee
 categories: Paper
 tags: CNN Dropout
+description: CNN에 dropout이 적용되는 여러 변형들을 제안한 논문들을 정리.
 ---
 
 # Dropout on CNN
