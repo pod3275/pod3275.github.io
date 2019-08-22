@@ -6,9 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>paper</title>
-  <meta name="description" content="pod3275의 머신 러닝 블로그
-">
+  <title>Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</title>
+  <meta name="description" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리  저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika  학회 : ICML 2019  날짜 : 2019.01.28 (last revi...">
   
   <meta name="author" content="Sangheon Lee">
   <meta name="copyright" content="&copy; Sangheon Lee 2019">
@@ -42,11 +41,10 @@
 
   
   <!-- Facebook OGP cards -->
-  <meta property="og:description" content="pod3275의 머신 러닝 블로그
-" />
+  <meta property="og:description" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리  저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika  학회 : ICML 2019  날짜 : 2019.01.28 (last revi..." />
   <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="pod3275" />
-  <meta property="og:title" content="paper" />
+  <meta property="og:title" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
@@ -57,9 +55,8 @@
   
   <!-- Twitter: card tags -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="paper">
-  <meta name="twitter:description" content="pod3275의 머신 러닝 블로그
-">
+  <meta name="twitter:title" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리">
+  <meta name="twitter:description" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리  저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika  학회 : ICML 2019  날짜 : 2019.01.28 (last revi...">
   <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
   <meta name="twitter:url" content="http://localhost:4000">
   
@@ -68,10 +65,35 @@
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/category/paper/">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/08/02/PreTraining.html">
   <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
 </head>
 
+
+  
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true,
+  }
+});
+MathJax.Hub.Register.MessageHook("Math Processing Error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
 
   
 
@@ -125,58 +147,260 @@
 
 
     <div class="page-content">
-        <div class="wrapper">
-<div class="page">
+        <div class="post">
 
-  <header class="post-header">
-    <h1 class="post-title">Posts in "Paper"</h1>
-  </header>
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
 
-  <span class="page-divider">
+<div class="wrapper">
+
+ <span class="page-divider">
   <span class="one"></span>
   <span class="two"></span>
 </span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">August 2, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="using-pre-training-can-improve-model-robustness-and-uncertainty-정리">Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</h1>
+<ul>
+  <li>저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika</li>
+  <li>학회 : ICML 2019</li>
+  <li>날짜 : 2019.01.28 (last revised 2019.06.21)</li>
+  <li>인용 : 9회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1901.09960.pdf">paper</a></li>
+</ul>
+
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="1-1-pre-training">1-1. Pre-Training</h3>
+
+</article>
 
 
-  <article class="post-content">
-    <ul class="posts-list">
-      
-      <li><strong><a class="post-link" href="/paper/2019/08/02/PreTraining.html">Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</a></strong><span class="post-date"> - August 2, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/08/02/KDwithADVsamples.html">Knowledge Distillation with Adversarial Samples Supporting Decision Boundary 정리</a></strong><span class="post-date"> - August 2, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/07/13/FastAutoAugment.html">Fast AutoAugment 정리</a></strong><span class="post-date"> - July 13, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/05/31/Dropout.html">Dropout on CNN</a></strong><span class="post-date"> - May 31, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/05/31/OOD.html">Training Confidence-calibrated Classifiers for Detecting Out-of-Distribution Samples 정리</a></strong><span class="post-date"> - May 31, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/05/23/Hyperband.html">Hyperband; A Novel Bandit-Based Approach to Hyperparameter Optimization 정리</a></strong><span class="post-date"> - May 23, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/04/09/UnsupervisedNMT.html">Unsupervised Machine Translation Using Monolingual Corpora Only 정리</a></strong><span class="post-date"> - April 9, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/04/04/GraphRepresentations.html">Learning Graph Representations with Embedding Propagation 정리</a></strong><span class="post-date"> - April 4, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/30/ConvAttentionSummary.html">A Convolutional Attention Network for Extreme Summarization of Source Code 정리</a></strong><span class="post-date"> - March 30, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/29/Tendency.html">Measuring the Tendency of CNNs to Learn Surface Statistical Regularities 정리</a></strong><span class="post-date"> - March 29, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/28/SyntheticNoise.html">Synthetic and Natural Noise Both Break Neural Machine Translation 정리</a></strong><span class="post-date"> - March 28, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/27/SELU.html">Self-Normalizing Neural Networks 정리</a></strong><span class="post-date"> - March 27, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/20/PBT.html">Population Based Training of Neural Networks 정리</a></strong><span class="post-date"> - March 20, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/19/Ondetecting.html">On Detecting Adversarial Perturbations 정리</a></strong><span class="post-date"> - March 19, 2019</span></li>
-      
-      <li><strong><a class="post-link" href="/paper/2019/03/16/Bypass.html">Adversarial Examples Are Not Easily Detected: Bypassing Ten Detection Methods 정리</a></strong><span class="post-date"> - March 16, 2019</span></li>
-      
-    </ul>
-  </article>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F08%2F02%2FPreTraining.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F08%2F02%2FPreTraining.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F08%2F02%2FPreTraining.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F08%2F02%2FPreTraining.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F08%2F02%2FPreTraining.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/08/02/PreTraining.html') + '&title=Using Pre-Training Can Improve Model Robustness and Uncertainty 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
 
 </div>
 </div>
-<br>
 
     </div>
 
@@ -351,8 +575,8 @@ $(document).ready(function() {
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
   ga('create', 'UA-145715679-1', 'auto');
   ga('send', 'pageview', {
-    'page': '/category/paper/',
-    'title': 'paper'
+    'page': '/paper/2019/08/02/PreTraining.html',
+    'title': 'Using Pre-Training Can Improve Model Robustness and Uncertainty 정리'
   });
 </script>
 
