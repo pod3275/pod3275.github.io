@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 22 Aug 2019 22:04:01 +0900</pubDate>
-    <lastBuildDate>Thu, 22 Aug 2019 22:04:01 +0900</lastBuildDate>
+    <pubDate>Mon, 26 Aug 2019 21:41:26 +0900</pubDate>
+    <lastBuildDate>Mon, 26 Aug 2019 21:41:26 +0900</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -23,6 +23,19 @@
 
 &lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
 &lt;h3 id=&quot;1-1-pre-training&quot;&gt;1-1. Pre-Training&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Pre-training이란 내가 원하는 task 이외의 다른 task의 데이터를 이용하여 주어진 모델을 먼저 학습하는 과정을 말함.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;특히 이미지 데이터에 대한 task를 수행하는 모델의 경우, ImageNet 데이터를 이용한 pre-training을 널리 사용함.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Pre-training의 연구 배경
+    &lt;ul&gt;
+      &lt;li&gt;(&lt;a href=&quot;https://m.blog.naver.com/PostView.nhn?blogId=laonple&amp;amp;logNo=220884698923&amp;amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F&quot;&gt;다음 블로그 내용&lt;/a&gt;을 참고함.)&lt;/li&gt;
+      &lt;li&gt;2006년 이전에는 hidden layer가 2개 이상인 neural network (이하 딥러닝) 의 경우 학습이 제대로 이루어지지 않아, 널리 사용하지 못하였음.&lt;/li&gt;
+      &lt;li&gt;딥러닝의 학습을 위해 제안된 것이&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Fri, 02 Aug 2019 06:05:00 +0900</pubDate>
         <link>http://localhost:4000/paper/2019/08/02/PreTraining.html</link>
