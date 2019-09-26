@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Using Pre-Training Can Improve Model Robustness and Uncertainty 정리"
-date:   2019-09-25 20:00:00
+date:   2019-09-26 20:00:00
 author: Sangheon Lee
 categories: paper
 use_math: true
