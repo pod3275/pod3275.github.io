@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</title>
+  <meta name="description" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리  저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika  학회 : ICML 2019  날짜 : 2019.01.28 (last revi...">
+  
+  <meta name="author" content="Sangheon Lee">
+  <meta name="copyright" content="&copy; Sangheon Lee 2019">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리  저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika  학회 : ICML 2019  날짜 : 2019.01.28 (last revi..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="pod3275" />
+  <meta property="og:title" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리">
+  <meta name="twitter:description" content="Using Pre-Training Can Improve Model Robustness and Uncertainty 정리  저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika  학회 : ICML 2019  날짜 : 2019.01.28 (last revi...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/paper/2019/09/26/PreTraining.html">
+  <link rel="alternate" type="application/rss+xml" title="pod3275" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true,
+  }
+});
+MathJax.Hub.Register.MessageHook("Math Processing Error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+  
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/logo.png" alt="pod3275">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/category/paper/">paper</a>
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container " >
+  <div class="scrim ">
+    <header class="post-header">
+      <h1 class="title">Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</h1>
+      <p class="info">by <strong>Sangheon Lee</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+ <span class="page-divider">
+  <span class="one"></span>
+  <span class="two"></span>
+</span>
+ 
+
+<section class="post-meta">
+  <div class="post-date">September 26, 2019</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/paper">Paper</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="using-pre-training-can-improve-model-robustness-and-uncertainty-정리">Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</h1>
+<ul>
+  <li>저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika</li>
+  <li>학회 : ICML 2019</li>
+  <li>날짜 : 2019.01.28 (last revised 2019.06.21)</li>
+  <li>인용 : 9회</li>
+  <li>논문 : <a href="https://arxiv.org/pdf/1901.09960.pdf">paper</a></li>
+</ul>
+
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="pre-training">Pre-Training</h3>
+<ul>
+  <li>Pre-training이란 내가 원하는 task 이외의 <strong>다른 task의 데이터를 이용하여 주어진 모델을 먼저 학습하는 과정</strong>을 말함.</li>
+  <li>
+    <p>특히 이미지 데이터에 대한 task를 수행하는 모델의 경우, <strong>ImageNet 데이터</strong>를 이용한 pre-training을 널리 사용함.</p>
+  </li>
+  <li>과거의 Pre-training
+    <ul>
+      <li>(<a href="https://m.blog.naver.com/PostView.nhn?blogId=laonple&amp;logNo=220884698923&amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F">다음 블로그 내용</a>을 참고함.)</li>
+      <li>2006년 이전에는 hidden layer가 2개 이상인 neural network (이하 딥러닝) 의 경우 학습이 제대로 이루어지지 않아, 널리 사용하지 못하였음.</li>
+      <li>딥러닝의 학습을 위해 제안된 여러 기법들 중 Bengio 교수의 <strong>Greedy Layer-Wise Training</strong>.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65571500-e4077980-df9f-11e9-8aaf-c4b66884571f.png" alt="image" /></p>
+
+    <ul>
+      <li>딥러닝 모델의 각 layer의 node수와 같은 hidden layer를 하나 갖는 auto-encoder 구조의 분할 모델을 unsupervised way로 학습.</li>
+      <li>
+        <p>학습된 여러 auto-encoder의 weight (박스 안의 부분) 들을 원래 모델에 합쳐서, 원래 모델을 전체적으로 supervised way로 학습.</p>
+      </li>
+      <li>이후 dropout, relu 등 딥러닝 학습을 가능하게 하는 다양한 기법들이 제안되면서 현재는 크게 사용하지 않는 기법이지만, 딥러닝 사용을 boosting하는 획기적인 기법이었음.</li>
+      <li><strong>또한, Pre-train의 개념이 처음으로 제안된 아이디어임.</strong></li>
+    </ul>
+  </li>
+  <li>
+    <p>현재의 Pre-training</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65571862-22516880-dfa1-11e9-8ec8-d7a2d7ca040f.png" alt="image" />
+그림: <a href="https://www.mdpi.com/2072-4292/9/7/666/pdf-vor">출처</a></p>
+
+    <ul>
+      <li>주어진 분류 모델을, 내 데이터가 아닌 다른 데이터로 학습.</li>
+      <li>
+        <p>모델 뒤의 fully-connected layer (dense layer, 분류 또는 개체 감지 등의 결과를 계산하는 부분) 를 내 데이터에 알맞게 바꿔서, 전체 모델을 내 데이터로 학습.</p>
+      </li>
+      <li>데이터의 feature를 추출하는 것은 task independent하기 때문에, <strong>데이터의 수가 많은 다른 task를 이용하여 모델 앞 단의 feature extractor 부분을 학습하자</strong> 라는 것임.</li>
+    </ul>
+  </li>
+  <li>이렇게 널리 쓰이는 Pre-training 기법에 대해, 회의적인 의견을 제시한 논문 등장.
+    <ul>
+      <li>
+        <p>“Rethinking ImageNet Pre-training”, He et al., 2018. <a href="https://arxiv.org/pdf/1811.08883.pdf">paper</a> (무려 ResNet 논문의 저자 Kaiming He의 논문)</p>
+      </li>
+      <li>ImageNet pre-trained weight를 사용하는 건 모델 수렴을 빠르게 해준다.</li>
+      <li>하지만 <strong>최종 성능을 높여주거나 overfitting을 방지해주는 효과는 없다.</strong></li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65572222-5ed19400-dfa2-11e9-997a-997c50d30e7b.png" alt="image" /></p>
+
+    <ul>
+      <li>그래프와 같이, weight를 randomly initialized한 모델은 학습 속도는 느림.</li>
+      <li>하지만 오래 학습하다보면 pre-trained weight를 사용한 모델과 성능이 비슷해짐.</li>
+      <li>
+        <p>특히 오른쪽 그래프처럼, 학습 데이터 수가 적어도 성능이 비슷해지는 걸 보면, generalization 측면에서도 특효가 있지 않음.</p>
+      </li>
+      <li><strong>최종적으로, pre-trained weight를 사용하는 것이 필수적인 건 아니다. (not necessary)</strong></li>
+    </ul>
+  </li>
+  <li>본 논문에서는 위의 논문을 반박함.
+    <ul>
+      <li>Pre-trained weight가 성능 개선이 없을 수 있지만, 다른 방면에서 우수성이 있다.</li>
+      <li>특히, <strong>모델의 Robustness 및 Uncertainty</strong> 를 크게 개선한다.
+        <ul>
+          <li>Robustness : Adversarial Robustness, Label Corruption, Class Imbalance</li>
+          <li>Uncertainty : Out-of-Distribution Detection, Calibration</li>
+        </ul>
+      </li>
+      <li>이에 대한 다양한 실험을 진행하며, pre-trained weight의 우수성을 입증함.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="2-experiments">2. Experiments</h2>
+<ul>
+  <li>이미지 분류 모델을 이용하여 실험 진행.</li>
+  <li>ImageNet 데이터를 이용하여 pre-training한 weight을 사용한 모델과 안한 모델을 비교평가.</li>
+  <li>모델의 robustness 및 uncertainty를 평가함.
+    <ul>
+      <li>Robustness: Adversarial Robustness, Label Corruption, Class Imbalance</li>
+      <li>Uncertainty: Out-of-Distribution Detection, Calibration</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-1-adversarial-robustness">2-1. Adversarial Robustness</h3>
+<ul>
+  <li>Adversarial attack에 대해 강인한가
+    <ul>
+      <li>Adversarial attack 설명: <a href="https://pod3275.github.io/paper/2019/08/02/KDwithADVsamples.html">관련 글</a> 참고. (Related works 부분)</li>
+      <li>주어진 adversarial example에 대해, 원래의 class라고 말할 확률 (accuracy) 측정.</li>
+    </ul>
+  </li>
+  <li><strong>Adversarial Pre-training</strong> 진행
+    <ul>
+      <li>Adversarial training: 모델의 학습 데이터에 (원래 label을 갖는) adversarial example을 추가하는 것.</li>
+      <li>Adversarial pre-training: 원래 모델 학습과정 뿐만 아니라 pre-training 과정에서도
+adversarial training을 진행함.</li>
+    </ul>
+  </li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><br /><img src="https://user-images.githubusercontent.com/26705935/65689180-6e86d080-e0a7-11e9-9147-a8d0e996439c.png" alt="image" /><br /></p>
+
+    <ul>
+      <li>Adversarial pre-training 기법: clean image에 대한 성능은 약간 떨어졌으나, adversarial example에 대한 정확도가 많이 상승함.</li>
+      <li>ImageNet 데이터셋에서 CIFAR-10과 관련된 class를 지우고 똑같이 진행하더라도 정확도 기준 1.04%p 정도만 떨어짐.</li>
+      <li>CIFAR 데이터셋을 이용한 fine-tuning 과정에서, 모델의 맨 뒷단인 fully-connected layer만 업데이트했을 경우
+        <ul>
+          <li>Adversarial example에 대한 정확도: 46.1% (CIFAR-10), 26.1% (CIFAR-100)</li>
+          <li>“<em>ImageNet pre-training을 통해 adversarial feature를 제대로 학습하여 CIFAR 데이터 도메인으로 transfer하였다.</em>”</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong><em>“Pre-trained weight을 사용한 모델은 Adversarial Attack에 대해 더욱 강인하다.”</em></strong></p>
+
+<h3 id="2-2-label-corruption">2-2. Label Corruption</h3>
+<ul>
+  <li>모델의 <strong>학습 데이터에 label noise</strong>가 존재
+    <ul>
+      <li>
+        <p>Adversarial example도 일종의 noise라고 볼 수 있지만, 여기서는 아예 다른 모양의 이미지지만 label만 이상한 경우를 말함.</p>
+      </li>
+      <li>
+        <p>입력 $x$, clean label $y$, corrupted label $\tilde y$ 이고, $(x, \tilde y)$가 주어졌을 때,</p>
+        <ul>
+          <li>
+            <table>
+              <tbody>
+                <tr>
+                  <td>목표: $argmax_y p(y</td>
+                  <td>x)$</td>
+                </tr>
+              </tbody>
+            </table>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Deal with Label Corruption problem
+    <ul>
+      <li><strong>Corruption probability matrix $C$ 를 계측</strong> 하는 방향임.
+        <ul>
+          <li>
+            <table>
+              <tbody>
+                <tr>
+                  <td>$C_{ij} = p(\tilde y = j</td>
+                  <td>y = i)$ : $i$라는 class가 $j$라는 class로 corrupt될 확률.</td>
+                </tr>
+              </tbody>
+            </table>
+          </li>
+        </ul>
+      </li>
+      <li>Forward Correction (<em>Patrini et al., 2017</em>), GLC (<em>Hendrycks et al., 2018</em>) 등</li>
+    </ul>
+  </li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><br /><img src="https://user-images.githubusercontent.com/26705935/65689167-62027800-e0a7-11e9-9252-091fd8d874ab.png" alt="image" /><br /></p>
+
+    <ul>
+      <li>Label corruption 기법 + w/ vs. w/o pre-trained weight 의 성능을 비교.</li>
+      <li>표는 모델의 Test Error Rate임.</li>
+      <li>Pre-trained weight을 사용하였을 때, corrupted data를 학습한 모델의 error rate이 낮아짐.</li>
+    </ul>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65689350-dc32fc80-e0a7-11e9-95a2-e6776540bdd6.png" alt="image" /></p>
+
+    <ul>
+      <li>Pre-training에 대해 회의적인 논문에서 주장한 얘기인, <em>“Random initialized weight도 오래 학습하면 성능이 비슷해진다”</em> 는 얘기에 대해 반박하는 그림.</li>
+      <li>만일 학습 데이터가 corrupted 되어있다면, 오래 학습할수록 test error는 증가한다.</li>
+      <li>따라서, pre-trained weight을 이용해서 <em>학습 시간을 단축시키는 것은 필수적이다.</em></li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong><em>“Pre-trained weight을 사용한 모델은 Label Corrupted Data에 대해 더욱 강인하다.”</em></strong></p>
+
+<h3 id="2-3-class-imbalance">2-3. Class Imbalance</h3>
+<ul>
+  <li>
+    <p>Class가 불균형한 데이터</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65689606-5f545280-e0a8-11e9-85de-6ca468999542.png" alt="image" />
+그림: <a href="http://api.ning.com/files/vvHEZw33BGqEUW8aBYm4epYJWOfSeUBPVQAsgz7aWaNe0pmDBsjgggBxsyq*8VU1FdBshuTDdL2-bp2ALs0E-0kpCV5kVdwu/imbdata.png">출처</a></p>
+
+    <ul>
+      <li>Instance 수가 많은 <strong>Major 데이터</strong> 와, 수가 적은 <strong>Minor 데이터</strong> 로 구분.</li>
+      <li>모델 입장에서는 모든 데이터에 대해 “Major class이다” 라고 얘기하면 정확도를 높일 수 있음.</li>
+      <li>Minor 데이터에 대해 정확히 얘기할 수 있도록 모델을 학습시켜야 함.</li>
+    </ul>
+  </li>
+  <li>Deal with Class Imbalance problem
+    <ul>
+      <li><strong>Oversampling</strong> 과 <strong>undersampling</strong>
+        <ul>
+          <li>Oversampling: Minor 데이터의 개수를 증폭함. (ex. SMOTE (<em>Chawla et al., 2002</em>))</li>
+          <li>Undersampling: Major 데이터의 개수를 줄임.</li>
+        </ul>
+      </li>
+      <li><strong>Cost sensitive learning</strong> (<em>Huang et al., 2016</em>)
+        <ul>
+          <li>학습 과정의 loss function 계산에서, Minor 데이터에 대한 cost를 높게 줌.</li>
+          <li>Minor data의 영향력을 증가시킴.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65690129-5dd75a00-e0a9-11e9-9dd7-eb0aab1614d9.png" alt="image" /></p>
+
+    <ul>
+      <li>Class Imbalance 처리 기법 vs. pre-trained 성능 비교.</li>
+      <li>CIFAR-10 및 100 을 class imbalance 하도록 sampling한 데이터를 이용함.</li>
+      <li>Pre-trained weight을 사용하였을 때, imabalanced data를 학습한 모델의 error rate이 다른 Imbalanced data 처리 기법을 적용한 모델에 비해 낮음.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong><em>“Pre-trained weight을 사용한 모델은 Class Imbalanced Data에 대해 더욱 강인하다.”</em></strong></p>
+
+<h3 id="2-4-out-of-distribution-detection">2-4. Out-of-Distribution Detection</h3>
+<ul>
+  <li>모델의 Uncertainty에 관한 실험.</li>
+  <li>모델 학습 데이터 (<em>in-distribution</em>) 와 다른 분포의 데이터 (<em>out-of-distribution</em>) 를 탐지하는 정확도 측정.
+    <ul>
+      <li>Out-of-Distribution 설명: <a href="https://pod3275.github.io/paper/2019/05/31/OOD.html">관련 글</a> 참고.</li>
+    </ul>
+  </li>
+  <li>OOD Detection method
+    <ul>
+      <li>Threshold 기반의 탐지 기법 (<em>Hendrycks &amp; Gimpel (2017)</em>)</li>
+      <li>입력에 대한 모델의 <strong>softmax probability의 최대값</strong> 을 이용하여 OOD를 판단.
+        <ul>
+          <li>In-distribution data라면 모델이 높은 확률로 대답할 것임.</li>
+          <li>Out-of-distribution data라면 모델이 낮은 확률로 대답할 것임.</li>
+        </ul>
+      </li>
+      <li>
+        <p>Threshold 설정에 따라 AUPR (Area Under Precision Recall) 로 탐지 성능을 측정함.</p>
+
+        <p><img src="https://user-images.githubusercontent.com/26705935/65691148-4d27e380-e0ab-11e9-998b-602402124a95.png" alt="image" />
+그림: <a href="https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5">출처1</a>, <a href="https://youtu.be/nMAtFhamoRY">출처2</a></p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65691268-87918080-e0ab-11e9-806d-48bb2b5e8e48.png" alt="image" /></p>
+
+    <ul>
+      <li>표: 왼쪽의 In-distribution data에 대해, 다양한 OOD data의 탐지 성능.</li>
+      <li>Pre-trained weight을 사용하였을 때, threshold 기반의 OOD 탐지 기법의 성능이 향상함.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong><em>“Pre-trained weight을 사용한 모델은 Out-of-Distribution data를 더욱 잘 구분한다.”</em></strong></p>
+
+<h3 id="2-5-calibration">2-5. Calibration</h3>
+<ul>
+  <li>모델의 Confidence
+    <ul>
+      <li>주어진 입력에 대한 모델의 softmax probability의 최대 값은, <strong>그 모델이 해당 데이터를 이 class로 판단하는 신뢰도</strong> 로 볼 수 있음.
+        <ul>
+          <li>예를 들어, maximum probability가 0.7인 데이터 10개를 모아놓으면, 그 10개 중에 7개가 정답인 것이 자연스러움.</li>
+        </ul>
+      </li>
+      <li>
+        <p>즉, <strong>모델이 내뱉는 확률 = 실제로 맞출 확률</strong> 인 모델을 추구함.</p>
+      </li>
+      <li>이렇게, 모델이 내뱉는 확률의 최대 값이 모델의 정확도와 같아지는 경우, well-calibrated 되었다고 말함.</li>
+    </ul>
+  </li>
+  <li>모델의 Calibration 측정
+    <ul>
+      <li>
+        <p><em>Root Mean Square Calibration Error (RMS-CE)</em></p>
+      </li>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>$ RMS = \sum_{m=1}^M {\frac{</td>
+              <td>B_m</td>
+              <td>}{n} \sqrt {(acc(B_m)-conf(B_m))^2}}$</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>$B_m$ : n개의 데이터 단위 집합.</li>
+          <li>$acc(B_m)$ : $B_m$ 내 데이터에 대한 모델의 정확도.</li>
+          <li>$conf(B_m)$ : $B_m$ 내 데이터의 softmax probability 최대 값의 평균.</li>
+        </ul>
+      </li>
+      <li>RMS는 error이기 때문에, 낮을수록 좋음.</li>
+    </ul>
+  </li>
+  <li>
+    <p>실험 결과</p>
+
+    <p><img src="https://user-images.githubusercontent.com/26705935/65692308-4601d500-e0ad-11e9-8333-4393a49a992a.png" alt="image" /></p>
+
+    <ul>
+      <li>Pre-trained weight을 사용하였을 때, 모델의 calibration을 나타내는 RMS error가 감소함.</li>
+      <li>Pre-trained weight을 사용한 모델이 random init weight 모델에 비해 더욱 well-calibrated 됨.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong><em>“Pre-trained weight을 사용한 모델은 well-calibrated 되어있다.”</em></strong></p>
+
+<h2 id="3-conclusion">3. Conclusion</h2>
+<ul>
+  <li>
+    <p>Kaiming He가 주장한 의견인, <em>“Pre-training은 성능 향상의 효과는 없고, 단지 학습 수렴을 빨라지게 하기 때문에, 꼭 필요하지 않다.”</em> 을 반박함.</p>
+  </li>
+  <li><em>“Pre-training은 성능 측면이 아닌, 모델의 Robustness 및 Uncertainty 측면에서 향상의 효과가 있다.”</em>
+    <ul>
+      <li>Adversarial Robustness, Label Corruption, Class Imbalance</li>
+      <li>Out-of-Distribution Detection, Calibration</li>
+    </ul>
+  </li>
+  <li>앞으로의 모델의 robustness 및 uncertainty 향상에 관한 연구는, pre-training을 기본적으로 생각하면서 성능을 평가해야 한다고 주장함.</li>
+</ul>
+
+</article>
+
+
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F09%2F26%2FPreTraining.html&via=SangheonLee"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&u=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F09%2F26%2FPreTraining.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F09%2F26%2FPreTraining.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+      <a href="//plus.google.com/share?title=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F09%2F26%2FPreTraining.html"
+        onclick="window.open(this.href, 'google-plus-share', 'width=550,height=255');return false;">
+        <i class="fa fa-google-plus-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Using+Pre-Training+Can+Improve+Model+Robustness+and+Uncertainty+%EC%A0%95%EB%A6%AC&url=http%3A%2F%2Flocalhost%3A4000%2Fpaper%2F2019%2F09%2F26%2FPreTraining.html&media=http://localhost:4000/assets/header_image.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+      <a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent('http://localhost:4000/paper/2019/09/26/PreTraining.html') + '&title=Using Pre-Training Can Improve Model Robustness and Uncertainty 정리'; return false">
+        <i class="fa fa-reddit-square fa-lg"></i>
+      </a>
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'pod3275';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">pod3275</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/category/paper/">paper</a>
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:lawlee1@naver.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">lawlee1@naver.com</span>
+          </a>
+        </li>
+
+        
+          
+        
+          
+          <li>
+            <a href="https://www.facebook.com/lawlee1LSH" title="Friend me on Facebook">
+              <i class="fa fa-facebook"></i>
+              <span class="username">이상헌</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/pod3275" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">pod3275</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/sangheon-lee-626401181/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">Sangheon Lee</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://www.youtube.com/channel/UC4QufB9MMXa3UjEfmZTXMEA" title="Subscribe on YouTube">
+              <i class="fa fa-youtube"></i>
+              <span class="username">칼바람 뿍뽁이</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/sanghoney95/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">Sanghoney95</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">pod3275의 머신 러닝 블로그
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-145715679-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/paper/2019/09/26/PreTraining.html',
+    'title': 'Using Pre-Training Can Improve Model Robustness and Uncertainty 정리'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

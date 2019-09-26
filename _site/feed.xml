@@ -6,9 +6,366 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 26 Sep 2019 23:02:03 +0900</pubDate>
-    <lastBuildDate>Thu, 26 Sep 2019 23:02:03 +0900</lastBuildDate>
+    <pubDate>Thu, 26 Sep 2019 23:05:04 +0900</pubDate>
+    <lastBuildDate>Thu, 26 Sep 2019 23:05:04 +0900</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Using Pre-Training Can Improve Model Robustness and Uncertainty 정리</title>
+        <description>&lt;h1 id=&quot;using-pre-training-can-improve-model-robustness-and-uncertainty-정리&quot;&gt;Using Pre-Training Can Improve Model Robustness and Uncertainty 정리&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;저자 : Dan Hendrycks, Kimin Lee, Mantas Mazeika&lt;/li&gt;
+  &lt;li&gt;학회 : ICML 2019&lt;/li&gt;
+  &lt;li&gt;날짜 : 2019.01.28 (last revised 2019.06.21)&lt;/li&gt;
+  &lt;li&gt;인용 : 9회&lt;/li&gt;
+  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1901.09960.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;1-introduction&quot;&gt;1. Introduction&lt;/h2&gt;
+&lt;h3 id=&quot;pre-training&quot;&gt;Pre-Training&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Pre-training이란 내가 원하는 task 이외의 &lt;strong&gt;다른 task의 데이터를 이용하여 주어진 모델을 먼저 학습하는 과정&lt;/strong&gt;을 말함.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;특히 이미지 데이터에 대한 task를 수행하는 모델의 경우, &lt;strong&gt;ImageNet 데이터&lt;/strong&gt;를 이용한 pre-training을 널리 사용함.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;과거의 Pre-training
+    &lt;ul&gt;
+      &lt;li&gt;(&lt;a href=&quot;https://m.blog.naver.com/PostView.nhn?blogId=laonple&amp;amp;logNo=220884698923&amp;amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F&quot;&gt;다음 블로그 내용&lt;/a&gt;을 참고함.)&lt;/li&gt;
+      &lt;li&gt;2006년 이전에는 hidden layer가 2개 이상인 neural network (이하 딥러닝) 의 경우 학습이 제대로 이루어지지 않아, 널리 사용하지 못하였음.&lt;/li&gt;
+      &lt;li&gt;딥러닝의 학습을 위해 제안된 여러 기법들 중 Bengio 교수의 &lt;strong&gt;Greedy Layer-Wise Training&lt;/strong&gt;.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65571500-e4077980-df9f-11e9-8aaf-c4b66884571f.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;딥러닝 모델의 각 layer의 node수와 같은 hidden layer를 하나 갖는 auto-encoder 구조의 분할 모델을 unsupervised way로 학습.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;학습된 여러 auto-encoder의 weight (박스 안의 부분) 들을 원래 모델에 합쳐서, 원래 모델을 전체적으로 supervised way로 학습.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;이후 dropout, relu 등 딥러닝 학습을 가능하게 하는 다양한 기법들이 제안되면서 현재는 크게 사용하지 않는 기법이지만, 딥러닝 사용을 boosting하는 획기적인 기법이었음.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;또한, Pre-train의 개념이 처음으로 제안된 아이디어임.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;현재의 Pre-training&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65571862-22516880-dfa1-11e9-8ec8-d7a2d7ca040f.png&quot; alt=&quot;image&quot; /&gt;
+그림: &lt;a href=&quot;https://www.mdpi.com/2072-4292/9/7/666/pdf-vor&quot;&gt;출처&lt;/a&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;주어진 분류 모델을, 내 데이터가 아닌 다른 데이터로 학습.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;모델 뒤의 fully-connected layer (dense layer, 분류 또는 개체 감지 등의 결과를 계산하는 부분) 를 내 데이터에 알맞게 바꿔서, 전체 모델을 내 데이터로 학습.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;데이터의 feature를 추출하는 것은 task independent하기 때문에, &lt;strong&gt;데이터의 수가 많은 다른 task를 이용하여 모델 앞 단의 feature extractor 부분을 학습하자&lt;/strong&gt; 라는 것임.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;이렇게 널리 쓰이는 Pre-training 기법에 대해, 회의적인 의견을 제시한 논문 등장.
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;“Rethinking ImageNet Pre-training”, He et al., 2018. &lt;a href=&quot;https://arxiv.org/pdf/1811.08883.pdf&quot;&gt;paper&lt;/a&gt; (무려 ResNet 논문의 저자 Kaiming He의 논문)&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;ImageNet pre-trained weight를 사용하는 건 모델 수렴을 빠르게 해준다.&lt;/li&gt;
+      &lt;li&gt;하지만 &lt;strong&gt;최종 성능을 높여주거나 overfitting을 방지해주는 효과는 없다.&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65572222-5ed19400-dfa2-11e9-997a-997c50d30e7b.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;그래프와 같이, weight를 randomly initialized한 모델은 학습 속도는 느림.&lt;/li&gt;
+      &lt;li&gt;하지만 오래 학습하다보면 pre-trained weight를 사용한 모델과 성능이 비슷해짐.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;특히 오른쪽 그래프처럼, 학습 데이터 수가 적어도 성능이 비슷해지는 걸 보면, generalization 측면에서도 특효가 있지 않음.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;최종적으로, pre-trained weight를 사용하는 것이 필수적인 건 아니다. (not necessary)&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;본 논문에서는 위의 논문을 반박함.
+    &lt;ul&gt;
+      &lt;li&gt;Pre-trained weight가 성능 개선이 없을 수 있지만, 다른 방면에서 우수성이 있다.&lt;/li&gt;
+      &lt;li&gt;특히, &lt;strong&gt;모델의 Robustness 및 Uncertainty&lt;/strong&gt; 를 크게 개선한다.
+        &lt;ul&gt;
+          &lt;li&gt;Robustness : Adversarial Robustness, Label Corruption, Class Imbalance&lt;/li&gt;
+          &lt;li&gt;Uncertainty : Out-of-Distribution Detection, Calibration&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;이에 대한 다양한 실험을 진행하며, pre-trained weight의 우수성을 입증함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;2-experiments&quot;&gt;2. Experiments&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;이미지 분류 모델을 이용하여 실험 진행.&lt;/li&gt;
+  &lt;li&gt;ImageNet 데이터를 이용하여 pre-training한 weight을 사용한 모델과 안한 모델을 비교평가.&lt;/li&gt;
+  &lt;li&gt;모델의 robustness 및 uncertainty를 평가함.
+    &lt;ul&gt;
+      &lt;li&gt;Robustness: Adversarial Robustness, Label Corruption, Class Imbalance&lt;/li&gt;
+      &lt;li&gt;Uncertainty: Out-of-Distribution Detection, Calibration&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;2-1-adversarial-robustness&quot;&gt;2-1. Adversarial Robustness&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Adversarial attack에 대해 강인한가
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial attack 설명: &lt;a href=&quot;https://pod3275.github.io/paper/2019/08/02/KDwithADVsamples.html&quot;&gt;관련 글&lt;/a&gt; 참고. (Related works 부분)&lt;/li&gt;
+      &lt;li&gt;주어진 adversarial example에 대해, 원래의 class라고 말할 확률 (accuracy) 측정.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Adversarial Pre-training&lt;/strong&gt; 진행
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial training: 모델의 학습 데이터에 (원래 label을 갖는) adversarial example을 추가하는 것.&lt;/li&gt;
+      &lt;li&gt;Adversarial pre-training: 원래 모델 학습과정 뿐만 아니라 pre-training 과정에서도
+adversarial training을 진행함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;br /&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65689180-6e86d080-e0a7-11e9-9147-a8d0e996439c.png&quot; alt=&quot;image&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial pre-training 기법: clean image에 대한 성능은 약간 떨어졌으나, adversarial example에 대한 정확도가 많이 상승함.&lt;/li&gt;
+      &lt;li&gt;ImageNet 데이터셋에서 CIFAR-10과 관련된 class를 지우고 똑같이 진행하더라도 정확도 기준 1.04%p 정도만 떨어짐.&lt;/li&gt;
+      &lt;li&gt;CIFAR 데이터셋을 이용한 fine-tuning 과정에서, 모델의 맨 뒷단인 fully-connected layer만 업데이트했을 경우
+        &lt;ul&gt;
+          &lt;li&gt;Adversarial example에 대한 정확도: 46.1% (CIFAR-10), 26.1% (CIFAR-100)&lt;/li&gt;
+          &lt;li&gt;“&lt;em&gt;ImageNet pre-training을 통해 adversarial feature를 제대로 학습하여 CIFAR 데이터 도메인으로 transfer하였다.&lt;/em&gt;”&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;“Pre-trained weight을 사용한 모델은 Adversarial Attack에 대해 더욱 강인하다.”&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-2-label-corruption&quot;&gt;2-2. Label Corruption&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;모델의 &lt;strong&gt;학습 데이터에 label noise&lt;/strong&gt;가 존재
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Adversarial example도 일종의 noise라고 볼 수 있지만, 여기서는 아예 다른 모양의 이미지지만 label만 이상한 경우를 말함.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;입력 $x$, clean label $y$, corrupted label $\tilde y$ 이고, $(x, \tilde y)$가 주어졌을 때,&lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;table&gt;
+              &lt;tbody&gt;
+                &lt;tr&gt;
+                  &lt;td&gt;목표: $argmax_y p(y&lt;/td&gt;
+                  &lt;td&gt;x)$&lt;/td&gt;
+                &lt;/tr&gt;
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Deal with Label Corruption problem
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Corruption probability matrix $C$ 를 계측&lt;/strong&gt; 하는 방향임.
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;table&gt;
+              &lt;tbody&gt;
+                &lt;tr&gt;
+                  &lt;td&gt;$C_{ij} = p(\tilde y = j&lt;/td&gt;
+                  &lt;td&gt;y = i)$ : $i$라는 class가 $j$라는 class로 corrupt될 확률.&lt;/td&gt;
+                &lt;/tr&gt;
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Forward Correction (&lt;em&gt;Patrini et al., 2017&lt;/em&gt;), GLC (&lt;em&gt;Hendrycks et al., 2018&lt;/em&gt;) 등&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;br /&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65689167-62027800-e0a7-11e9-9252-091fd8d874ab.png&quot; alt=&quot;image&quot; /&gt;&lt;br /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Label corruption 기법 + w/ vs. w/o pre-trained weight 의 성능을 비교.&lt;/li&gt;
+      &lt;li&gt;표는 모델의 Test Error Rate임.&lt;/li&gt;
+      &lt;li&gt;Pre-trained weight을 사용하였을 때, corrupted data를 학습한 모델의 error rate이 낮아짐.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65689350-dc32fc80-e0a7-11e9-95a2-e6776540bdd6.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Pre-training에 대해 회의적인 논문에서 주장한 얘기인, &lt;em&gt;“Random initialized weight도 오래 학습하면 성능이 비슷해진다”&lt;/em&gt; 는 얘기에 대해 반박하는 그림.&lt;/li&gt;
+      &lt;li&gt;만일 학습 데이터가 corrupted 되어있다면, 오래 학습할수록 test error는 증가한다.&lt;/li&gt;
+      &lt;li&gt;따라서, pre-trained weight을 이용해서 &lt;em&gt;학습 시간을 단축시키는 것은 필수적이다.&lt;/em&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;“Pre-trained weight을 사용한 모델은 Label Corrupted Data에 대해 더욱 강인하다.”&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-3-class-imbalance&quot;&gt;2-3. Class Imbalance&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Class가 불균형한 데이터&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65689606-5f545280-e0a8-11e9-85de-6ca468999542.png&quot; alt=&quot;image&quot; /&gt;
+그림: &lt;a href=&quot;http://api.ning.com/files/vvHEZw33BGqEUW8aBYm4epYJWOfSeUBPVQAsgz7aWaNe0pmDBsjgggBxsyq*8VU1FdBshuTDdL2-bp2ALs0E-0kpCV5kVdwu/imbdata.png&quot;&gt;출처&lt;/a&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Instance 수가 많은 &lt;strong&gt;Major 데이터&lt;/strong&gt; 와, 수가 적은 &lt;strong&gt;Minor 데이터&lt;/strong&gt; 로 구분.&lt;/li&gt;
+      &lt;li&gt;모델 입장에서는 모든 데이터에 대해 “Major class이다” 라고 얘기하면 정확도를 높일 수 있음.&lt;/li&gt;
+      &lt;li&gt;Minor 데이터에 대해 정확히 얘기할 수 있도록 모델을 학습시켜야 함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Deal with Class Imbalance problem
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Oversampling&lt;/strong&gt; 과 &lt;strong&gt;undersampling&lt;/strong&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Oversampling: Minor 데이터의 개수를 증폭함. (ex. SMOTE (&lt;em&gt;Chawla et al., 2002&lt;/em&gt;))&lt;/li&gt;
+          &lt;li&gt;Undersampling: Major 데이터의 개수를 줄임.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Cost sensitive learning&lt;/strong&gt; (&lt;em&gt;Huang et al., 2016&lt;/em&gt;)
+        &lt;ul&gt;
+          &lt;li&gt;학습 과정의 loss function 계산에서, Minor 데이터에 대한 cost를 높게 줌.&lt;/li&gt;
+          &lt;li&gt;Minor data의 영향력을 증가시킴.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65690129-5dd75a00-e0a9-11e9-9dd7-eb0aab1614d9.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Class Imbalance 처리 기법 vs. pre-trained 성능 비교.&lt;/li&gt;
+      &lt;li&gt;CIFAR-10 및 100 을 class imbalance 하도록 sampling한 데이터를 이용함.&lt;/li&gt;
+      &lt;li&gt;Pre-trained weight을 사용하였을 때, imabalanced data를 학습한 모델의 error rate이 다른 Imbalanced data 처리 기법을 적용한 모델에 비해 낮음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;“Pre-trained weight을 사용한 모델은 Class Imbalanced Data에 대해 더욱 강인하다.”&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-4-out-of-distribution-detection&quot;&gt;2-4. Out-of-Distribution Detection&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;모델의 Uncertainty에 관한 실험.&lt;/li&gt;
+  &lt;li&gt;모델 학습 데이터 (&lt;em&gt;in-distribution&lt;/em&gt;) 와 다른 분포의 데이터 (&lt;em&gt;out-of-distribution&lt;/em&gt;) 를 탐지하는 정확도 측정.
+    &lt;ul&gt;
+      &lt;li&gt;Out-of-Distribution 설명: &lt;a href=&quot;https://pod3275.github.io/paper/2019/05/31/OOD.html&quot;&gt;관련 글&lt;/a&gt; 참고.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;OOD Detection method
+    &lt;ul&gt;
+      &lt;li&gt;Threshold 기반의 탐지 기법 (&lt;em&gt;Hendrycks &amp;amp; Gimpel (2017)&lt;/em&gt;)&lt;/li&gt;
+      &lt;li&gt;입력에 대한 모델의 &lt;strong&gt;softmax probability의 최대값&lt;/strong&gt; 을 이용하여 OOD를 판단.
+        &lt;ul&gt;
+          &lt;li&gt;In-distribution data라면 모델이 높은 확률로 대답할 것임.&lt;/li&gt;
+          &lt;li&gt;Out-of-distribution data라면 모델이 낮은 확률로 대답할 것임.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Threshold 설정에 따라 AUPR (Area Under Precision Recall) 로 탐지 성능을 측정함.&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65691148-4d27e380-e0ab-11e9-998b-602402124a95.png&quot; alt=&quot;image&quot; /&gt;
+그림: &lt;a href=&quot;https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5&quot;&gt;출처1&lt;/a&gt;, &lt;a href=&quot;https://youtu.be/nMAtFhamoRY&quot;&gt;출처2&lt;/a&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65691268-87918080-e0ab-11e9-806d-48bb2b5e8e48.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;표: 왼쪽의 In-distribution data에 대해, 다양한 OOD data의 탐지 성능.&lt;/li&gt;
+      &lt;li&gt;Pre-trained weight을 사용하였을 때, threshold 기반의 OOD 탐지 기법의 성능이 향상함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;“Pre-trained weight을 사용한 모델은 Out-of-Distribution data를 더욱 잘 구분한다.”&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-5-calibration&quot;&gt;2-5. Calibration&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;모델의 Confidence
+    &lt;ul&gt;
+      &lt;li&gt;주어진 입력에 대한 모델의 softmax probability의 최대 값은, &lt;strong&gt;그 모델이 해당 데이터를 이 class로 판단하는 신뢰도&lt;/strong&gt; 로 볼 수 있음.
+        &lt;ul&gt;
+          &lt;li&gt;예를 들어, maximum probability가 0.7인 데이터 10개를 모아놓으면, 그 10개 중에 7개가 정답인 것이 자연스러움.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;즉, &lt;strong&gt;모델이 내뱉는 확률 = 실제로 맞출 확률&lt;/strong&gt; 인 모델을 추구함.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;이렇게, 모델이 내뱉는 확률의 최대 값이 모델의 정확도와 같아지는 경우, well-calibrated 되었다고 말함.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;모델의 Calibration 측정
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;em&gt;Root Mean Square Calibration Error (RMS-CE)&lt;/em&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;table&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;
+              &lt;td&gt;$ RMS = \sum_{m=1}^M {\frac{&lt;/td&gt;
+              &lt;td&gt;B_m&lt;/td&gt;
+              &lt;td&gt;}{n} \sqrt {(acc(B_m)-conf(B_m))^2}}$&lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+        &lt;ul&gt;
+          &lt;li&gt;$B_m$ : n개의 데이터 단위 집합.&lt;/li&gt;
+          &lt;li&gt;$acc(B_m)$ : $B_m$ 내 데이터에 대한 모델의 정확도.&lt;/li&gt;
+          &lt;li&gt;$conf(B_m)$ : $B_m$ 내 데이터의 softmax probability 최대 값의 평균.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;RMS는 error이기 때문에, 낮을수록 좋음.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;실험 결과&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/65692308-4601d500-e0ad-11e9-8333-4393a49a992a.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Pre-trained weight을 사용하였을 때, 모델의 calibration을 나타내는 RMS error가 감소함.&lt;/li&gt;
+      &lt;li&gt;Pre-trained weight을 사용한 모델이 random init weight 모델에 비해 더욱 well-calibrated 됨.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;“Pre-trained weight을 사용한 모델은 well-calibrated 되어있다.”&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;3-conclusion&quot;&gt;3. Conclusion&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kaiming He가 주장한 의견인, &lt;em&gt;“Pre-training은 성능 향상의 효과는 없고, 단지 학습 수렴을 빨라지게 하기 때문에, 꼭 필요하지 않다.”&lt;/em&gt; 을 반박함.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;“Pre-training은 성능 측면이 아닌, 모델의 Robustness 및 Uncertainty 측면에서 향상의 효과가 있다.”&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Adversarial Robustness, Label Corruption, Class Imbalance&lt;/li&gt;
+      &lt;li&gt;Out-of-Distribution Detection, Calibration&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;앞으로의 모델의 robustness 및 uncertainty 향상에 관한 연구는, pre-training을 기본적으로 생각하면서 성능을 평가해야 한다고 주장함.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Thu, 26 Sep 2019 05:00:00 +0900</pubDate>
+        <link>http://localhost:4000/paper/2019/09/26/PreTraining.html</link>
+        <guid isPermaLink="true">http://localhost:4000/paper/2019/09/26/PreTraining.html</guid>
+        
+        
+        <category>paper</category>
+        
+      </item>
     
       <item>
         <title>Knowledge Distillation with Adversarial Samples Supporting Decision Boundary 정리</title>
@@ -2116,103 +2473,6 @@
         <pubDate>Fri, 29 Mar 2019 06:40:00 +0900</pubDate>
         <link>http://localhost:4000/paper/2019/03/29/Tendency.html</link>
         <guid isPermaLink="true">http://localhost:4000/paper/2019/03/29/Tendency.html</guid>
-        
-        
-        <category>paper</category>
-        
-      </item>
-    
-      <item>
-        <title>Synthetic and Natural Noise Both Break Neural Machine Translation 정리</title>
-        <description>&lt;h1 id=&quot;synthetic-and-natural-noise-both-break-neural-machine-translation-정리&quot;&gt;Synthetic and Natural Noise Both Break Neural Machine Translation 정리&lt;/h1&gt;
-&lt;ul&gt;
-  &lt;li&gt;저자 : Yonatan Bellnkov, Yonatan Bisk&lt;/li&gt;
-  &lt;li&gt;학회 : ICLR 2018&lt;/li&gt;
-  &lt;li&gt;날짜 : 2017.11.06 (last revised 2018.02.24)&lt;/li&gt;
-  &lt;li&gt;인용 : 47회&lt;/li&gt;
-  &lt;li&gt;논문 : &lt;a href=&quot;https://arxiv.org/pdf/1711.02173.pdf&quot;&gt;paper&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;1-human-robust-language-processing-system&quot;&gt;1. Human robust language processing system&lt;/h2&gt;
-&lt;p&gt;인간은 오타, 스펠링 오류, 철자 누락 등의 에러가 섞인 텍스트에 놀랍도록 robust한 언어 체계 시스템을 가지고 있다. (Rawlinson, 1976) 다음 문장을 보면 이해가 잘 될 것이다.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;“Aoccdrnig to a rscheearch at Cmabrigde Uinervtisy, it deosn’t mttaer in waht oredr the ltteers in a wrod are, the olny iprmoetnt tihng is taht the frist and lsat ltteer be at the rghit pclae.”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;위의 문장은 단어에 에러가 많이 섞여 있지만, 딱 봤을 때 잘 읽힌다.&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;According to a research at Cambridge University, it doesn’t matter in what order the letters in a word are, the only important thing is that the first and last letter be at the right place.)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;하지만 기계 학습 기반의 기계 번역 시스템은 이 문장의 의미를 제대로 해석하지 못한다. 이 문장을 구글 번역기를 이용하여 한국어로 해석하였을 때, 다음과 같은 말도 안되는 문장이 나타난다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40490565-ce639ea8-5fa6-11e8-92b1-83ff1c3d7921.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;논문 서론에서는 &lt;strong&gt;인간의 robust한 언어 체계 시스템&lt;/strong&gt;의 특징을 설명한다. Saberi &amp;amp; Perrott (1999)에 의하면 robustness 특성은 audio에도 잘 적용된다고 한다. Rayner et al. (2006)은 &lt;strong&gt;noise 환경에서 텍스트를 읽는 능력이 단지 11%밖에 떨어지지 않는다&lt;/strong&gt;는 결과를 찾았으며, McCusker et. Al. (1981) 은 &lt;strong&gt;두 문자의 위치가 바뀐 형태는 인간에게 잘 인지되지 않는다&lt;/strong&gt;는 것을 확인하였다. 특히 중요한 것은, &lt;strong&gt;인간은 단어의 형태(word shape)에 크게 의존&lt;/strong&gt;하며, 단어의 맨 앞 문자와 뒷 문자를 고정시킨다면 그 의미를 쉽게 알아볼 수 있다는 것이다. (Mayall et al., 1997, Reicher, 1969; Pelli et al., 2003)&lt;/p&gt;
-
-&lt;p&gt;이러한 인간의 robust한 언어 시스템과는 달리, Neural Machine Translation (NMT) 시스템은 에러가 섞인 데이터에 매우 취약하다. 에러가 섞인 텍스트 데이터를 명시적으로 처리하지 않으면 기계 번역 시스템은 이의 의미를 파악하기 힘들다.&lt;/p&gt;
-
-&lt;p&gt;그럼에도 불구하고 저자들은 character-based NMT가 중요하다고 얘기한다. 두 가지 이유가 있는데, 사전에 없는 단어들에 대한 long-tailed distribution (긴 꼬리 분포?)을 생성하는 데 도움을 준다고 하며, 큰 word embedding 값을 계산하는 computational cost을 줄여준다고 한다. 첫 번째는 아마 특정 언어의 큰 줄기(전체적인 특징)을 파악할 수 있도록 해준다는 것 같다. 그래서 character-based NMT를 계속하여 사용해야 한다.&lt;/p&gt;
-
-&lt;p&gt;본 논문에서는 기존 NMT 모델의 robustness를 증가시키기 위한 두 가지 방안을 제시한다. 첫 번째는 &lt;strong&gt;word embedding 표현에 있어서 structure-invariant한 표현법을 제시&lt;/strong&gt;하는 것이고, 두 번째는 &lt;strong&gt;noise가 섞인 데이터를 이용하여 adversarial training&lt;/strong&gt;을 하는 것이다. 결국에는 자연적인(natural) 혹은 합성한(synthetic) noise가 포함된 텍스트를 training set으로 하여 NMT 모델을 학습시키는 방법이 가장 효과적이었다. &lt;strong&gt;본 논문의 point는 synthetic noise를 생성하는 방식이며, natural noise를 어떻게 최대한 cover할지에 대한 논의를 제기&lt;/strong&gt;한다.&lt;/p&gt;
-
-&lt;h2 id=&quot;2-adversarial-example&quot;&gt;2. Adversarial example&lt;/h2&gt;
-&lt;p&gt;Adversarial example은 머신 러닝 모델이 실 세계에서 적용되는 것이 매우 위험하다는 사실을 증명한다. 개념은 &lt;strong&gt;input에 아주 작은 변화&lt;/strong&gt;를 줌으로써 머신 러닝 모델이 이를 알아보지 못하여 전혀 다른 결과를 내놓게 만들고, 이를 통해 머신 러닝의 큰 실패를 유도하는 것이다. 예를 들어, 아래 그림과 같이 인간이 알아보지 못하는 아주 작은 change가 섞인 두 이미지를 classification하였을 때, 두 결과가 완전히 반대 혹은 서로 관련 없게 나타날 수 있다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494041-e95a0776-5fae-11e8-93ea-eab617f6dfdc.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;(출처 : https://blog.openai.com/adversarial-example-research/)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Adversarial example을 이용하여 머신 러닝 모델을 제 기능을 하지 못하도록 하는 것이 adversarial attack이다. Adversarial attack은 adversarial example을 생성하는 과정에서 모델의 parameter에 접근할 수 있냐 없냐에 따라 두 가지 종류로 나뉜다. White-box attack은 모델의 parameter에 접근하여 adversarial example을 생성한다. 반면에 Black-box attack은 parameter에 직접 접근하지 않고도 adversarial example을 생성 및 공격을 시도한다.&lt;/p&gt;
-
-&lt;p&gt;본 논문에서는 모델의 parameter에 접근하지 않고, NMT 모델에 대한 adversarial example을 생성하는 black-box 방식을 고안한다. 모델의 parameter, 즉 gradient에 접근하지 않고, 저자들은 합성(synthetic) error 혹은 자연(natural) error를 통해 adversarial example을 생성한다. 또한 생성한 adversarial example을 여러 조합으로 섞은 데이터셋을 training set으로 함으로써 adversarial training을 적용한다. 정확히 얘기하면 ensemble adversarial training이고, 이를 통해 NMT 모델의 robustness를 증가시킨다.&lt;/p&gt;
-
-&lt;h2 id=&quot;3-data-and-error&quot;&gt;3. Data and Error&lt;/h2&gt;
-&lt;p&gt;연구에서 사용한 데이터는 TED 강연의 parallel corpus이다. Parallel한 것은 같은 의미의 말을 다양한 언어로 표현되어 있기에 쓴 말인 것 같다. 데이터 셋의 크기는 아래와 같다. 언어는 프랑스어, 독일어, 체코어로 3가지의 언어로 된 말뭉치를 사용한다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494148-2194268a-5faf-11e8-97e3-2da9031a7246.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;다음은 본 논문의 point인, noise가 섞인 텍스트를 생성 방안이다. 저자들은 noise를 크게 &lt;strong&gt;자연적인(natural) noise&lt;/strong&gt;와 &lt;strong&gt;합성(synthetic) noise&lt;/strong&gt;로 나눈다. 자연 noise는 실제로 인간이 만들어내는 noise이고, 합성 noise는 여러 요인들에 의해 이렇게 만들어질 것이다 라고 예측하여 만들어낸 noise이다. 사실 “자연적”으로 만들어진다는 것의 정의가 모호하다고 생각한다. 인간이 “자연”스럽게 만드는 noise는 어떤 방식인가? 결국 keyboard로 입력하는 text라면 합성 noise와 크게 다를 바가 없지 않을까? 하지만 뒤의 결과를 보면 합성 noise는 cover되지만 자연 noise는 cover하지 못하는 현상을 볼 수 있다. 자연 noise에는 어떤 데이터들이 있는지, 그것이 합성 noise와 어떻게 다른 지 실제로 보고 싶은 생각이 들었다.&lt;/p&gt;
-
-&lt;p&gt;자연 noise는 기존의 (TED 말뭉치와는 다른)말뭉치에서 발생한, 수정 가능한 error(오타, 스펠링 오류, 문자 누락 등)을 추출한다. 이후 TED 말뭉치 내에서 변환할 수 있는 모든 단어들을 natural noise가 섞인 단어로 변환하였다. 변환 비율은 아래와 같다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494197-3d7c8414-5faf-11e8-8680-46f28b4a7314.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;합성 noise에 대해 저자들은 이를 만드는 4가지 방식을 제시한다. 각각 맨 앞과 맨 뒷문자를 제외한 두 문자의 위치를 바꾸는 Swap, 앞과 뒤를 제외한 중간 문자의 순서를 바꾸는 Mid, 앞과 뒤 문자를 포함하여 단어 내 모든 문자의 순서를 바꾸는 Rand 그리고 단어 내 한 문자를 키보드 상 가까이 있는 문자로 치환하는 Key이다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40494212-47211246-5faf-11e8-9ddc-f17b40a3f939.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;만드는 구조를 보면 썩 괜찮아 보인다. 인간이 발생시키는 noise가 섞인 단어들을 어느정도 cover할 수 있을 것이라고 생각 들었다. 근데 막상 결과를 보면 natural noise를 cover하지 못하는 현상을 볼 수 있다.&lt;/p&gt;
-
-&lt;h2 id=&quot;4-첫-번째-실험&quot;&gt;4. 첫 번째 실험&lt;/h2&gt;
-&lt;p&gt;첫 번째 실험은 Vanilla text로 학습하고, noise text를 test set으로 하여 번역의 성능을 판별한다. 판별 기준은 BLEU score인데, &lt;strong&gt;BLEU score&lt;/strong&gt;는 기계 학습이 번역한 텍스트가 인간이 만들어 내는 것과 얼마나 유사한지를 기준으로 기계 학습의 성능을 측정하는 도표이다.&lt;/p&gt;
-
-&lt;p&gt;모델은 총 3가지의 서로 다른 NMT 모델을 사용하였다. &lt;strong&gt;Char2char 모델&lt;/strong&gt;(Lee et al., 2017)은 attention 기법을 이용한sequence-to-sequence model으로, 복잡한 encoder 및 standard recurrent decoder를 가진다. &lt;strong&gt;Nematus 모델&lt;/strong&gt;(Sennrich et al., 2017)은 WMT라는 기계 번역 워크샵에서 가장 우수한 성능을 보인 모델이다. 마지막으로 &lt;strong&gt;charCNN 모델&lt;/strong&gt;은 word representation 기반의 character cNN 모델이다. 이는 형태학적으로 풍부한 특성을 가진 언어에서 좋은 성능을 보인다고 한다. (Kim et al., 2015; Belinkov &amp;amp; Glass, 2016; Costa-juss’a &amp;amp; Fonollosa, 2016; Sajjad et al., 2017)&lt;/p&gt;
-
-&lt;p&gt;3가지 모델 및 위에서 설명한 데이터를 이용하여 한 실험의 결과는 당연히 아래 표와 같이 잘 안 나온다. 이것은 논문이 작성된 이유이기도 하다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40530594-5aec8f78-6034-11e8-82cc-66cb918270f1.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;특히 독일 사람은 noise가 섞인 text를 보고 robust한 system에 의해 그 의미를 잘 이해하는 반면, 3가지 NMT 모델은 모두 말이 되지 않는 번역 결과를 내놓는다. 이로써 기존의 기계 번역 시스템은 noise가 섞인 text에 매우 취약하다는 것을 보인다.&lt;/p&gt;
-
-&lt;p&gt;단순히 spell check를 한 후에 checking된 text를 번역하면 성공할 수 있지 않나? 라는 의문을 가진 사람들을 위해 저자는 친절하게 한 번 더 실험한다. Noise text를 google의 spell-checker로 spelling check를 하고, 그 text로 번역 성능을 평가한다. Spelling check를 했을 때, 안 한 noise text보다 BLEU 점수가 5점 가량 상승하지만, 여전히 vanilla text를 번역할 때보다 성능이 낮게 나타난다. 결과 표는 생략하겠다.&lt;/p&gt;
-
-&lt;h2 id=&quot;5-제안-기법&quot;&gt;5. 제안 기법&lt;/h2&gt;
-
-&lt;p&gt;기존 NMT 모델의 취약함 + spell checker로도 cover되지 않음을 보인 저자들은 자신들만의 방식을 제안한다.(사실 자신들만의 방식 이라기엔 기술적인 contribution은 별로 없다.)&lt;/p&gt;
-
-&lt;p&gt;첫 번째로 새로운 word embedding 표현법을 제안한다. 기존의 word embedding값을 얻는 방식은, 단어 내의 문자의 순서에 예민하다. 그래서 문자의 순서를 바꾸는 swap, middle, random인 합성 noise에 취약한 모습을 보였다. 저자들은 새로이 &lt;strong&gt;구조적으로 불변하는 단어 표현법(structure invariant word representation)&lt;/strong&gt; 을 제안한다. 말은 거창하지만, 그냥 단순히 단어의 embedding 값으로 단어를 구성하는 각 문자의 embedding 값의 average를 쓰자는 것이다. (&lt;strong&gt;meanChar 모델&lt;/strong&gt;이라고 저자들은 명명하였다.) 이렇게 되면 당연히 문자간의 순서에 independent해진다. 그럼에도 불구하고 다른 noise (keybord noise 혹은 natural noise)는 cover되지 않고, 낮은 성능을 보인다. 아쉽지만 이 방법은 accept되지 않는다.&lt;/p&gt;
-
-&lt;p&gt;두 번째는 학습 데이터에 noise가 섞인 text를 이용하자는 것이다. 이렇게 하면 noise가 섞인 text도 충분히 cover되어 높은 성능을 보일 것이다. 어찌 보면 당연한 소리다. 실험은 charCNN NMT 모델만을 이용하여 하였고, 아래 표와 같이 당연하게도 특정 종류의 noise로 학습한 모델은 그 종류의 noise에 대해 견고한 결과를 보인다. 하지만 한 종류의 noise로 학습한 모델은 다른 종류의 noise를 cover하지 못한다. 따라서 저자들은 여러 종류의 noise를 섞인 데이터로 모델을 학습시켰고, 결과적으로 &lt;strong&gt;random, keyboard, natural noise를 섞은 데이터&lt;/strong&gt;로 학습한 것이 두루두루 좋은 성능을 나타내는 것을 볼 수 있다.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/26705935/40530635-84953a78-6034-11e8-9c94-fbc021a4f1cb.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 28 Mar 2019 07:17:00 +0900</pubDate>
-        <link>http://localhost:4000/paper/2019/03/28/SyntheticNoise.html</link>
-        <guid isPermaLink="true">http://localhost:4000/paper/2019/03/28/SyntheticNoise.html</guid>
         
         
         <category>paper</category>
